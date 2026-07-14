@@ -1,0 +1,3 @@
+- [connect-pg-simple + esbuild bundling](connect-pg-simple-esbuild.md) — must stay external in esbuild bundles or session table creation fails with ENOENT.
+- [Orval schema naming for entity-shaped components](orval-entity-schema-naming.md) — keep OpenAPI component names entity-shaped to dodge codegen collisions; Orval still names generated Zod schemas after the operationId, not the component.
+- [Zod v3 pinned in this workspace](zod-v3-format-email.md) — no top-level `z.email()`/`format: email` support; avoid in OpenAPI specs feeding Orval codegen.

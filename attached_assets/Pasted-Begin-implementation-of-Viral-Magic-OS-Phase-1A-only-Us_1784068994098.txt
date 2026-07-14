@@ -1,0 +1,496 @@
+Begin implementation of Viral Magic OS — Phase 1A only.
+
+Use the approved architecture document located at:
+
+docs/viral-magic-os-architecture.md
+
+Use the approved owner decisions for Section 18.
+
+IMPORTANT SCOPE RULE
+
+Build only Phase 1A.
+
+Do not begin Phase 1B or any later phase.
+
+Do not build:
+
+- Client management
+- Project management
+- Diagnostics
+- Bottleneck scoring
+- Solution Architect
+- Platform Matcher
+- Software Blueprints
+- Task management
+- AI integrations
+- Billing
+- Public registration
+- Client portal
+- Viral Growth Engine
+
+Phase 1A must create the stable foundation that all later modules will use.
+
+# PHASE 1A OBJECTIVE
+
+Build the application foundation for:
+
+Viral Magic OS
+
+Subtitle:
+
+Software Factory Command Center
+
+Phase 1A must include:
+
+1. Stable full-stack application architecture
+2. PostgreSQL database connection
+3. Database migration system
+4. Secure Administrator login
+5. Protected application routes
+6. Main application shell
+7. Responsive sidebar navigation
+8. Top application header
+9. Settings module
+10. Activity logging foundation
+11. Reusable interface components
+12. Error handling
+13. Loading states
+14. Empty states
+15. Seed setup process
+16. README documentation
+17. Phase 1A testing
+
+# 1. PRESERVE THE ARCHITECTURE
+
+Follow the architecture plan already approved.
+
+Preferred stack:
+
+- TypeScript
+- React
+- Node.js
+- PostgreSQL
+- Reliable ORM
+- Server-side validation
+- Modular services
+- Environment variables or Replit Secrets
+
+Do not replace the approved architecture with a simpler static mockup.
+
+Do not use temporary in-memory storage.
+
+All settings and administrator records must persist after page refresh and application restart.
+
+# 2. DATABASE FOUNDATION
+
+Connect the app to Replit’s managed PostgreSQL database.
+
+Create migrations for the Phase 1A tables required now:
+
+- users
+- roles
+- user_roles or equivalent role relationship
+- application_settings
+- activity_records
+
+You may also create framework-level migration metadata tables required by the ORM.
+
+Do not create every future business table yet unless the architecture requires placeholder migrations.
+
+Requirements:
+
+- UUID or similarly robust primary keys
+- Created-at timestamps
+- Updated-at timestamps
+- Soft-delete or archive fields where appropriate
+- Foreign-key integrity
+- Indexed fields where useful
+- Server-side validation
+- No hard-coded database credentials
+
+Create a repeatable migration command.
+
+Document how migrations are applied.
+
+# 3. ADMINISTRATOR AUTHENTICATION
+
+Create one secure Administrator login system.
+
+Requirements:
+
+- No public registration
+- Login page
+- Logout
+- Protected application routes
+- Password hashing
+- Rate limiting or basic brute-force protection
+- Secure session cookies
+- Session expiration after 8 hours of normal use
+- Rolling expiration while active
+- Optional Remember Me checkbox
+- Remember Me duration: 30 days
+- Session invalidation after password change
+- Unauthorized users must be redirected to login
+- Server endpoints must also enforce authentication
+
+Create the initial Administrator through one of these safe methods:
+
+Preferred:
+- Secure first-run setup flow
+
+Acceptable alternative:
+- Environment-variable-based administrator seed
+
+Never hard-code a default email or password inside the source code.
+
+Do not display private environment values in the interface.
+
+# 4. APPLICATION SHELL
+
+After login, create the main Viral Magic OS application layout.
+
+Desktop layout:
+
+- Collapsible left sidebar
+- Top application header
+- Main workspace
+- Responsive content width
+
+Mobile layout:
+
+- Hamburger navigation
+- Slide-out sidebar
+- Touch-friendly controls
+- No horizontal overflow
+
+Branding:
+
+Application name:
+Viral Magic OS
+
+Subtitle:
+Software Factory Command Center
+
+Version label:
+Phase 1A
+
+Visual direction:
+
+- Premium executive SaaS
+- Deep navy or near-black background
+- Slightly lighter cards
+- Electric violet primary accent
+- Bright blue secondary accent
+- Emerald success
+- Amber warning
+- Red critical
+- White primary text
+- Cool-gray secondary text
+- Subtle borders
+- Minimal gradients
+- Clean sans-serif typography
+
+Avoid a playful or generic landing-page appearance.
+
+# 5. PHASE 1A NAVIGATION
+
+Display only working Phase 1A pages.
+
+Sidebar navigation:
+
+1. Dashboard
+2. Settings
+
+Do not display later modules as Coming Soon.
+
+Do not add dead navigation links.
+
+At the bottom of the sidebar display:
+
+Viral Magic OS
+Software Factory Command Center
+Phase 1A
+
+# 6. DASHBOARD PLACEHOLDER
+
+Create a functional Phase 1A Dashboard page.
+
+Because client, project, diagnostic, blueprint, and task tables are not being built yet, do not show fake business metrics.
+
+Instead display:
+
+- Foundation Status
+- Database Connection Status
+- Authentication Status
+- Application Version
+- Administrator Account Status
+- Settings Configuration Status
+- Recent Foundation Activity
+
+Use real system data where available.
+
+Include a clear message:
+
+“Business modules will be added in the next approved build phases.”
+
+This message should appear in the page content only, not as unfinished sidebar navigation.
+
+# 7. TOP APPLICATION HEADER
+
+Create a reusable top header containing:
+
+- Current page title
+- Sidebar toggle
+- Administrator profile menu
+- Logout action
+
+Do not add fake notifications.
+
+Do not add nonfunctional global search yet.
+
+Global search will be added after searchable business records exist.
+
+# 8. SETTINGS MODULE
+
+Build a working Settings page stored in PostgreSQL.
+
+Create these sections:
+
+BUSINESS PROFILE
+
+- Business name
+- Owner name
+- Business email
+- Phone
+- Website
+- Address
+- Default currency
+- Default timezone
+
+Default timezone:
+America/Phoenix
+
+BRANDING
+
+- Application name
+- Application subtitle
+- Logo URL
+- Primary accent preference
+- Secondary accent preference
+
+PROJECT DEFAULTS
+
+Store fields for later use:
+
+- Default project status
+- Default task priority
+- Default estimated timeline
+- Default project owner
+
+These fields may exist now even though the project and task modules will be built later.
+
+ACCOUNT SETTINGS
+
+Allow the logged-in Administrator to:
+
+- View account email
+- Change display name
+- Change password
+
+Changing the password must invalidate existing sessions where technically appropriate.
+
+All settings must save correctly to PostgreSQL.
+
+Show:
+
+- Validation errors
+- Save progress
+- Save success
+- Save failure
+
+Do not report success when the database update fails.
+
+# 9. ACTIVITY LOGGING FOUNDATION
+
+Create an activity logging service and database table.
+
+Phase 1A activities should include:
+
+- Administrator login
+- Administrator logout
+- Settings updated
+- Password changed
+- Application initialized
+- Administrator account created
+
+Store:
+
+- Activity type
+- Actor
+- Description
+- Entity type
+- Entity ID if applicable
+- Metadata
+- Timestamp
+
+Display recent activities on the Dashboard.
+
+Keep the activity service reusable for future clients, projects, diagnostics, blueprints, and tasks.
+
+# 10. REUSABLE COMPONENTS
+
+Create reusable components for:
+
+- App shell
+- Sidebar
+- Top header
+- Page header
+- Cards
+- Buttons
+- Form fields
+- Select fields
+- Text areas
+- Status badges
+- Modals
+- Confirmation dialogs
+- Toast messages
+- Loading states
+- Empty states
+- Error states
+- Section panels
+
+Keep styling consistent.
+
+Do not duplicate major layout code across pages.
+
+# 11. ERROR HANDLING
+
+Implement:
+
+- Server-side error handling
+- Client-side error display
+- Database failure handling
+- Authentication failure handling
+- Form validation
+- 404 page
+- Unauthorized state
+- General application error boundary where supported
+
+Do not expose stack traces, secrets, or database details to normal users.
+
+Log technical errors server-side.
+
+# 12. ENVIRONMENT CONFIGURATION
+
+Use Replit Secrets or environment variables for:
+
+- Database connection
+- Session secret
+- Initial administrator setup values if used
+- Application environment
+
+Create an example environment configuration file without real secrets.
+
+Document required environment variables in the README.
+
+Do not commit credentials.
+
+# 13. SEED AND INITIALIZATION
+
+Create a safe initialization process.
+
+Requirements:
+
+- Create required roles
+- Create Administrator role
+- Create initial application settings
+- Optionally create the first Administrator from secure environment values
+- Prevent duplicate seed records
+- Make the process safe to rerun
+
+Do not insert fake clients, projects, diagnostics, blueprints, or tasks.
+
+# 14. README
+
+Update or create a README containing:
+
+- Product name
+- Phase 1A scope
+- Technology stack
+- Folder structure
+- Local run instructions
+- Replit run instructions
+- Required Secrets
+- Database migration command
+- Seed or setup command
+- Administrator setup process
+- Login instructions
+- Testing instructions
+- Known Phase 1A limitations
+- Clear statement that later business modules are not yet implemented
+
+# 15. TESTING REQUIREMENTS
+
+Before declaring Phase 1A complete, test:
+
+1. Application starts successfully
+2. Database connection succeeds
+3. Migrations apply successfully
+4. Initial setup or seed process works
+5. Administrator can log in
+6. Incorrect login is rejected
+7. Protected routes redirect unauthenticated users
+8. Logout works
+9. Remember Me works
+10. Session expiration configuration is implemented
+11. Settings load from PostgreSQL
+12. Settings save to PostgreSQL
+13. Settings remain after refresh
+14. Password change works
+15. Activity records are created
+16. Dashboard displays recent activity
+17. Sidebar works on desktop
+18. Sidebar works on mobile
+19. No dead navigation links
+20. No fake success states
+21. No hard-coded credentials
+22. No exposed secrets
+23. 404 page works
+24. Application handles a database error gracefully
+
+Fix any failures before marking the phase complete.
+
+# 16. COMPLETION CRITERIA
+
+Phase 1A is complete only when:
+
+- Administrator authentication works
+- Protected routes work
+- PostgreSQL persistence works
+- Settings can be edited and saved
+- Activity logging works
+- Dashboard uses real foundation data
+- Responsive application shell works
+- Migrations and setup are documented
+- Tests have been performed
+- No later-phase modules were added
+
+# 17. FINAL RESPONSE
+
+When finished, report:
+
+1. What was implemented
+2. Files and folders created
+3. Database tables created
+4. Secrets or environment variables required
+5. How the first Administrator is created
+6. How to log in
+7. How to test settings persistence
+8. Tests completed
+9. Any test failures
+10. Known limitations
+11. Confirmation that Phase 1B was not started
+
+Do not begin Phase 1B.
+
+Stop after Phase 1A and wait for approval.

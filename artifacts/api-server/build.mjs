@@ -100,6 +100,9 @@ async function buildAll() {
       "puppeteer",
       "puppeteer-core",
       "electron",
+      // Reads a sibling table.sql file via path traversal at runtime; must
+      // stay resolvable from node_modules rather than bundled.
+      "connect-pg-simple",
     ],
     sourcemap: "linked",
     plugins: [
