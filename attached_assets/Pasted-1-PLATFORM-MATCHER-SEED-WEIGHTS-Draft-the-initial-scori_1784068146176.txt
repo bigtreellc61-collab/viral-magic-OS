@@ -1,0 +1,238 @@
+1. PLATFORM MATCHER SEED WEIGHTS
+
+Draft the initial scoring weights using your recommended consulting judgment, but make every weight administrator-editable.
+
+Requirements:
+- Store platform criteria weights and fit scores in database/configuration tables.
+- Do not hard-code them permanently in application logic.
+- Include a default seed matrix for:
+  - Replit
+  - Lovable
+  - DCS AI Studio
+  - WordPress
+  - Airtable
+  - Custom Development
+- Show the weighted reasoning behind each recommendation.
+- Allow the Administrator to adjust platform scores and criteria weights later.
+- Preserve the original system-calculated recommendation and any Administrator override.
+
+The initial weights should be drafted by the system for owner review before final implementation.
+
+2. PLATFORM MATCHER RE-RUN HISTORY
+
+Keep every completed Platform Matcher run as append-only history.
+
+Requirements:
+- Each rerun creates a new evaluation version.
+- Never overwrite the previous evaluation.
+- Display the latest evaluation as the current recommendation.
+- Allow older evaluations to be viewed and compared.
+- Store:
+  - Evaluation date
+  - Input criteria
+  - Criteria weights
+  - Scores for every platform
+  - Recommended platform
+  - Secondary recommendation
+  - Confidence score
+  - Administrator override
+  - Override reason
+  - Notes
+- Older evaluations may be marked superseded, but should not be deleted automatically.
+
+3. BOTTLENECK RECOMMENDATION AUTHORING
+
+Use a hybrid rule-based system.
+
+Requirements:
+- Automatically rank bottlenecks using the diagnostic formula.
+- Generate a rule-based draft recommendation for every Moderate, High, or Critical bottleneck.
+- Allow the Administrator to edit, replace, approve, or reject the recommendation.
+- Store both:
+  - System-generated draft
+  - Administrator-approved final recommendation
+- Healthy and Monitor categories may receive shorter maintenance recommendations.
+- Do not require an external AI API during Phase 1.
+
+4. BLUEPRINT STRUCTURED SECTION SHAPES
+
+Use structured items for list-based sections and long-form text for narrative sections.
+
+PAGES AND SCREENS fields:
+- Name
+- Purpose
+- Description
+- User roles with access
+- Primary actions
+- Data displayed
+- Forms or inputs
+- Related features
+- Mobile requirements
+- Priority
+- Build status
+- Sort order
+- Notes
+
+CORE FEATURES fields:
+- Feature name
+- Description
+- Business purpose
+- Target user
+- Priority: Must Have, Should Have, Could Have, Future
+- Complexity: Low, Medium, High
+- Dependencies
+- Acceptance criteria
+- Build status
+- Sort order
+- Notes
+
+OPTIONAL FEATURES fields:
+- Feature name
+- Description
+- Business benefit
+- Priority
+- Complexity
+- Dependency
+- Future phase
+- Sort order
+- Notes
+
+USER ROLES fields:
+- Role name
+- Role description
+- Permissions
+- Accessible screens
+- Allowed actions
+- Data restrictions
+- Future or Phase 1 role
+- Sort order
+- Notes
+
+INTEGRATIONS fields:
+- Integration name
+- Provider
+- Purpose
+- Data sent
+- Data received
+- Authentication method
+- Required or optional
+- Complexity
+- Status
+- Notes
+
+ACCEPTANCE CRITERIA fields:
+- Criterion title
+- Description
+- Related feature or screen
+- Test method
+- Required result
+- Status
+- Notes
+
+Use long-form text for:
+- Executive Summary
+- Business Problem
+- Target User Summary
+- Desired Outcome
+- Core Value Proposition
+- User Journey Narrative
+- Business Logic Summary
+- Security Requirements Summary
+- Testing Strategy
+- Future Expansion
+- Known Risks
+
+Use separate blueprint section records with JSONB content where structured data is needed.
+
+5. TASK-TO-BLUEPRINT LINKAGE
+
+Include a simple optional action in Phase 1:
+
+“Generate Starter Tasks from Core Features”
+
+Requirements:
+- The action must require Administrator confirmation.
+- Generate one editable starter task per selected Core Feature.
+- Do not generate tasks automatically when a blueprint is saved.
+- Allow the Administrator to select which features become tasks.
+- Map:
+  - Feature name → Task title
+  - Feature description → Task description
+  - Feature priority → Task priority
+  - Feature complexity → Suggested estimate or label
+- Link generated tasks back to:
+  - Blueprint
+  - Core Feature
+  - Project
+  - Client
+- Prevent accidental duplicate task generation.
+- This should remain lightweight and not become a full automated project-planning engine in Phase 1.
+
+6. DIAGNOSTIC CATEGORY CUSTOMIZATION
+
+Keep the 15 diagnostic categories as the fixed default framework for Phase 1.
+
+Requirements:
+- Every new diagnostic starts with the same 15 default categories.
+- Allow the Administrator to:
+  - Rename a category
+  - Edit its description
+  - Deactivate a category
+  - Add a custom category
+- Customization should apply at the diagnostic level or through reusable diagnostic templates.
+- Do not build complex automatic industry variation in Phase 1.
+- Preserve the original category key internally when only the display label changes.
+- Industry-specific diagnostic templates should be added in a later phase.
+
+7. SESSION AND LOGIN POLICY
+
+Use a secure Administrator login for Phase 1.
+
+Requirements:
+- Session duration: 8 hours of normal activity.
+- Use rolling session expiration while the Administrator remains active.
+- Provide an optional “Remember Me” checkbox.
+- Remember Me duration: 30 days.
+- Require reauthentication for sensitive future actions such as:
+  - Password change
+  - User management
+  - Billing
+  - API key changes
+- Provide:
+  - Secure logout
+  - Password hashing
+  - Rate limiting for login attempts
+  - Session invalidation after password change
+  - Protected server routes
+- Do not build public registration.
+- Create the initial Administrator account through a secure setup flow or environment-based seed process, not hard-coded credentials.
+
+8. DASHBOARD SCOPE
+
+Phase 1 dashboard priorities:
+
+PRIMARY METRICS:
+- Active Clients
+- Active Projects
+- Open Tasks
+- Overdue Tasks
+- Diagnostics Completed
+- High and Critical Bottlenecks
+- Blueprints Created
+- Projects Due Soon
+
+PRIMARY DASHBOARD SECTIONS:
+- Project Pipeline by status
+- Top unresolved bottlenecks across clients
+- Tasks due this week
+- Overdue tasks
+- Recent activity
+- Recently updated projects
+- Diagnostics awaiting review
+
+Metric behavior:
+- Every metric must use real stored data.
+- Clicking a metric opens the related filtered page.
+- Do not use decorative charts that do not support decisions.
+- Keep the first dashboard operational and easy to scan.
+- Revenue metrics can be added later after project financial tracking is validated.
