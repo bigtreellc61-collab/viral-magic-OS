@@ -38,10 +38,12 @@ export function LoginPage() {
           setLocation('/');
         },
         onError: (err: any) => {
-          toast({ 
-            title: "Authentication Failed", 
-            description: err?.error || "Invalid credentials.", 
-            variant: "destructive" 
+          // See setup.tsx: ApiError carries the real backend message at
+          // `err.data.error`, not `err.error`.
+          toast({
+            title: "Authentication Failed",
+            description: err?.data?.error || "Invalid credentials.",
+            variant: "destructive"
           });
         }
       }

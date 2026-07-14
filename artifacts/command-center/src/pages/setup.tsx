@@ -33,6 +33,15 @@ export function SetupPage() {
   });
 
   function onSubmit(values: z.infer<typeof setupSchema>) {
+    // Guard against a double form submission (e.g. an impatient double-click)
+    // firing a second POST while the first is still in flight. Without this,
+    // the first request can succeed and create the account while a second,
+    // now-redundant request lands after the setup gate has closed and is
+    // reported to the user as a failure, even though setup actually succeeded.
+    if (completeSetup.isPending || completeSetup.isSuccess) {
+      return;
+    }
+
     completeSetup.mutate(
       { data: { email: values.email, fullName: values.fullName, password: values.password } },
       {
@@ -43,10 +52,19 @@ export function SetupPage() {
           setLocation('/');
         },
         onError: (err: any) => {
-          toast({ 
-            title: "Setup Failed", 
-            description: err?.error || "Could not complete setup. Please try again.", 
-            variant: "destructive" 
+          // `err` is an ApiError from the generated client: the real backend
+          // message lives at `err.data.error`, not `err.error` (ApiError has
+          // no `.error` property, so that lookup was always undefined and
+          // every failure silently fell back to a generic message).
+          const description =
+            err?.data?.error ||
+            (err?.status === 409
+              ? "An administrator account already exists. Please log in instead."
+              : "Could not complete setup. Please try again.");
+          toast({
+            title: "Setup Failed",
+            description,
+            variant: "destructive"
           });
         }
       }

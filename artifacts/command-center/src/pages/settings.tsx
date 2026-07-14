@@ -113,7 +113,8 @@ export function SettingsPage({ user }: { user: AuthUser }) {
         toast({ title: "Settings Updated", description: "Changes saved successfully." });
       },
       onError: (err: any) => {
-        toast({ title: "Update Failed", description: err?.error || "Failed to save settings.", variant: "destructive" });
+        // ApiError carries the real backend message at `err.data.error`.
+        toast({ title: "Update Failed", description: err?.data?.error || "Failed to save settings.", variant: "destructive" });
       }
     });
   };
@@ -125,7 +126,7 @@ export function SettingsPage({ user }: { user: AuthUser }) {
         toast({ title: "Profile Updated", description: "Your profile has been updated." });
       },
       onError: (err: any) => {
-        toast({ title: "Update Failed", description: err?.error || "Failed to update profile.", variant: "destructive" });
+        toast({ title: "Update Failed", description: err?.data?.error || "Failed to update profile.", variant: "destructive" });
       }
     });
   };
@@ -137,7 +138,7 @@ export function SettingsPage({ user }: { user: AuthUser }) {
         passwordForm.reset();
       },
       onError: (err: any) => {
-        toast({ title: "Update Failed", description: err?.error || "Failed to change password.", variant: "destructive" });
+        toast({ title: "Update Failed", description: err?.data?.error || "Failed to change password.", variant: "destructive" });
       }
     });
   };
