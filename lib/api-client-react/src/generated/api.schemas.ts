@@ -134,7 +134,249 @@ export interface FoundationStatus {
   recentActivity: ActivityRecord[];
 }
 
+export interface ClientRecord {
+  id: string;
+  /** @nullable */
+  contactFirstName?: string | null;
+  /** @nullable */
+  contactLastName?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  website?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  /** @nullable */
+  businessType?: string | null;
+  /** @nullable */
+  customerMarket?: string | null;
+  /** @nullable */
+  companySize?: string | null;
+  /** @nullable */
+  annualRevenueRange?: string | null;
+  /** @nullable */
+  primaryLocation?: string | null;
+  /** @nullable */
+  currentTechnologyStack?: string | null;
+  /** @nullable */
+  primaryBusinessConcern?: string | null;
+  /** @nullable */
+  desiredOutcome?: string | null;
+  /** @nullable */
+  budgetRange?: string | null;
+  /** @nullable */
+  leadSource?: string | null;
+  status: string;
+  /** @nullable */
+  internalNotes?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+}
+
+export interface ClientListResult {
+  clients: ClientRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface CreateClientBody {
+  /** @nullable */
+  contactFirstName?: string | null;
+  /** @nullable */
+  contactLastName?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  website?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  /** @nullable */
+  businessType?: string | null;
+  /** @nullable */
+  customerMarket?: string | null;
+  /** @nullable */
+  companySize?: string | null;
+  /** @nullable */
+  annualRevenueRange?: string | null;
+  /** @nullable */
+  primaryLocation?: string | null;
+  /** @nullable */
+  currentTechnologyStack?: string | null;
+  /** @nullable */
+  primaryBusinessConcern?: string | null;
+  /** @nullable */
+  desiredOutcome?: string | null;
+  /** @nullable */
+  budgetRange?: string | null;
+  /** @nullable */
+  leadSource?: string | null;
+  status?: string;
+  /** @nullable */
+  internalNotes?: string | null;
+}
+
+export interface UpdateClientBody {
+  /** @nullable */
+  contactFirstName?: string | null;
+  /** @nullable */
+  contactLastName?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  website?: string | null;
+  /** @nullable */
+  industry?: string | null;
+  /** @nullable */
+  businessType?: string | null;
+  /** @nullable */
+  customerMarket?: string | null;
+  /** @nullable */
+  companySize?: string | null;
+  /** @nullable */
+  annualRevenueRange?: string | null;
+  /** @nullable */
+  primaryLocation?: string | null;
+  /** @nullable */
+  currentTechnologyStack?: string | null;
+  /** @nullable */
+  primaryBusinessConcern?: string | null;
+  /** @nullable */
+  desiredOutcome?: string | null;
+  /** @nullable */
+  budgetRange?: string | null;
+  /** @nullable */
+  leadSource?: string | null;
+  status?: string;
+  /** @nullable */
+  internalNotes?: string | null;
+}
+
+export interface ClientDuplicateCheckBody {
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+}
+
+export interface ClientDuplicateCheckResult {
+  isDuplicate: boolean;
+  matches: ClientRecord[];
+}
+
+export interface RestoreClientBody {
+  status: string;
+}
+
+export interface ClientNoteRecord {
+  id: string;
+  clientId: string;
+  noteType: string;
+  title: string;
+  body: string;
+  isPinned: boolean;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  archivedAt?: string | null;
+}
+
+export interface CreateClientNoteBody {
+  noteType?: string;
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  body: string;
+}
+
+export interface UpdateClientNoteBody {
+  noteType?: string;
+  /** @minLength 1 */
+  title?: string;
+  /** @minLength 1 */
+  body?: string;
+}
+
+export interface ToggleNotePinBody {
+  isPinned: boolean;
+}
+
+export interface ClientMetrics {
+  totalClients: number;
+  activeClients: number;
+  prospects: number;
+  archivedClients: number;
+  addedThisMonth: number;
+  recentClients: ClientRecord[];
+  recentActivity: ActivityRecord[];
+}
+
 export type ListActivityParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+
+export type ListClientsParams = {
+q?: string;
+status?: string;
+industry?: string;
+businessType?: string;
+customerMarket?: string;
+showArchived?: boolean;
+sortBy?: ListClientsSortBy;
+/**
+ * @minimum 1
+ */
+page?: number;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+pageSize?: number;
+};
+
+export type ListClientsSortBy = typeof ListClientsSortBy[keyof typeof ListClientsSortBy];
+
+
+export const ListClientsSortBy = {
+  newest: 'newest',
+  oldest: 'oldest',
+  company_az: 'company_az',
+  company_za: 'company_za',
+  contact_az: 'contact_az',
+  recently_updated: 'recently_updated',
+} as const;
+
+export type ListClientNotesParams = {
+showArchived?: boolean;
+};
+
+export type ListClientActivityParams = {
 /**
  * @minimum 1
  * @maximum 100

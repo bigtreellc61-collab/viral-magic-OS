@@ -4,6 +4,7 @@ import authRouter from "./auth";
 import settingsRouter from "./settings";
 import activityRouter from "./activity";
 import dashboardRouter from "./dashboard";
+import clientsRouter from "./clients";
 
 const router: IRouter = Router();
 
@@ -12,5 +13,6 @@ router.use(authRouter);
 router.use(settingsRouter);
 router.use(activityRouter);
 router.use(dashboardRouter);
+router.use(clientsRouter);
 
 export default router;

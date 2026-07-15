@@ -18,6 +18,8 @@ tags:
     description: Activity log
   - name: dashboard
     description: Foundation status dashboard
+  - name: clients
+    description: Client management
 paths:
   /healthz:
     get:
@@ -263,6 +265,630 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /dashboard/clients:
+    get:
+      operationId: getClientMetrics
+      tags: [dashboard]
+      summary: Get client metrics for the dashboard
+      responses:
+        "200":
+          description: Client metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientMetrics"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List clients with search, filter, sort, and pagination
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: industry
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: businessType
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: customerMarket
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: showArchived
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [newest, oldest, company_az, company_za, contact_az, recently_updated]
+            default: newest
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+      responses:
+        "200":
+          description: Paginated client list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientListResult"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientBody"
+      responses:
+        "201":
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/check-duplicate:
+    post:
+      operationId: checkClientDuplicate
+      tags: [clients]
+      summary: Check for potential duplicate clients before creating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientDuplicateCheckBody"
+      responses:
+        "200":
+          description: Duplicate check result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientDuplicateCheckResult"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a single client by ID
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Client record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client record
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientBody"
+      responses:
+        "200":
+          description: Updated client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Permanently delete an archived client and all their notes
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Client permanently deleted
+        "400":
+          description: Client must be archived before permanent deletion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/archive:
+    post:
+      operationId: archiveClient
+      tags: [clients]
+      summary: Archive a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Archived client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/restore:
+    post:
+      operationId: restoreClient
+      tags: [clients]
+      summary: Restore an archived client with a new status
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestoreClientBody"
+      responses:
+        "200":
+          description: Restored client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/notes:
+    get:
+      operationId: listClientNotes
+      tags: [clients]
+      summary: List notes for a client (pinned first, then newest)
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: showArchived
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Client notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientNoteRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createClientNote
+      tags: [clients]
+      summary: Add a note to a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientNoteBody"
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNoteRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/notes/{noteId}:
+    patch:
+      operationId: updateClientNote
+      tags: [clients]
+      summary: Update a client note
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientNoteBody"
+      responses:
+        "200":
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNoteRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteClientNote
+      tags: [clients]
+      summary: Permanently delete an archived note
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Note permanently deleted
+        "400":
+          description: Note must be archived before permanent deletion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/notes/{noteId}/pin:
+    post:
+      operationId: toggleClientNotePin
+      tags: [clients]
+      summary: Pin or unpin a client note
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleNotePinBody"
+      responses:
+        "200":
+          description: Updated note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNoteRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/notes/{noteId}/archive:
+    post:
+      operationId: archiveClientNote
+      tags: [clients]
+      summary: Archive a client note
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Archived note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNoteRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/notes/{noteId}/restore:
+    post:
+      operationId: restoreClientNote
+      tags: [clients]
+      summary: Restore an archived client note
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Restored note
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNoteRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{clientId}/activity:
+    get:
+      operationId: listClientActivity
+      tags: [clients]
+      summary: List activity records for a specific client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: Client activity records, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityRecord"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -494,4 +1120,288 @@ components:
         - phase
         - generatedAt
         - recentActivity
-
+    ClientRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        contactFirstName:
+          type: ["string", "null"]
+        contactLastName:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        businessType:
+          type: ["string", "null"]
+        customerMarket:
+          type: ["string", "null"]
+        companySize:
+          type: ["string", "null"]
+        annualRevenueRange:
+          type: ["string", "null"]
+        primaryLocation:
+          type: ["string", "null"]
+        currentTechnologyStack:
+          type: ["string", "null"]
+        primaryBusinessConcern:
+          type: ["string", "null"]
+        desiredOutcome:
+          type: ["string", "null"]
+        budgetRange:
+          type: ["string", "null"]
+        leadSource:
+          type: ["string", "null"]
+        status:
+          type: string
+        internalNotes:
+          type: ["string", "null"]
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+      required:
+        - id
+        - status
+        - createdAt
+        - updatedAt
+    ClientListResult:
+      type: object
+      properties:
+        clients:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientRecord"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+      required:
+        - clients
+        - total
+        - page
+        - pageSize
+    CreateClientBody:
+      type: object
+      properties:
+        contactFirstName:
+          type: ["string", "null"]
+        contactLastName:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        businessType:
+          type: ["string", "null"]
+        customerMarket:
+          type: ["string", "null"]
+        companySize:
+          type: ["string", "null"]
+        annualRevenueRange:
+          type: ["string", "null"]
+        primaryLocation:
+          type: ["string", "null"]
+        currentTechnologyStack:
+          type: ["string", "null"]
+        primaryBusinessConcern:
+          type: ["string", "null"]
+        desiredOutcome:
+          type: ["string", "null"]
+        budgetRange:
+          type: ["string", "null"]
+        leadSource:
+          type: ["string", "null"]
+        status:
+          type: string
+        internalNotes:
+          type: ["string", "null"]
+    UpdateClientBody:
+      type: object
+      properties:
+        contactFirstName:
+          type: ["string", "null"]
+        contactLastName:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        industry:
+          type: ["string", "null"]
+        businessType:
+          type: ["string", "null"]
+        customerMarket:
+          type: ["string", "null"]
+        companySize:
+          type: ["string", "null"]
+        annualRevenueRange:
+          type: ["string", "null"]
+        primaryLocation:
+          type: ["string", "null"]
+        currentTechnologyStack:
+          type: ["string", "null"]
+        primaryBusinessConcern:
+          type: ["string", "null"]
+        desiredOutcome:
+          type: ["string", "null"]
+        budgetRange:
+          type: ["string", "null"]
+        leadSource:
+          type: ["string", "null"]
+        status:
+          type: string
+        internalNotes:
+          type: ["string", "null"]
+    ClientDuplicateCheckBody:
+      type: object
+      properties:
+        email:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+    ClientDuplicateCheckResult:
+      type: object
+      properties:
+        isDuplicate:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientRecord"
+      required:
+        - isDuplicate
+        - matches
+    RestoreClientBody:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ClientNoteRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        noteType:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        isPinned:
+          type: boolean
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+      required:
+        - id
+        - clientId
+        - noteType
+        - title
+        - body
+        - isPinned
+        - createdAt
+        - updatedAt
+    CreateClientNoteBody:
+      type: object
+      properties:
+        noteType:
+          type: string
+        title:
+          type: string
+          minLength: 1
+        body:
+          type: string
+          minLength: 1
+      required:
+        - title
+        - body
+    UpdateClientNoteBody:
+      type: object
+      properties:
+        noteType:
+          type: string
+        title:
+          type: string
+          minLength: 1
+        body:
+          type: string
+          minLength: 1
+    ToggleNotePinBody:
+      type: object
+      properties:
+        isPinned:
+          type: boolean
+      required:
+        - isPinned
+    ClientMetrics:
+      type: object
+      properties:
+        totalClients:
+          type: integer
+        activeClients:
+          type: integer
+        prospects:
+          type: integer
+        archivedClients:
+          type: integer
+        addedThisMonth:
+          type: integer
+        recentClients:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClientRecord"
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityRecord"
+      required:
+        - totalClients
+        - activeClients
+        - prospects
+        - archivedClients
+        - addedThisMonth
+        - recentClients
+        - recentActivity

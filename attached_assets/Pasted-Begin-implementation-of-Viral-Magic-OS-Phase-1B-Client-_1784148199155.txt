@@ -1,0 +1,676 @@
+Begin implementation of Viral Magic OS — Phase 1B: Client Management only.
+
+Use the approved architecture document:
+
+docs/viral-magic-os-architecture.md
+
+Preserve all working Phase 1A functionality.
+
+IMPORTANT SCOPE RULE
+
+Build only Phase 1B.
+
+Do not begin:
+
+- Project Management
+- Diagnostics
+- Bottleneck Scoring
+- Solution Architect
+- Platform Matcher
+- Software Blueprints
+- Task Management
+- AI integrations
+- Billing
+- Public registration
+- Client portal
+- Viral Growth Engine
+
+Do not remove, replace, or weaken:
+
+- Administrator authentication
+- Protected routes
+- PostgreSQL connection
+- Settings
+- Activity logging
+- Dashboard foundation
+- Existing responsive application shell
+
+# PHASE 1B OBJECTIVE
+
+Build a complete internal Client Management module for Viral Magic OS.
+
+The Administrator must be able to:
+
+1. View all clients
+2. Search clients
+3. Filter clients
+4. Sort clients
+5. Create a client
+6. View a client record
+7. Edit a client
+8. Archive a client
+9. Restore an archived client
+10. Permanently delete a client only after explicit confirmation
+11. Add and edit client notes
+12. View client activity history
+13. See real client metrics on the Dashboard
+
+All client data must persist in PostgreSQL.
+
+# 1. NAVIGATION
+
+Add one new working sidebar item:
+
+Clients
+
+The Phase 1B sidebar should contain only:
+
+1. Dashboard
+2. Clients
+3. Settings
+
+Do not display unfinished modules.
+
+Update the application version label to:
+
+Phase 1B
+
+Do not remove the Phase 1A foundation status information unless it is intentionally updated to reflect the new phase.
+
+# 2. DATABASE TABLES
+
+Create migrations for the required Phase 1B tables.
+
+CLIENTS TABLE
+
+Include:
+
+- id
+- contact_first_name
+- contact_last_name
+- company_name
+- email
+- phone
+- website
+- industry
+- business_type
+- customer_market
+- company_size
+- annual_revenue_range
+- primary_location
+- current_technology_stack
+- primary_business_concern
+- desired_outcome
+- budget_range
+- lead_source
+- status
+- internal_notes
+- archived_at
+- created_at
+- updated_at
+- created_by
+- updated_by
+
+Use types appropriate to the approved architecture.
+
+CUSTOMER MARKET OPTIONS
+
+- B2B
+- B2C
+- Both
+
+CLIENT STATUS OPTIONS
+
+- Prospect
+- Discovery
+- Qualified
+- Proposal Sent
+- Active
+- Paused
+- Completed
+- Archived
+
+BUSINESS TYPE OPTIONS
+
+- Local Service Business
+- Professional Service
+- Industrial Business
+- Medical or Healthcare
+- Real Estate
+- E-commerce
+- SaaS or Technology
+- Agency or Consultant
+- Content Creator
+- Affiliate Business
+- Other
+
+COMPANY SIZE OPTIONS
+
+- Solo Owner
+- 2–5 Employees
+- 6–10 Employees
+- 11–25 Employees
+- 26–50 Employees
+- 51–100 Employees
+- 101–250 Employees
+- 251+ Employees
+
+ANNUAL REVENUE RANGE OPTIONS
+
+- Pre-Revenue
+- Under $100,000
+- $100,000–$249,999
+- $250,000–$499,999
+- $500,000–$999,999
+- $1 Million–$2.49 Million
+- $2.5 Million–$4.99 Million
+- $5 Million–$9.99 Million
+- $10 Million+
+- Unknown
+
+BUDGET RANGE OPTIONS
+
+- Under $1,000
+- $1,000–$2,499
+- $2,500–$4,999
+- $5,000–$9,999
+- $10,000–$24,999
+- $25,000+
+- Not Yet Determined
+
+CLIENT NOTES TABLE
+
+Include:
+
+- id
+- client_id
+- note_type
+- title
+- body
+- is_pinned
+- created_by
+- updated_by
+- created_at
+- updated_at
+- archived_at
+
+NOTE TYPE OPTIONS
+
+- General
+- Discovery
+- Sales
+- Technical
+- Strategy
+- Follow-Up
+- Support
+- Important
+
+Use proper foreign keys and indexes.
+
+Do not use in-memory or browser-only storage.
+
+# 3. CLIENT LIST PAGE
+
+Create a working Clients page.
+
+Display:
+
+- Page title
+- Total client count
+- Active client count
+- Prospect count
+- Archived client count
+- Add Client button
+
+Provide:
+
+- Search field
+- Status filter
+- Industry filter
+- Business type filter
+- Customer market filter
+- Archived status filter
+- Sort control
+- Clear filters action
+
+SEARCH MUST INCLUDE
+
+- Contact first name
+- Contact last name
+- Company name
+- Email
+- Phone
+- Industry
+- Primary location
+
+SORT OPTIONS
+
+- Newest
+- Oldest
+- Company A–Z
+- Company Z–A
+- Contact A–Z
+- Recently Updated
+
+Create:
+
+- Table view
+- Card view
+- View toggle
+
+Remember the selected view during the current session if practical.
+
+TABLE COLUMNS
+
+- Company
+- Primary Contact
+- Industry
+- Customer Market
+- Status
+- Email
+- Phone
+- Last Updated
+- Actions
+
+ROW ACTIONS
+
+- View
+- Edit
+- Archive
+- Restore, when archived
+- Delete, only for archived records and after confirmation
+
+Use pagination when the list becomes large.
+
+Create polished empty states for:
+
+- No clients exist
+- No search results
+- No archived clients
+
+# 4. ADD CLIENT FORM
+
+Create a dedicated Add Client page or polished modal.
+
+Use logical sections.
+
+CONTACT INFORMATION
+
+- First name
+- Last name
+- Email
+- Phone
+
+COMPANY INFORMATION
+
+- Company name
+- Website
+- Industry
+- Business type
+- Customer market
+- Company size
+- Annual revenue range
+- Primary location
+
+BUSINESS CONTEXT
+
+- Current technology stack
+- Primary business concern
+- Desired outcome
+- Budget range
+- Lead source
+- Client status
+- Internal notes
+
+VALIDATION
+
+Required:
+
+- Contact first name or company name
+- Email must be valid when entered
+- Website must be valid when entered
+- Phone must accept common US formatting
+- Status must be valid
+- Customer market must be valid
+
+Prevent accidental duplicate clients when the same email and company name already exist.
+
+Do not silently block possible duplicates.
+
+Instead:
+
+- Warn the Administrator
+- Show possible matching records
+- Allow cancellation or intentional continuation
+
+Add:
+
+- Save Client
+- Save and View
+- Cancel
+
+Show:
+
+- Saving state
+- Validation errors
+- Success state
+- Real failure message
+
+Do not show success unless the database save succeeds.
+
+# 5. CLIENT DETAIL PAGE
+
+Create a dedicated client detail page.
+
+HEADER
+
+Display:
+
+- Company name
+- Contact name
+- Status badge
+- Industry
+- Customer market
+- Edit button
+- Add Note button
+- Archive or Restore button
+
+Create tabs:
+
+1. Overview
+2. Notes
+3. Activity
+
+Do not add empty Projects, Diagnostics, or Blueprints tabs yet.
+
+OVERVIEW TAB
+
+Display:
+
+- Contact details
+- Company details
+- Business profile
+- Technology stack
+- Primary concern
+- Desired outcome
+- Budget
+- Lead source
+- Internal notes
+- Created date
+- Last updated date
+
+Use clean cards and grouped information.
+
+Provide click-to-copy where useful for:
+
+- Email
+- Phone
+- Website
+
+NOTES TAB
+
+Allow:
+
+- Add note
+- Edit note
+- Pin note
+- Unpin note
+- Archive note
+- Restore note
+- Permanently delete archived note after confirmation
+
+Display pinned notes first.
+
+ACTIVITY TAB
+
+Display activity related to this client.
+
+Include:
+
+- Client created
+- Client updated
+- Client archived
+- Client restored
+- Client deleted
+- Note created
+- Note updated
+- Note archived
+- Note restored
+
+Use the Phase 1A activity logging service.
+
+# 6. EDIT CLIENT
+
+Create a working Edit Client form.
+
+Requirements:
+
+- Load existing PostgreSQL data
+- Validate changes
+- Save only after successful database update
+- Update updated_at and updated_by
+- Log meaningful activity
+- Warn about unsaved changes
+- Allow cancel without modifying the record
+
+Do not overwrite fields with null or empty values due to partial form errors.
+
+# 7. ARCHIVE, RESTORE, AND DELETE
+
+ARCHIVE
+
+Archiving should:
+
+- Set archived_at
+- Set status to Archived
+- Keep the record and related notes
+- Remove the client from the default active list
+- Log the activity
+
+RESTORE
+
+Restoring should:
+
+- Clear archived_at
+- Require the Administrator to select a valid restored status
+- Log the activity
+
+PERMANENT DELETE
+
+Permanent deletion should:
+
+- Be available only for archived clients
+- Use a strong confirmation dialog
+- Require confirmation using the company name or the word DELETE
+- Explain that client notes will also be removed
+- Use a database transaction
+- Log the deletion before removing the record when technically possible
+
+Do not accidentally expose permanent deletion as the primary action.
+
+# 8. DASHBOARD UPDATES
+
+Update the Dashboard using real client data.
+
+Add these metric cards:
+
+- Total Clients
+- Active Clients
+- Prospects
+- Archived Clients
+- Clients Added This Month
+
+Each card should:
+
+- Use PostgreSQL data
+- Be clickable
+- Open the Clients page with the relevant filter applied
+
+Add:
+
+RECENT CLIENTS
+
+Show the five most recently added clients.
+
+RECENT CLIENT ACTIVITY
+
+Include recent:
+
+- Client creation
+- Updates
+- Archive and restore events
+- Note events
+
+Keep existing foundation status visible in a smaller System Status section if useful.
+
+Do not add fake project, task, diagnostic, revenue, or blueprint data.
+
+# 9. API AND SERVICE STRUCTURE
+
+Use the approved modular API structure.
+
+Create or extend services for:
+
+- Client CRUD
+- Client search
+- Client filtering
+- Client sorting
+- Client notes
+- Duplicate detection
+- Archive and restore
+- Dashboard client metrics
+- Client activity logging
+
+Requirements:
+
+- Authentication enforced server-side
+- Administrator authorization enforced
+- Input validation enforced server-side
+- Parameterized ORM queries
+- Pagination supported
+- Errors converted into safe client-facing messages
+- Technical details logged server-side only
+
+# 10. REUSABLE COMPONENTS
+
+Use and extend existing Phase 1A components.
+
+Create reusable components for:
+
+- Client status badge
+- Client form sections
+- Search and filter bar
+- Data table
+- Client card
+- Empty state
+- Archive confirmation
+- Delete confirmation
+- Note editor
+- Activity timeline
+- Pagination
+- View toggle
+
+Avoid duplicating form and display logic.
+
+# 11. RESPONSIVE DESIGN
+
+Test desktop, tablet, and mobile.
+
+Requirements:
+
+- Client table should adapt on smaller screens
+- Use card layout or controlled horizontal scrolling where necessary
+- Forms must stack cleanly
+- Action menus must remain usable
+- Modals must fit smaller screens
+- No horizontal page overflow
+- Buttons must remain touch-friendly
+
+# 12. SECURITY
+
+Maintain all Phase 1A security controls.
+
+Additionally:
+
+- Protect client data routes
+- Validate IDs
+- Prevent unauthorized direct API access
+- Sanitize text input where appropriate
+- Do not render unsafe HTML from notes
+- Do not expose internal database errors
+- Do not expose archived records unless requested
+
+# 13. TESTING REQUIREMENTS
+
+Before declaring Phase 1B complete, test:
+
+1. Existing Administrator login still works
+2. Existing logout still works
+3. Existing Settings still work
+4. Add Client succeeds
+5. Add Client validation works
+6. Client remains after refresh
+7. Client list displays stored records
+8. Search works
+9. Every filter works
+10. Every sort option works
+11. Table view works
+12. Card view works
+13. Client detail loads
+14. Edit Client works
+15. Unsaved changes warning works
+16. Duplicate warning works
+17. Add Note works
+18. Edit Note works
+19. Pin and unpin note works
+20. Archive note works
+21. Restore note works
+22. Archive client works
+23. Archived client disappears from default list
+24. Archived filter displays archived clients
+25. Restore client works
+26. Permanent delete requires strong confirmation
+27. Activity records are created
+28. Dashboard metrics update
+29. Dashboard metric links open filtered client lists
+30. Mobile layout works
+31. No Phase 1C modules were added
+32. No existing Phase 1A features were broken
+
+Fix failures before reporting completion.
+
+# 14. COMPLETION CRITERIA
+
+Phase 1B is complete only when:
+
+- Client CRUD works
+- Search and filters work
+- Notes work
+- Archive and restore work
+- Strong-confirmation delete works
+- Client activity logging works
+- Dashboard uses real client metrics
+- PostgreSQL persistence works
+- Responsive behavior is verified
+- Phase 1A remains operational
+- No Phase 1C or later modules were started
+
+# 15. FINAL RESPONSE
+
+When complete, report:
+
+1. What was implemented
+2. Files and folders created or modified
+3. Database migrations added
+4. Tables and fields added
+5. Client workflows completed
+6. Dashboard updates
+7. Activity events added
+8. Tests completed
+9. Any failures or unresolved issues
+10. Known limitations
+11. Confirmation that Phase 1C was not started
+
+Do not begin Phase 1C.
+
+Stop after Phase 1B and wait for approval.

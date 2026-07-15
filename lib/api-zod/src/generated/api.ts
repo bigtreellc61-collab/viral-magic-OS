@@ -239,3 +239,589 @@ export const GetFoundationStatusResponse = zod.object({
 })
 
 
+/**
+ * @summary Get client metrics for the dashboard
+ */
+export const GetClientMetricsResponse = zod.object({
+  "totalClients": zod.number(),
+  "activeClients": zod.number(),
+  "prospects": zod.number(),
+  "archivedClients": zod.number(),
+  "addedThisMonth": zod.number(),
+  "recentClients": zod.array(zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})),
+  "recentActivity": zod.array(zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary List clients with search, filter, sort, and pagination
+ */
+export const listClientsQueryShowArchivedDefault = false;
+export const listClientsQuerySortByDefault = `newest`;
+export const listClientsQueryPageDefault = 1;
+
+export const listClientsQueryPageSizeDefault = 25;
+export const listClientsQueryPageSizeMax = 100;
+
+
+
+export const ListClientsQueryParams = zod.object({
+  "q": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "industry": zod.coerce.string().optional(),
+  "businessType": zod.coerce.string().optional(),
+  "customerMarket": zod.coerce.string().optional(),
+  "showArchived": zod.coerce.boolean().default(listClientsQueryShowArchivedDefault),
+  "sortBy": zod.enum(['newest', 'oldest', 'company_az', 'company_za', 'contact_az', 'recently_updated']).default(listClientsQuerySortByDefault),
+  "page": zod.coerce.number().min(1).default(listClientsQueryPageDefault),
+  "pageSize": zod.coerce.number().min(1).max(listClientsQueryPageSizeMax).default(listClientsQueryPageSizeDefault)
+})
+
+export const ListClientsResponse = zod.object({
+  "clients": zod.array(zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "pageSize": zod.number()
+})
+
+
+/**
+ * @summary Create a new client
+ */
+export const CreateClientBody = zod.object({
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string().optional(),
+  "internalNotes": zod.string().nullish()
+})
+
+export const CreateClientResponse = zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Check for potential duplicate clients before creating
+ */
+export const CheckClientDuplicateBody = zod.object({
+  "email": zod.string().nullish(),
+  "companyName": zod.string().nullish()
+})
+
+export const CheckClientDuplicateResponse = zod.object({
+  "isDuplicate": zod.boolean(),
+  "matches": zod.array(zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary Get a single client by ID
+ */
+export const GetClientParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const GetClientResponse = zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a client record
+ */
+export const UpdateClientParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const UpdateClientBody = zod.object({
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string().optional(),
+  "internalNotes": zod.string().nullish()
+})
+
+export const UpdateClientResponse = zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Permanently delete an archived client and all their notes
+ */
+export const DeleteClientParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const DeleteClientResponse = zod.void()
+
+
+/**
+ * @summary Archive a client
+ */
+export const ArchiveClientParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const ArchiveClientResponse = zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Restore an archived client with a new status
+ */
+export const RestoreClientParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const RestoreClientBody = zod.object({
+  "status": zod.string()
+})
+
+export const RestoreClientResponse = zod.object({
+  "id": zod.string(),
+  "contactFirstName": zod.string().nullish(),
+  "contactLastName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "website": zod.string().nullish(),
+  "industry": zod.string().nullish(),
+  "businessType": zod.string().nullish(),
+  "customerMarket": zod.string().nullish(),
+  "companySize": zod.string().nullish(),
+  "annualRevenueRange": zod.string().nullish(),
+  "primaryLocation": zod.string().nullish(),
+  "currentTechnologyStack": zod.string().nullish(),
+  "primaryBusinessConcern": zod.string().nullish(),
+  "desiredOutcome": zod.string().nullish(),
+  "budgetRange": zod.string().nullish(),
+  "leadSource": zod.string().nullish(),
+  "status": zod.string(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary List notes for a client (pinned first, then newest)
+ */
+export const ListClientNotesParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const listClientNotesQueryShowArchivedDefault = false;
+
+export const ListClientNotesQueryParams = zod.object({
+  "showArchived": zod.coerce.boolean().default(listClientNotesQueryShowArchivedDefault)
+})
+
+export const ListClientNotesResponseItem = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+export const ListClientNotesResponse = zod.array(ListClientNotesResponseItem)
+
+
+/**
+ * @summary Add a note to a client
+ */
+export const CreateClientNoteParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+
+
+
+
+export const CreateClientNoteBody = zod.object({
+  "noteType": zod.string().optional(),
+  "title": zod.string().min(1),
+  "body": zod.string().min(1)
+})
+
+export const CreateClientNoteResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Update a client note
+ */
+export const UpdateClientNoteParams = zod.object({
+  "clientId": zod.coerce.string(),
+  "noteId": zod.coerce.string()
+})
+
+
+
+
+
+export const UpdateClientNoteBody = zod.object({
+  "noteType": zod.string().optional(),
+  "title": zod.string().min(1).optional(),
+  "body": zod.string().min(1).optional()
+})
+
+export const UpdateClientNoteResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Permanently delete an archived note
+ */
+export const DeleteClientNoteParams = zod.object({
+  "clientId": zod.coerce.string(),
+  "noteId": zod.coerce.string()
+})
+
+export const DeleteClientNoteResponse = zod.void()
+
+
+/**
+ * @summary Pin or unpin a client note
+ */
+export const ToggleClientNotePinParams = zod.object({
+  "clientId": zod.coerce.string(),
+  "noteId": zod.coerce.string()
+})
+
+export const ToggleClientNotePinBody = zod.object({
+  "isPinned": zod.boolean()
+})
+
+export const ToggleClientNotePinResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Archive a client note
+ */
+export const ArchiveClientNoteParams = zod.object({
+  "clientId": zod.coerce.string(),
+  "noteId": zod.coerce.string()
+})
+
+export const ArchiveClientNoteResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary Restore an archived client note
+ */
+export const RestoreClientNoteParams = zod.object({
+  "clientId": zod.coerce.string(),
+  "noteId": zod.coerce.string()
+})
+
+export const RestoreClientNoteResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "noteType": zod.string(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "isPinned": zod.boolean(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "archivedAt": zod.coerce.date().nullish()
+})
+
+
+/**
+ * @summary List activity records for a specific client
+ */
+export const ListClientActivityParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const listClientActivityQueryLimitDefault = 50;
+export const listClientActivityQueryLimitMax = 100;
+
+
+
+export const ListClientActivityQueryParams = zod.object({
+  "limit": zod.coerce.number().min(1).max(listClientActivityQueryLimitMax).default(listClientActivityQueryLimitDefault)
+})
+
+export const ListClientActivityResponseItem = zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const ListClientActivityResponse = zod.array(ListClientActivityResponseItem)
+
+

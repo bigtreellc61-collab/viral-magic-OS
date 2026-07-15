@@ -9,6 +9,9 @@ import { SetupPage } from '@/pages/setup';
 import { LoginPage } from '@/pages/login';
 import { DashboardPage } from '@/pages/dashboard';
 import { SettingsPage } from '@/pages/settings';
+import { ClientsPage } from '@/pages/clients';
+import { ClientDetailPage } from '@/pages/client-detail';
+import { ClientFormPage } from '@/pages/client-form';
 import NotFound from '@/pages/not-found';
 import { useGetSetupStatus, useGetCurrentUser, getGetCurrentUserQueryKey } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
@@ -25,14 +28,13 @@ const queryClient = new QueryClient({
 function AuthWall() {
   const [location, setLocation] = useLocation();
   const { data: setupStatus, isLoading: isLoadingSetup } = useGetSetupStatus();
-  
-  // Only query user if setup is not needed
+
   const { data: user, isLoading: isLoadingUser, error: userError } = useGetCurrentUser({
     query: {
       enabled: setupStatus?.needsSetup === false,
       retry: false,
       queryKey: getGetCurrentUserQueryKey(),
-    }
+    },
   });
 
   const isLoading = isLoadingSetup || (setupStatus?.needsSetup === false && isLoadingUser);
@@ -65,31 +67,27 @@ function AuthWall() {
     );
   }
 
-  // 1. Force setup if needed
-  if (needsSetup) {
-    return <SetupPage />;
-  }
-
-  // 2. Force login if not authenticated
-  if (isUnauthenticated) {
-    return <LoginPage />;
-  }
-
-  // 3. Authenticated users on auth routes: render nothing while the effect
-  // above navigates them away.
-  if (location === '/login' || location === '/setup') {
-    return null;
-  }
-
-  // 4. Authenticated Area
-  if (!user) {
-    return null;
-  }
+  if (needsSetup) return <SetupPage />;
+  if (isUnauthenticated) return <LoginPage />;
+  if (location === '/login' || location === '/setup') return null;
+  if (!user) return null;
 
   return (
     <Shell user={user}>
       <Switch>
         <Route path="/" component={DashboardPage} />
+        <Route path="/clients">
+          {() => <ClientsPage />}
+        </Route>
+        <Route path="/clients/new">
+          {() => <ClientFormPage />}
+        </Route>
+        <Route path="/clients/:id/edit">
+          {(params) => <ClientFormPage clientId={params.id} />}
+        </Route>
+        <Route path="/clients/:id">
+          {(params) => <ClientDetailPage clientId={params.id} />}
+        </Route>
         <Route path="/settings">
           {() => <SettingsPage user={user} />}
         </Route>
