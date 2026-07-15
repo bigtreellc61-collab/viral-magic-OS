@@ -825,3 +825,711 @@ export const ListClientActivityResponseItem = zod.object({
 export const ListClientActivityResponse = zod.array(ListClientActivityResponseItem)
 
 
+/**
+ * @summary Dashboard project and task metrics
+ */
+export const GetDashboardProjectsResponse = zod.object({
+  "projects": zod.object({
+
+}),
+  "tasks": zod.object({
+
+}),
+  "recentActivity": zod.array(zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Project metrics summary
+ */
+export const GetProjectMetricsResponse = zod.object({
+  "total": zod.number(),
+  "active": zod.number(),
+  "completed": zod.number(),
+  "onHold": zod.number(),
+  "overdue": zod.number()
+})
+
+
+/**
+ * @summary List projects
+ */
+export const ListProjectsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "clientId": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "priority": zod.coerce.string().optional(),
+  "projectType": zod.coerce.string().optional(),
+  "selectedPlatform": zod.coerce.string().optional(),
+  "showArchived": zod.coerce.string().optional(),
+  "sort": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "pageSize": zod.coerce.number().optional()
+})
+
+export const ListProjectsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "pageSize": zod.number(),
+  "totalPages": zod.number()
+})
+
+
+/**
+ * @summary Create a project
+ */
+
+
+
+export const CreateProjectBody = zod.object({
+  "clientId": zod.string(),
+  "projectName": zod.string().min(1),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.number().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.number().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish()
+})
+
+export const CreateProjectResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a project
+ */
+export const GetProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetProjectResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a project
+ */
+export const UpdateProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const UpdateProjectBody = zod.object({
+  "projectName": zod.string().nullish(),
+  "projectType": zod.string().nullish(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string().nullish(),
+  "priority": zod.string().nullish(),
+  "estimatedProjectValue": zod.number().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.number().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish()
+})
+
+export const UpdateProjectResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+
+
+/**
+ * @summary Permanently delete an archived project
+ */
+export const DeleteProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const DeleteProjectResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary Archive a project
+ */
+export const ArchiveProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ArchiveProjectResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+
+
+/**
+ * @summary Restore an archived project
+ */
+export const RestoreProjectParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const RestoreProjectBody = zod.object({
+  "status": zod.string(),
+  "restoreTasks": zod.boolean().optional()
+})
+
+export const RestoreProjectResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get project progress from tasks
+ */
+export const GetProjectProgressParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetProjectProgressResponse = zod.object({
+  "percentage": zod.number(),
+  "completed": zod.number(),
+  "open": zod.number(),
+  "blocked": zod.number(),
+  "total": zod.number(),
+  "overdue": zod.number()
+})
+
+
+/**
+ * @summary Get project activity history
+ */
+export const GetProjectActivityParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const GetProjectActivityResponseItem = zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+export const GetProjectActivityResponse = zod.array(GetProjectActivityResponseItem)
+
+
+/**
+ * @summary List tasks for a project
+ */
+export const ListProjectTasksParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListProjectTasksQueryParams = zod.object({
+  "showArchived": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "priority": zod.coerce.string().optional(),
+  "category": zod.coerce.string().optional()
+})
+
+export const ListProjectTasksResponseItem = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+export const ListProjectTasksResponse = zod.array(ListProjectTasksResponseItem)
+
+
+/**
+ * @summary List projects for a client
+ */
+export const ListClientProjectsParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const ListClientProjectsQueryParams = zod.object({
+  "showArchived": zod.coerce.string().optional()
+})
+
+export const ListClientProjectsResponseItem = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectName": zod.string(),
+  "projectType": zod.string(),
+  "projectDescription": zod.string().nullish(),
+  "businessProblem": zod.string().nullish(),
+  "desiredBusinessOutcome": zod.string().nullish(),
+  "recommendedSolution": zod.string().nullish(),
+  "selectedPlatform": zod.string().nullish(),
+  "projectStatus": zod.string(),
+  "priority": zod.string(),
+  "estimatedProjectValue": zod.string().nullish(),
+  "estimatedMonthlyRecurringRevenue": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "targetCompletionDate": zod.string().nullish(),
+  "actualCompletionDate": zod.string().nullish(),
+  "projectOwner": zod.string().nullish(),
+  "internalNotes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "clientContactFirst": zod.string().nullish(),
+  "clientContactLast": zod.string().nullish()
+})
+export const ListClientProjectsResponse = zod.array(ListClientProjectsResponseItem)
+
+
+/**
+ * @summary Task metrics summary
+ */
+export const GetTaskMetricsResponse = zod.object({
+  "open": zod.number(),
+  "inProgress": zod.number(),
+  "overdue": zod.number(),
+  "blocked": zod.number(),
+  "completedThisMonth": zod.number()
+})
+
+
+/**
+ * @summary List all tasks
+ */
+export const ListTasksQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "clientId": zod.coerce.string().optional(),
+  "projectId": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "priority": zod.coerce.string().optional(),
+  "category": zod.coerce.string().optional(),
+  "dueDate": zod.coerce.string().optional(),
+  "showArchived": zod.coerce.string().optional(),
+  "sort": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "pageSize": zod.coerce.number().optional()
+})
+
+export const ListTasksResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "pageSize": zod.number(),
+  "totalPages": zod.number()
+})
+
+
+/**
+ * @summary Create a task
+ */
+
+
+
+export const CreateTaskBody = zod.object({
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string().min(1),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const CreateTaskResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a task
+ */
+export const GetTaskParams = zod.object({
+  "taskId": zod.coerce.string()
+})
+
+export const GetTaskResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a task
+ */
+export const UpdateTaskParams = zod.object({
+  "taskId": zod.coerce.string()
+})
+
+export const UpdateTaskBody = zod.object({
+  "clientId": zod.string().nullish(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string().nullish(),
+  "status": zod.string().nullish(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateTaskResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Permanently delete an archived task
+ */
+export const DeleteTaskParams = zod.object({
+  "taskId": zod.coerce.string()
+})
+
+export const DeleteTaskResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary Archive a task
+ */
+export const ArchiveTaskParams = zod.object({
+  "taskId": zod.coerce.string()
+})
+
+export const ArchiveTaskResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Restore an archived task
+ */
+export const RestoreTaskParams = zod.object({
+  "taskId": zod.coerce.string()
+})
+
+export const RestoreTaskBody = zod.object({
+  "status": zod.string()
+})
+
+export const RestoreTaskResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "assignedUserId": zod.string().nullish(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "startDate": zod.string().nullish(),
+  "dueDate": zod.string().nullish(),
+  "completionDate": zod.string().nullish(),
+  "estimatedEffort": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "projectName": zod.string().nullish(),
+  "clientName": zod.string().nullish()
+})
+
+

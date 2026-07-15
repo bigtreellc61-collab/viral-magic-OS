@@ -4,3 +4,5 @@ export * from "./applicationSettings";
 export * from "./activityRecords";
 export * from "./clients";
 export * from "./clientNotes";
+export * from "./projects";
+export * from "./tasks";

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'wouter';
-import { LayoutDashboard, Settings, LogOut, Hexagon, Users } from 'lucide-react';
+import { LayoutDashboard, Settings, LogOut, Hexagon, Users, FolderOpen, CheckSquare } from 'lucide-react';
 import { useLogout, AuthUser } from '@workspace/api-client-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -25,9 +25,11 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
 const NAV_ITEMS = [
-  { href: '/',         label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/clients',  label: 'Clients',   icon: Users },
-  { href: '/settings', label: 'Settings',  icon: Settings },
+  { href: '/',          label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/clients',   label: 'Clients',   icon: Users },
+  { href: '/projects',  label: 'Projects',  icon: FolderOpen },
+  { href: '/tasks',     label: 'Tasks',     icon: CheckSquare },
+  { href: '/settings',  label: 'Settings',  icon: Settings },
 ];
 
 function isActive(location: string, href: string) {
@@ -41,6 +43,11 @@ function getPageTitle(location: string) {
   if (location.startsWith('/clients/new')) return 'Add Client';
   if (location.startsWith('/clients/')) return 'Client Detail';
   if (location.startsWith('/clients')) return 'Clients';
+  if (location.startsWith('/projects/') && location.endsWith('/edit')) return 'Edit Project';
+  if (location.startsWith('/projects/new')) return 'Add Project';
+  if (location.startsWith('/projects/')) return 'Project Detail';
+  if (location.startsWith('/projects')) return 'Projects';
+  if (location.startsWith('/tasks')) return 'Tasks';
   if (location.startsWith('/settings')) return 'Settings';
   return 'Command Center';
 }
@@ -95,7 +102,7 @@ export function Shell({ children, user }: { children: React.ReactNode; user: Aut
 
           <SidebarFooter className="p-4">
             <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/40 p-3 text-[10px] uppercase tracking-widest text-muted-foreground font-medium border border-border/50">
-              <span>Phase 1B Release</span>
+              <span>Phase 1C Release</span>
             </div>
           </SidebarFooter>
         </Sidebar>

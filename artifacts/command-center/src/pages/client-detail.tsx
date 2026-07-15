@@ -6,8 +6,9 @@ import {
   useArchiveClient, useRestoreClient, useDeleteClient,
   useCreateClientNote, useUpdateClientNote, useToggleClientNotePin,
   useArchiveClientNote, useRestoreClientNote, useDeleteClientNote,
+  useListClientProjects,
   getGetClientQueryKey, getListClientNotesQueryKey, getListClientsQueryKey,
-  getListClientActivityQueryKey,
+  getListClientActivityQueryKey, getListClientProjectsQueryKey,
   ClientRecord, ClientNoteRecord,
 } from '@workspace/api-client-react';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus, Pin, PinOff,
-  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink,
+  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ClientStatusBadge } from '@/components/clients/status-badge';
@@ -31,10 +32,13 @@ import {
   getClientDisplayName, getBusinessTypeLabel, getCustomerMarketLabel,
   getCompanySizeLabel, getRevenueLabel, getBudgetLabel, getNoteTypeLabel,
 } from '@/lib/client-constants';
+import { ProjectStatusBadge } from '@/components/projects/status-badge';
+import { PriorityBadge } from '@/components/projects/priority-badge';
+import { ProjectProgressBar } from '@/components/projects/progress-bar';
 
 interface ClientDetailPageProps { clientId: string; }
 
-type Tab = 'overview' | 'notes' | 'activity';
+type Tab = 'overview' | 'notes' | 'activity' | 'projects';
 
 export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const [, setLocation] = useLocation();
@@ -51,6 +55,9 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const { data: notes = [], isLoading: notesLoading } = useListClientNotes(clientId, { showArchived });
   const { data: activity = [], isLoading: activityLoading } = useListClientActivity(clientId, undefined, {
     query: { enabled: tab === 'activity', queryKey: getListClientActivityQueryKey(clientId) },
+  });
+  const { data: clientProjects, isLoading: projectsLoading } = useListClientProjects(clientId, undefined, {
+    query: { enabled: tab === 'projects', queryKey: getListClientProjectsQueryKey(clientId) },
   });
 
   const archiveClient = useArchiveClient();
@@ -135,10 +142,12 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const displayName = getClientDisplayName(client);
   const isArchived = Boolean(client.archivedAt);
 
+  const clientProjectsList = (clientProjects as any)?.data ?? [];
   const TABS: { id: Tab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'notes', label: `Notes${notes.length ? ` (${notes.length})` : ''}` },
     { id: 'activity', label: 'Activity' },
+    { id: 'projects', label: `Projects${clientProjectsList.length ? ` (${clientProjectsList.length})` : ''}` },
   ];
 
   return (
@@ -254,6 +263,50 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
       )}
       {tab === 'activity' && (
         <ActivityTab items={activity as any[]} isLoading={activityLoading} />
+      )}
+      {tab === 'projects' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Projects linked to this client.</p>
+            <Link href={`/projects/new`}>
+              <Button size="sm" className="gap-2"><Plus className="h-4 w-4" /> Add Project</Button>
+            </Link>
+          </div>
+          {projectsLoading ? (
+            <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+          ) : clientProjectsList.length === 0 ? (
+            <Card className="border-border/50 border-dashed">
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <FolderOpen className="h-8 w-8 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No projects yet for this client.</p>
+                <Link href="/projects/new">
+                  <Button className="mt-3 gap-2" size="sm"><Plus className="h-4 w-4" /> Add Project</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {clientProjectsList.map((p: any) => (
+                <Link key={p.id} href={`/projects/${p.id}`}>
+                  <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="font-medium">{p.projectName}</p>
+                          <p className="text-xs text-muted-foreground">{p.projectType?.replace(/_/g, ' ')}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <ProjectStatusBadge status={p.projectStatus} />
+                          <PriorityBadge priority={p.priority} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Dialogs */}

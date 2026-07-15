@@ -12,6 +12,10 @@ import { SettingsPage } from '@/pages/settings';
 import { ClientsPage } from '@/pages/clients';
 import { ClientDetailPage } from '@/pages/client-detail';
 import { ClientFormPage } from '@/pages/client-form';
+import { ProjectsPage } from '@/pages/projects';
+import { ProjectDetailPage } from '@/pages/project-detail';
+import { ProjectFormPage } from '@/pages/project-form';
+import { TasksPage } from '@/pages/tasks';
 import NotFound from '@/pages/not-found';
 import { useGetSetupStatus, useGetCurrentUser, getGetCurrentUserQueryKey } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
@@ -87,6 +91,21 @@ function AuthWall() {
         </Route>
         <Route path="/clients/:id">
           {(params) => <ClientDetailPage clientId={params.id} />}
+        </Route>
+        <Route path="/projects">
+          {() => <ProjectsPage />}
+        </Route>
+        <Route path="/projects/new">
+          {() => <ProjectFormPage />}
+        </Route>
+        <Route path="/projects/:id/edit">
+          {(params) => <ProjectFormPage projectId={params.id} />}
+        </Route>
+        <Route path="/projects/:id">
+          {(params) => <ProjectDetailPage projectId={params.id} />}
+        </Route>
+        <Route path="/tasks">
+          {() => <TasksPage />}
         </Route>
         <Route path="/settings">
           {() => <SettingsPage user={user} />}

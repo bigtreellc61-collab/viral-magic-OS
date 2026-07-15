@@ -1,0 +1,952 @@
+Begin implementation of Viral Magic OS — Phase 1C: Project Management and Task Management only.
+
+Use the approved architecture document:
+
+docs/viral-magic-os-architecture.md
+
+Preserve all working Phase 1A and Phase 1B functionality.
+
+IMPORTANT SCOPE RULE
+
+Build only Phase 1C.
+
+Do not begin:
+
+- Business Diagnostics
+- Bottleneck Scoring
+- Solution Architect
+- Platform Matcher
+- Software Blueprints
+- AI integrations
+- Billing
+- Public registration
+- Client portal
+- Viral Growth Engine
+- Prompt Library
+- Industry Modules
+
+Do not remove, replace, or weaken:
+
+- Administrator authentication
+- Protected routes
+- PostgreSQL connection
+- Settings
+- Activity logging
+- Dashboard foundation
+- Client Management
+- Existing responsive application shell
+
+# PHASE 1C OBJECTIVE
+
+Build a complete internal Project Management and Task Management module.
+
+The Administrator must be able to:
+
+1. View all projects
+2. Search, filter, and sort projects
+3. Create a project
+4. Attach a project to an existing client
+5. View a project record
+6. Edit a project
+7. Change project status
+8. Archive and restore a project
+9. Permanently delete only an archived project after strong confirmation
+10. Create, edit, complete, archive, restore, and delete project tasks
+11. View project activity history
+12. View project progress
+13. See real project and task metrics on the Dashboard
+
+All project and task data must persist in PostgreSQL.
+
+# 1. NAVIGATION
+
+Add these working sidebar items:
+
+1. Dashboard
+2. Clients
+3. Projects
+4. Tasks
+5. Settings
+
+Do not display unfinished modules.
+
+Update the application phase label to:
+
+Phase 1C
+
+# 2. DATABASE TABLES
+
+Create migrations for:
+
+- projects
+- tasks
+
+Use the approved architecture relationships.
+
+PROJECTS TABLE
+
+Include:
+
+- id
+- client_id
+- project_name
+- project_type
+- project_description
+- business_problem
+- desired_business_outcome
+- recommended_solution
+- selected_platform
+- project_status
+- priority
+- estimated_project_value
+- estimated_monthly_recurring_revenue
+- start_date
+- target_completion_date
+- actual_completion_date
+- project_owner
+- internal_notes
+- archived_at
+- created_by
+- updated_by
+- created_at
+- updated_at
+
+PROJECT TYPE OPTIONS
+
+- Website
+- Landing Page
+- Lead Generation System
+- Dashboard
+- Calculator
+- Assessment Tool
+- Client Portal
+- CRM Workflow
+- Automation
+- Internal Business Tool
+- AI Application
+- Content System
+- Custom SaaS
+- Other
+
+PROJECT STATUS OPTIONS
+
+- Discovery
+- Diagnostic
+- Planning
+- Approved
+- Building
+- Testing
+- Client Review
+- Completed
+- On Hold
+- Cancelled
+- Archived
+
+PRIORITY OPTIONS
+
+- Low
+- Normal
+- High
+- Urgent
+
+SELECTED PLATFORM OPTIONS
+
+- Replit
+- Lovable
+- DCS AI Studio
+- WordPress
+- Airtable
+- Custom Development
+- Not Yet Determined
+- Other
+
+TASKS TABLE
+
+Include:
+
+- id
+- client_id
+- project_id
+- title
+- description
+- category
+- assigned_user_id
+- priority
+- status
+- start_date
+- due_date
+- completion_date
+- estimated_effort
+- notes
+- archived_at
+- created_by
+- updated_by
+- created_at
+- updated_at
+
+TASK CATEGORY OPTIONS
+
+- Discovery
+- Research
+- Diagnostic
+- Planning
+- Design
+- Development
+- Integration
+- Content
+- Testing
+- Client Review
+- Revision
+- Deployment
+- Training
+- Support
+- Other
+
+TASK STATUS OPTIONS
+
+- Not Started
+- In Progress
+- Waiting
+- Blocked
+- Completed
+- Cancelled
+- Archived
+
+ESTIMATED EFFORT OPTIONS
+
+- Under 1 Hour
+- 1–2 Hours
+- Half Day
+- Full Day
+- 2–3 Days
+- 1 Week
+- More Than 1 Week
+- Not Estimated
+
+DATABASE REQUIREMENTS
+
+- Projects must belong to a client
+- Tasks may belong to a project and client
+- Project deletion must not leave orphaned tasks
+- Use foreign keys and indexes
+- Use soft delete/archive by default
+- Preserve timestamps
+- Use transactions where multiple records change
+- Do not use browser-only or in-memory storage
+
+# 3. PROJECTS LIST PAGE
+
+Create a working Projects page.
+
+Display metric cards:
+
+- Total Projects
+- Active Projects
+- Completed Projects
+- On Hold Projects
+- Overdue Projects
+
+Provide:
+
+- Search
+- Client filter
+- Status filter
+- Priority filter
+- Project type filter
+- Platform filter
+- Archived filter
+- Sort control
+- Clear filters
+- Table view
+- Kanban view
+- View toggle
+- Add Project button
+
+SEARCH MUST INCLUDE
+
+- Project name
+- Client company name
+- Project type
+- Selected platform
+- Business problem
+- Desired outcome
+
+SORT OPTIONS
+
+- Newest
+- Oldest
+- Name A–Z
+- Name Z–A
+- Recently Updated
+- Target Date Soonest
+- Highest Value
+- Highest Priority
+
+TABLE COLUMNS
+
+- Project
+- Client
+- Type
+- Status
+- Priority
+- Platform
+- Target Completion
+- Progress
+- Updated
+- Actions
+
+ROW ACTIONS
+
+- View
+- Edit
+- Archive
+- Restore
+- Delete only when archived
+
+KANBAN COLUMNS
+
+- Discovery
+- Diagnostic
+- Planning
+- Approved
+- Building
+- Testing
+- Client Review
+- Completed
+- On Hold
+
+Allow status changes through a controlled action or drag-and-drop only if it can be implemented reliably.
+
+If drag-and-drop is used:
+
+- Save status immediately to PostgreSQL
+- Show success or failure
+- Revert the card if the update fails
+- Log the status change
+
+Do not implement unreliable visual-only dragging.
+
+# 4. ADD PROJECT FORM
+
+Create a dedicated Add Project page or polished modal.
+
+Sections:
+
+CLIENT AND PROJECT
+
+- Client
+- Project name
+- Project type
+- Project description
+
+BUSINESS CONTEXT
+
+- Business problem
+- Desired business outcome
+- Recommended solution
+
+PLANNING
+
+- Selected platform
+- Project status
+- Priority
+- Estimated project value
+- Estimated monthly recurring revenue
+- Start date
+- Target completion date
+- Project owner
+- Internal notes
+
+VALIDATION
+
+Required:
+
+- Client
+- Project name
+- Project type
+- Project status
+- Priority
+
+Additional rules:
+
+- Target completion date cannot be before start date
+- Financial values cannot be negative
+- Completed projects may require actual completion date
+- Archived status should use the archive action rather than normal editing
+
+Warn about possible duplicates when the same client already has a project with a similar name.
+
+Provide:
+
+- Save Project
+- Save and View
+- Cancel
+
+Show:
+
+- Saving state
+- Validation errors
+- Save success
+- Real save failure
+
+# 5. PROJECT DETAIL PAGE
+
+Create a dedicated Project Detail page.
+
+HEADER
+
+Display:
+
+- Project name
+- Client company
+- Project status
+- Priority
+- Project type
+- Selected platform
+- Edit button
+- Add Task button
+- Archive or Restore action
+
+Create tabs:
+
+1. Overview
+2. Tasks
+3. Activity
+4. Notes
+
+Do not add empty Diagnostic, Solution, Blueprint, or Files tabs yet.
+
+OVERVIEW TAB
+
+Display:
+
+- Project summary
+- Client
+- Business problem
+- Desired outcome
+- Recommended solution
+- Platform
+- Status
+- Priority
+- Financial estimates
+- Timeline
+- Owner
+- Internal notes
+- Created and updated dates
+- Project progress
+
+TASKS TAB
+
+Display project-linked tasks.
+
+Allow:
+
+- Add task
+- Edit task
+- Change status
+- Complete task
+- Archive task
+- Restore task
+- Delete archived task after confirmation
+- Filter by status, priority, and category
+
+ACTIVITY TAB
+
+Display project-related activity.
+
+NOTES TAB
+
+For Phase 1C, use the project internal_notes field with an editable notes section.
+
+Do not create a separate project-notes table unless required by the approved architecture.
+
+# 6. PROJECT PROGRESS
+
+Calculate project progress from tasks.
+
+Default formula:
+
+Completed non-cancelled tasks divided by total non-cancelled tasks × 100.
+
+Rules:
+
+- If no tasks exist, show 0% and “No tasks created”
+- Cancelled and archived tasks do not count
+- Completed tasks count as complete
+- Project completion does not automatically occur unless the Administrator confirms it
+- If project status is Completed, show 100% only when all active tasks are completed or display a warning
+
+Display:
+
+- Progress bar
+- Completed task count
+- Open task count
+- Blocked task count
+- Overdue task count
+
+# 7. TASKS PAGE
+
+Create a standalone Tasks page across all projects.
+
+Display metrics:
+
+- Open Tasks
+- In Progress
+- Overdue
+- Blocked
+- Completed This Month
+
+Provide:
+
+- Search
+- Client filter
+- Project filter
+- Status filter
+- Priority filter
+- Category filter
+- Due date filter
+- Archived filter
+- Sort control
+- Clear filters
+- List view
+- Kanban view
+- Add Task button
+
+SEARCH MUST INCLUDE
+
+- Task title
+- Task description
+- Client name
+- Project name
+- Category
+
+DUE DATE FILTER OPTIONS
+
+- Overdue
+- Due Today
+- Due This Week
+- Due This Month
+- No Due Date
+
+SORT OPTIONS
+
+- Due Date Soonest
+- Due Date Latest
+- Highest Priority
+- Newest
+- Oldest
+- Recently Updated
+
+TASK LIST COLUMNS
+
+- Task
+- Project
+- Client
+- Category
+- Priority
+- Status
+- Due Date
+- Assigned To
+- Actions
+
+TASK KANBAN COLUMNS
+
+- Not Started
+- In Progress
+- Waiting
+- Blocked
+- Completed
+
+# 8. ADD AND EDIT TASK FORM
+
+Fields:
+
+- Client
+- Project
+- Task title
+- Description
+- Category
+- Assigned user
+- Priority
+- Status
+- Start date
+- Due date
+- Estimated effort
+- Notes
+
+Rules:
+
+- Selecting a project should auto-select its client
+- A task cannot be linked to a project and a different client
+- Due date cannot be before start date
+- Completing a task sets completion_date
+- Reopening a completed task clears completion_date
+- Archived status should use the archive action
+
+Required:
+
+- Task title
+- Client
+- Project
+- Category
+- Priority
+- Status
+
+Provide:
+
+- Save Task
+- Save and View Project
+- Cancel
+
+# 9. STATUS CHANGES
+
+PROJECT STATUS CHANGES
+
+Log:
+
+- Previous status
+- New status
+- Administrator
+- Timestamp
+
+When setting a project to Completed:
+
+- Prompt for confirmation
+- Set actual_completion_date if empty
+- Warn if open tasks remain
+
+TASK STATUS CHANGES
+
+When setting a task to Completed:
+
+- Set completion_date
+- Log the event
+
+When reopening:
+
+- Clear completion_date
+- Log the event
+
+# 10. ARCHIVE, RESTORE, AND DELETE
+
+PROJECT ARCHIVE
+
+- Set archived_at
+- Set status to Archived
+- Preserve tasks
+- Hide from default list
+- Log activity
+
+PROJECT RESTORE
+
+- Clear archived_at
+- Require selection of a valid restored status
+- Restore tasks only if explicitly selected
+- Log activity
+
+PROJECT PERMANENT DELETE
+
+- Only archived projects may be deleted
+- Require company or project name confirmation
+- Explain that linked tasks will be deleted
+- Use a transaction
+- Log before deletion when technically possible
+
+TASK ARCHIVE
+
+- Set archived_at
+- Set status to Archived
+- Hide from default task views
+- Log activity
+
+TASK RESTORE
+
+- Clear archived_at
+- Require valid restored status
+- Log activity
+
+TASK DELETE
+
+- Only archived tasks
+- Strong confirmation required
+
+# 11. CLIENT PAGE UPDATES
+
+Update Client Detail pages.
+
+Add a working Projects tab.
+
+Display:
+
+- Projects linked to the client
+- Project count
+- Active project count
+- Add Project button
+- Project status
+- Priority
+- Target date
+- Progress
+
+Add a working Tasks tab only if it fits cleanly.
+
+If added, show client-linked tasks with project context.
+
+Do not add Diagnostics or Blueprints tabs.
+
+# 12. DASHBOARD UPDATES
+
+Update the Dashboard with real project and task data.
+
+PRIMARY METRICS
+
+- Active Clients
+- Active Projects
+- Open Tasks
+- Overdue Tasks
+- Completed Projects
+- Projects Due Soon
+
+PROJECT PIPELINE
+
+Show project counts by status.
+
+RECENT PROJECTS
+
+Show the five most recently updated projects.
+
+TASKS DUE THIS WEEK
+
+Show:
+
+- Task
+- Project
+- Client
+- Due date
+- Priority
+- Status
+
+OVERDUE TASKS
+
+Show overdue tasks prominently.
+
+RECENT ACTIVITY
+
+Include:
+
+- Project created
+- Project updated
+- Project status changed
+- Project archived
+- Project restored
+- Task created
+- Task completed
+- Task reopened
+- Task archived
+- Task restored
+
+Keep the system-status panel collapsed or secondary.
+
+Do not add fake diagnostics, blueprint, revenue, or AI data.
+
+# 13. ACTIVITY LOGGING
+
+Use the existing activity service.
+
+Add activity types for:
+
+- PROJECT.CREATED
+- PROJECT.UPDATED
+- PROJECT.STATUS_CHANGED
+- PROJECT.ARCHIVED
+- PROJECT.RESTORED
+- PROJECT.DELETED
+- TASK.CREATED
+- TASK.UPDATED
+- TASK.STATUS_CHANGED
+- TASK.COMPLETED
+- TASK.REOPENED
+- TASK.ARCHIVED
+- TASK.RESTORED
+- TASK.DELETED
+
+Store:
+
+- Actor
+- Client
+- Project
+- Task
+- Previous value where relevant
+- New value where relevant
+- Timestamp
+- Metadata
+
+# 14. API AND SERVICE STRUCTURE
+
+Create or extend services for:
+
+- Project CRUD
+- Project search
+- Project filters
+- Project sorting
+- Project metrics
+- Project progress
+- Project archive and restore
+- Task CRUD
+- Task filtering
+- Task status changes
+- Task metrics
+- Due-date calculations
+- Dashboard project and task metrics
+- Activity logging
+
+Requirements:
+
+- Authentication enforced server-side
+- Administrator authorization enforced
+- Input validation enforced server-side
+- Pagination supported
+- Safe error messages
+- Technical errors logged server-side
+- Database transactions for destructive operations
+- No visual-only state changes
+
+# 15. REUSABLE COMPONENTS
+
+Create or extend reusable components for:
+
+- Project status badge
+- Priority badge
+- Project card
+- Project table
+- Project form sections
+- Project progress bar
+- Project Kanban board
+- Task card
+- Task table
+- Task form
+- Task Kanban board
+- Due-date badge
+- Overdue indicator
+- Search and filter bar
+- Archive dialog
+- Restore dialog
+- Delete confirmation
+- Activity timeline
+- Empty state
+- Pagination
+- View toggle
+
+# 16. RESPONSIVE DESIGN
+
+Test desktop, tablet, and mobile.
+
+Requirements:
+
+- Kanban boards remain usable
+- Tables adapt or scroll safely
+- Forms stack cleanly
+- Filters collapse appropriately
+- Action menus remain accessible
+- Modals fit mobile screens
+- No horizontal page overflow
+- Buttons remain touch-friendly
+
+# 17. SECURITY
+
+Maintain all existing security controls.
+
+Additionally:
+
+- Protect all project and task routes
+- Validate project and task IDs
+- Enforce client-project-task relationships
+- Prevent unauthorized direct API access
+- Sanitize text inputs
+- Do not render unsafe HTML
+- Do not expose internal database errors
+- Do not return archived records unless explicitly requested
+
+# 18. TESTING REQUIREMENTS
+
+Before declaring Phase 1C complete, test:
+
+1. Existing login works
+2. Existing logout works
+3. Existing Settings work
+4. Existing Client Management works
+5. Create Project works
+6. Edit Project works
+7. Project remains after refresh
+8. Project search works
+9. All project filters work
+10. All project sort options work
+11. Project table view works
+12. Project Kanban view works
+13. Project status changes persist
+14. Project activity logs are created
+15. Project progress calculates correctly
+16. Create Task works
+17. Edit Task works
+18. Task remains after refresh
+19. Task search works
+20. All task filters work
+21. Task Kanban works
+22. Complete Task works
+23. Reopen Task works
+24. Completion date updates correctly
+25. Overdue calculation works
+26. Archive Task works
+27. Restore Task works
+28. Delete Task requires strong confirmation
+29. Archive Project works
+30. Restore Project works
+31. Delete Project requires strong confirmation
+32. Client detail shows linked projects
+33. Dashboard metrics update
+34. Dashboard project pipeline updates
+35. Dashboard overdue tasks update
+36. Mobile layout works
+37. No Phase 1D modules were added
+38. No existing Phase 1A or 1B functionality was broken
+
+Fix failures before reporting completion.
+
+# 19. COMPLETION CRITERIA
+
+Phase 1C is complete only when:
+
+- Project CRUD works
+- Project search, filters, sorting, and views work
+- Task CRUD works
+- Task status and due-date logic work
+- Project progress works
+- Archive, restore, and delete workflows work
+- Client-project relationships work
+- Dashboard uses real project and task data
+- Activity logging works
+- PostgreSQL persistence works
+- Responsive behavior is verified
+- Phase 1A and 1B remain operational
+- No Phase 1D or later modules were started
+
+# 20. FINAL RESPONSE
+
+When complete, report:
+
+1. What was implemented
+2. Files and folders created or modified
+3. Database migrations added
+4. Tables and fields added
+5. Project workflows completed
+6. Task workflows completed
+7. Dashboard updates
+8. Client page updates
+9. Activity events added
+10. Tests completed
+11. Any failures or unresolved issues
+12. Known limitations
+13. Confirmation that Phase 1D was not started
+
+Do not begin Phase 1D.
+
+Stop after Phase 1C and wait for approval.

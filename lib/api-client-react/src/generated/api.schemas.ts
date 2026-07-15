@@ -333,6 +333,270 @@ export interface ClientMetrics {
   recentActivity: ActivityRecord[];
 }
 
+export interface ProjectRecord {
+  id: string;
+  clientId: string;
+  projectName: string;
+  projectType: string;
+  /** @nullable */
+  projectDescription?: string | null;
+  /** @nullable */
+  businessProblem?: string | null;
+  /** @nullable */
+  desiredBusinessOutcome?: string | null;
+  /** @nullable */
+  recommendedSolution?: string | null;
+  /** @nullable */
+  selectedPlatform?: string | null;
+  projectStatus: string;
+  priority: string;
+  /** @nullable */
+  estimatedProjectValue?: string | null;
+  /** @nullable */
+  estimatedMonthlyRecurringRevenue?: string | null;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  targetCompletionDate?: string | null;
+  /** @nullable */
+  actualCompletionDate?: string | null;
+  /** @nullable */
+  projectOwner?: string | null;
+  /** @nullable */
+  internalNotes?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  clientContactFirst?: string | null;
+  /** @nullable */
+  clientContactLast?: string | null;
+}
+
+export interface CreateProjectBody {
+  clientId: string;
+  /** @minLength 1 */
+  projectName: string;
+  projectType: string;
+  /** @nullable */
+  projectDescription?: string | null;
+  /** @nullable */
+  businessProblem?: string | null;
+  /** @nullable */
+  desiredBusinessOutcome?: string | null;
+  /** @nullable */
+  recommendedSolution?: string | null;
+  /** @nullable */
+  selectedPlatform?: string | null;
+  projectStatus: string;
+  priority: string;
+  /** @nullable */
+  estimatedProjectValue?: number | null;
+  /** @nullable */
+  estimatedMonthlyRecurringRevenue?: number | null;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  targetCompletionDate?: string | null;
+  /** @nullable */
+  projectOwner?: string | null;
+  /** @nullable */
+  internalNotes?: string | null;
+}
+
+export interface UpdateProjectBody {
+  /** @nullable */
+  projectName?: string | null;
+  /** @nullable */
+  projectType?: string | null;
+  /** @nullable */
+  projectDescription?: string | null;
+  /** @nullable */
+  businessProblem?: string | null;
+  /** @nullable */
+  desiredBusinessOutcome?: string | null;
+  /** @nullable */
+  recommendedSolution?: string | null;
+  /** @nullable */
+  selectedPlatform?: string | null;
+  /** @nullable */
+  projectStatus?: string | null;
+  /** @nullable */
+  priority?: string | null;
+  /** @nullable */
+  estimatedProjectValue?: number | null;
+  /** @nullable */
+  estimatedMonthlyRecurringRevenue?: number | null;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  targetCompletionDate?: string | null;
+  /** @nullable */
+  actualCompletionDate?: string | null;
+  /** @nullable */
+  projectOwner?: string | null;
+  /** @nullable */
+  internalNotes?: string | null;
+}
+
+export interface RestoreProjectBody {
+  status: string;
+  restoreTasks?: boolean;
+}
+
+export interface ProjectProgress {
+  percentage: number;
+  completed: number;
+  open: number;
+  blocked: number;
+  total: number;
+  overdue: number;
+}
+
+export interface ProjectMetricsSummary {
+  total: number;
+  active: number;
+  completed: number;
+  onHold: number;
+  overdue: number;
+}
+
+export interface PaginatedProjects {
+  data: ProjectRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface TaskRecord {
+  id: string;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  category: string;
+  /** @nullable */
+  assignedUserId?: string | null;
+  priority: string;
+  status: string;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  dueDate?: string | null;
+  /** @nullable */
+  completionDate?: string | null;
+  /** @nullable */
+  estimatedEffort?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  projectName?: string | null;
+  /** @nullable */
+  clientName?: string | null;
+}
+
+export interface CreateTaskBody {
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  /** @minLength 1 */
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  category: string;
+  /** @nullable */
+  assignedUserId?: string | null;
+  priority: string;
+  status: string;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  dueDate?: string | null;
+  /** @nullable */
+  estimatedEffort?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface UpdateTaskBody {
+  /** @nullable */
+  clientId?: string | null;
+  /** @nullable */
+  projectId?: string | null;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  category?: string | null;
+  /** @nullable */
+  assignedUserId?: string | null;
+  /** @nullable */
+  priority?: string | null;
+  /** @nullable */
+  status?: string | null;
+  /** @nullable */
+  startDate?: string | null;
+  /** @nullable */
+  dueDate?: string | null;
+  /** @nullable */
+  estimatedEffort?: string | null;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export interface RestoreTaskBody {
+  status: string;
+}
+
+export interface TaskMetricsSummary {
+  open: number;
+  inProgress: number;
+  overdue: number;
+  blocked: number;
+  completedThisMonth: number;
+}
+
+export interface PaginatedTasks {
+  data: TaskRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type DashboardProjectsMetricsProjects = { [key: string]: unknown };
+
+export type DashboardProjectsMetricsTasks = { [key: string]: unknown };
+
+export interface DashboardProjectsMetrics {
+  projects: DashboardProjectsMetricsProjects;
+  tasks: DashboardProjectsMetricsTasks;
+  recentActivity: ActivityRecord[];
+}
+
+export interface SuccessResponse {
+  success: boolean;
+}
+
 export type ListActivityParams = {
 /**
  * @minimum 1
@@ -382,5 +646,43 @@ export type ListClientActivityParams = {
  * @maximum 100
  */
 limit?: number;
+};
+
+export type ListProjectsParams = {
+search?: string;
+clientId?: string;
+status?: string;
+priority?: string;
+projectType?: string;
+selectedPlatform?: string;
+showArchived?: string;
+sort?: string;
+page?: number;
+pageSize?: number;
+};
+
+export type ListProjectTasksParams = {
+showArchived?: string;
+status?: string;
+priority?: string;
+category?: string;
+};
+
+export type ListClientProjectsParams = {
+showArchived?: string;
+};
+
+export type ListTasksParams = {
+search?: string;
+clientId?: string;
+projectId?: string;
+status?: string;
+priority?: string;
+category?: string;
+dueDate?: string;
+showArchived?: string;
+sort?: string;
+page?: number;
+pageSize?: number;
 };
 

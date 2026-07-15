@@ -33,21 +33,40 @@ import type {
   ClientRecord,
   CreateClientBody,
   CreateClientNoteBody,
+  CreateProjectBody,
+  CreateTaskBody,
+  DashboardProjectsMetrics,
   ErrorResponse,
   FoundationStatus,
   HealthStatus,
   ListActivityParams,
   ListClientActivityParams,
   ListClientNotesParams,
+  ListClientProjectsParams,
   ListClientsParams,
+  ListProjectTasksParams,
+  ListProjectsParams,
+  ListTasksParams,
   LoginInput,
+  PaginatedProjects,
+  PaginatedTasks,
   PasswordChangeInput,
+  ProjectMetricsSummary,
+  ProjectProgress,
+  ProjectRecord,
   RestoreClientBody,
+  RestoreProjectBody,
+  RestoreTaskBody,
   SetupInput,
   SetupStatus,
+  SuccessResponse,
+  TaskMetricsSummary,
+  TaskRecord,
   ToggleNotePinBody,
   UpdateClientBody,
-  UpdateClientNoteBody
+  UpdateClientNoteBody,
+  UpdateProjectBody,
+  UpdateTaskBody
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -2256,4 +2275,1603 @@ export function useListClientActivity<TData = Awaited<ReturnType<typeof listClie
 
 
 
+
+export const getGetDashboardProjectsUrl = () => {
+
+
+
+
+  return `/api/dashboard/projects`
+}
+
+/**
+ * @summary Dashboard project and task metrics
+ */
+export const getDashboardProjects = async ( options?: RequestInit): Promise<DashboardProjectsMetrics> => {
+
+  return customFetch<DashboardProjectsMetrics>(getGetDashboardProjectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDashboardProjectsQueryKey = () => {
+    return [
+    `/api/dashboard/projects`
+    ] as const;
+    }
+
+
+export const getGetDashboardProjectsQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardProjects>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardProjectsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardProjects>>> = ({ signal }) => getDashboardProjects({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboardProjects>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDashboardProjectsQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardProjects>>>
+export type GetDashboardProjectsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Dashboard project and task metrics
+ */
+
+export function useGetDashboardProjects<TData = Awaited<ReturnType<typeof getDashboardProjects>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDashboardProjectsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetProjectMetricsUrl = () => {
+
+
+
+
+  return `/api/projects/metrics/summary`
+}
+
+/**
+ * @summary Project metrics summary
+ */
+export const getProjectMetrics = async ( options?: RequestInit): Promise<ProjectMetricsSummary> => {
+
+  return customFetch<ProjectMetricsSummary>(getGetProjectMetricsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectMetricsQueryKey = () => {
+    return [
+    `/api/projects/metrics/summary`
+    ] as const;
+    }
+
+
+export const getGetProjectMetricsQueryOptions = <TData = Awaited<ReturnType<typeof getProjectMetrics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectMetricsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectMetrics>>> = ({ signal }) => getProjectMetrics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectMetrics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectMetrics>>>
+export type GetProjectMetricsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Project metrics summary
+ */
+
+export function useGetProjectMetrics<TData = Awaited<ReturnType<typeof getProjectMetrics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectMetricsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListProjectsUrl = (params?: ListProjectsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects?${stringifiedParams}` : `/api/projects`
+}
+
+/**
+ * @summary List projects
+ */
+export const listProjects = async (params?: ListProjectsParams, options?: RequestInit): Promise<PaginatedProjects> => {
+
+  return customFetch<PaginatedProjects>(getListProjectsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectsQueryKey = (params?: ListProjectsParams,) => {
+    return [
+    `/api/projects`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListProjectsQueryOptions = <TData = Awaited<ReturnType<typeof listProjects>>, TError = ErrorType<unknown>>(params?: ListProjectsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjects>>> = ({ signal }) => listProjects(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjects>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectsQueryResult = NonNullable<Awaited<ReturnType<typeof listProjects>>>
+export type ListProjectsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List projects
+ */
+
+export function useListProjects<TData = Awaited<ReturnType<typeof listProjects>>, TError = ErrorType<unknown>>(
+ params?: ListProjectsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateProjectUrl = () => {
+
+
+
+
+  return `/api/projects`
+}
+
+/**
+ * @summary Create a project
+ */
+export const createProject = async (createProjectBody: CreateProjectBody, options?: RequestInit): Promise<ProjectRecord> => {
+
+  return customFetch<ProjectRecord>(getCreateProjectUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createProjectBody)
+  }
+);}
+
+
+
+
+
+export const getCreateProjectMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProject>>, TError,{data: BodyType<CreateProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createProject>>, TError,{data: BodyType<CreateProjectBody>}, TContext> => {
+
+const mutationKey = ['createProject'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProject>>, {data: BodyType<CreateProjectBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createProject(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateProjectMutationResult = NonNullable<Awaited<ReturnType<typeof createProject>>>
+    export type CreateProjectMutationBody = BodyType<CreateProjectBody>
+    export type CreateProjectMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a project
+ */
+export const useCreateProject = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProject>>, TError,{data: BodyType<CreateProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createProject>>,
+        TError,
+        {data: BodyType<CreateProjectBody>},
+        TContext
+      > => {
+      return useMutation(getCreateProjectMutationOptions(options));
+    }
+
+export const getGetProjectUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}`
+}
+
+/**
+ * @summary Get a project
+ */
+export const getProject = async (projectId: string, options?: RequestInit): Promise<ProjectRecord> => {
+
+  return customFetch<ProjectRecord>(getGetProjectUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}`
+    ] as const;
+    }
+
+
+export const getGetProjectQueryOptions = <TData = Awaited<ReturnType<typeof getProject>>, TError = ErrorType<ErrorResponse>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProject>>> = ({ signal }) => getProject(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProject>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectQueryResult = NonNullable<Awaited<ReturnType<typeof getProject>>>
+export type GetProjectQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a project
+ */
+
+export function useGetProject<TData = Awaited<ReturnType<typeof getProject>>, TError = ErrorType<ErrorResponse>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProject>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateProjectUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}`
+}
+
+/**
+ * @summary Update a project
+ */
+export const updateProject = async (projectId: string,
+    updateProjectBody: UpdateProjectBody, options?: RequestInit): Promise<ProjectRecord> => {
+
+  return customFetch<ProjectRecord>(getUpdateProjectUrl(projectId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateProjectBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateProjectMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProject>>, TError,{projectId: string;data: BodyType<UpdateProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateProject>>, TError,{projectId: string;data: BodyType<UpdateProjectBody>}, TContext> => {
+
+const mutationKey = ['updateProject'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProject>>, {projectId: string;data: BodyType<UpdateProjectBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  updateProject(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateProjectMutationResult = NonNullable<Awaited<ReturnType<typeof updateProject>>>
+    export type UpdateProjectMutationBody = BodyType<UpdateProjectBody>
+    export type UpdateProjectMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a project
+ */
+export const useUpdateProject = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProject>>, TError,{projectId: string;data: BodyType<UpdateProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateProject>>,
+        TError,
+        {projectId: string;data: BodyType<UpdateProjectBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateProjectMutationOptions(options));
+    }
+
+export const getDeleteProjectUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}`
+}
+
+/**
+ * @summary Permanently delete an archived project
+ */
+export const deleteProject = async (projectId: string, options?: RequestInit): Promise<SuccessResponse> => {
+
+  return customFetch<SuccessResponse>(getDeleteProjectUrl(projectId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteProjectMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteProject>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteProject>>, TError,{projectId: string}, TContext> => {
+
+const mutationKey = ['deleteProject'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteProject>>, {projectId: string}> = (props) => {
+          const {projectId} = props ?? {};
+
+          return  deleteProject(projectId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteProjectMutationResult = NonNullable<Awaited<ReturnType<typeof deleteProject>>>
+
+    export type DeleteProjectMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Permanently delete an archived project
+ */
+export const useDeleteProject = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteProject>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteProject>>,
+        TError,
+        {projectId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteProjectMutationOptions(options));
+    }
+
+export const getArchiveProjectUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/archive`
+}
+
+/**
+ * @summary Archive a project
+ */
+export const archiveProject = async (projectId: string, options?: RequestInit): Promise<ProjectRecord> => {
+
+  return customFetch<ProjectRecord>(getArchiveProjectUrl(projectId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getArchiveProjectMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveProject>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveProject>>, TError,{projectId: string}, TContext> => {
+
+const mutationKey = ['archiveProject'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveProject>>, {projectId: string}> = (props) => {
+          const {projectId} = props ?? {};
+
+          return  archiveProject(projectId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveProjectMutationResult = NonNullable<Awaited<ReturnType<typeof archiveProject>>>
+
+    export type ArchiveProjectMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Archive a project
+ */
+export const useArchiveProject = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveProject>>, TError,{projectId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveProject>>,
+        TError,
+        {projectId: string},
+        TContext
+      > => {
+      return useMutation(getArchiveProjectMutationOptions(options));
+    }
+
+export const getRestoreProjectUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/restore`
+}
+
+/**
+ * @summary Restore an archived project
+ */
+export const restoreProject = async (projectId: string,
+    restoreProjectBody: RestoreProjectBody, options?: RequestInit): Promise<ProjectRecord> => {
+
+  return customFetch<ProjectRecord>(getRestoreProjectUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(restoreProjectBody)
+  }
+);}
+
+
+
+
+
+export const getRestoreProjectMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreProject>>, TError,{projectId: string;data: BodyType<RestoreProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof restoreProject>>, TError,{projectId: string;data: BodyType<RestoreProjectBody>}, TContext> => {
+
+const mutationKey = ['restoreProject'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof restoreProject>>, {projectId: string;data: BodyType<RestoreProjectBody>}> = (props) => {
+          const {projectId,data} = props ?? {};
+
+          return  restoreProject(projectId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RestoreProjectMutationResult = NonNullable<Awaited<ReturnType<typeof restoreProject>>>
+    export type RestoreProjectMutationBody = BodyType<RestoreProjectBody>
+    export type RestoreProjectMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Restore an archived project
+ */
+export const useRestoreProject = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreProject>>, TError,{projectId: string;data: BodyType<RestoreProjectBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof restoreProject>>,
+        TError,
+        {projectId: string;data: BodyType<RestoreProjectBody>},
+        TContext
+      > => {
+      return useMutation(getRestoreProjectMutationOptions(options));
+    }
+
+export const getGetProjectProgressUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/progress`
+}
+
+/**
+ * @summary Get project progress from tasks
+ */
+export const getProjectProgress = async (projectId: string, options?: RequestInit): Promise<ProjectProgress> => {
+
+  return customFetch<ProjectProgress>(getGetProjectProgressUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectProgressQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/progress`
+    ] as const;
+    }
+
+
+export const getGetProjectProgressQueryOptions = <TData = Awaited<ReturnType<typeof getProjectProgress>>, TError = ErrorType<unknown>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectProgress>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectProgressQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectProgress>>> = ({ signal }) => getProjectProgress(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectProgress>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectProgressQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectProgress>>>
+export type GetProjectProgressQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get project progress from tasks
+ */
+
+export function useGetProjectProgress<TData = Awaited<ReturnType<typeof getProjectProgress>>, TError = ErrorType<unknown>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectProgress>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectProgressQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetProjectActivityUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/activity`
+}
+
+/**
+ * @summary Get project activity history
+ */
+export const getProjectActivity = async (projectId: string, options?: RequestInit): Promise<ActivityRecord[]> => {
+
+  return customFetch<ActivityRecord[]>(getGetProjectActivityUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectActivityQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/activity`
+    ] as const;
+    }
+
+
+export const getGetProjectActivityQueryOptions = <TData = Awaited<ReturnType<typeof getProjectActivity>>, TError = ErrorType<unknown>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectActivityQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectActivity>>> = ({ signal }) => getProjectActivity(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectActivity>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectActivityQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectActivity>>>
+export type GetProjectActivityQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get project activity history
+ */
+
+export function useGetProjectActivity<TData = Awaited<ReturnType<typeof getProjectActivity>>, TError = ErrorType<unknown>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectActivityQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListProjectTasksUrl = (projectId: string,
+    params?: ListProjectTasksParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/projects/${projectId}/tasks?${stringifiedParams}` : `/api/projects/${projectId}/tasks`
+}
+
+/**
+ * @summary List tasks for a project
+ */
+export const listProjectTasks = async (projectId: string,
+    params?: ListProjectTasksParams, options?: RequestInit): Promise<TaskRecord[]> => {
+
+  return customFetch<TaskRecord[]>(getListProjectTasksUrl(projectId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectTasksQueryKey = (projectId: string,
+    params?: ListProjectTasksParams,) => {
+    return [
+    `/api/projects/${projectId}/tasks`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListProjectTasksQueryOptions = <TData = Awaited<ReturnType<typeof listProjectTasks>>, TError = ErrorType<unknown>>(projectId: string,
+    params?: ListProjectTasksParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectTasks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectTasksQueryKey(projectId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectTasks>>> = ({ signal }) => listProjectTasks(projectId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectTasks>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectTasksQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectTasks>>>
+export type ListProjectTasksQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List tasks for a project
+ */
+
+export function useListProjectTasks<TData = Awaited<ReturnType<typeof listProjectTasks>>, TError = ErrorType<unknown>>(
+ projectId: string,
+    params?: ListProjectTasksParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectTasks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectTasksQueryOptions(projectId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListClientProjectsUrl = (clientId: string,
+    params?: ListClientProjectsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/clients/${clientId}/projects?${stringifiedParams}` : `/api/clients/${clientId}/projects`
+}
+
+/**
+ * @summary List projects for a client
+ */
+export const listClientProjects = async (clientId: string,
+    params?: ListClientProjectsParams, options?: RequestInit): Promise<ProjectRecord[]> => {
+
+  return customFetch<ProjectRecord[]>(getListClientProjectsUrl(clientId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListClientProjectsQueryKey = (clientId: string,
+    params?: ListClientProjectsParams,) => {
+    return [
+    `/api/clients/${clientId}/projects`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListClientProjectsQueryOptions = <TData = Awaited<ReturnType<typeof listClientProjects>>, TError = ErrorType<unknown>>(clientId: string,
+    params?: ListClientProjectsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListClientProjectsQueryKey(clientId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listClientProjects>>> = ({ signal }) => listClientProjects(clientId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: clientId !== null && clientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listClientProjects>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListClientProjectsQueryResult = NonNullable<Awaited<ReturnType<typeof listClientProjects>>>
+export type ListClientProjectsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List projects for a client
+ */
+
+export function useListClientProjects<TData = Awaited<ReturnType<typeof listClientProjects>>, TError = ErrorType<unknown>>(
+ clientId: string,
+    params?: ListClientProjectsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientProjects>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListClientProjectsQueryOptions(clientId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetTaskMetricsUrl = () => {
+
+
+
+
+  return `/api/tasks/metrics/summary`
+}
+
+/**
+ * @summary Task metrics summary
+ */
+export const getTaskMetrics = async ( options?: RequestInit): Promise<TaskMetricsSummary> => {
+
+  return customFetch<TaskMetricsSummary>(getGetTaskMetricsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTaskMetricsQueryKey = () => {
+    return [
+    `/api/tasks/metrics/summary`
+    ] as const;
+    }
+
+
+export const getGetTaskMetricsQueryOptions = <TData = Awaited<ReturnType<typeof getTaskMetrics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTaskMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTaskMetricsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTaskMetrics>>> = ({ signal }) => getTaskMetrics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTaskMetrics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTaskMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof getTaskMetrics>>>
+export type GetTaskMetricsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Task metrics summary
+ */
+
+export function useGetTaskMetrics<TData = Awaited<ReturnType<typeof getTaskMetrics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTaskMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTaskMetricsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListTasksUrl = (params?: ListTasksParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/tasks?${stringifiedParams}` : `/api/tasks`
+}
+
+/**
+ * @summary List all tasks
+ */
+export const listTasks = async (params?: ListTasksParams, options?: RequestInit): Promise<PaginatedTasks> => {
+
+  return customFetch<PaginatedTasks>(getListTasksUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListTasksQueryKey = (params?: ListTasksParams,) => {
+    return [
+    `/api/tasks`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListTasksQueryOptions = <TData = Awaited<ReturnType<typeof listTasks>>, TError = ErrorType<unknown>>(params?: ListTasksParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListTasksQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listTasks>>> = ({ signal }) => listTasks(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListTasksQueryResult = NonNullable<Awaited<ReturnType<typeof listTasks>>>
+export type ListTasksQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all tasks
+ */
+
+export function useListTasks<TData = Awaited<ReturnType<typeof listTasks>>, TError = ErrorType<unknown>>(
+ params?: ListTasksParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listTasks>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListTasksQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateTaskUrl = () => {
+
+
+
+
+  return `/api/tasks`
+}
+
+/**
+ * @summary Create a task
+ */
+export const createTask = async (createTaskBody: CreateTaskBody, options?: RequestInit): Promise<TaskRecord> => {
+
+  return customFetch<TaskRecord>(getCreateTaskUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createTaskBody)
+  }
+);}
+
+
+
+
+
+export const getCreateTaskMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTask>>, TError,{data: BodyType<CreateTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createTask>>, TError,{data: BodyType<CreateTaskBody>}, TContext> => {
+
+const mutationKey = ['createTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createTask>>, {data: BodyType<CreateTaskBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createTask(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateTaskMutationResult = NonNullable<Awaited<ReturnType<typeof createTask>>>
+    export type CreateTaskMutationBody = BodyType<CreateTaskBody>
+    export type CreateTaskMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a task
+ */
+export const useCreateTask = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createTask>>, TError,{data: BodyType<CreateTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createTask>>,
+        TError,
+        {data: BodyType<CreateTaskBody>},
+        TContext
+      > => {
+      return useMutation(getCreateTaskMutationOptions(options));
+    }
+
+export const getGetTaskUrl = (taskId: string,) => {
+
+
+
+
+  return `/api/tasks/${taskId}`
+}
+
+/**
+ * @summary Get a task
+ */
+export const getTask = async (taskId: string, options?: RequestInit): Promise<TaskRecord> => {
+
+  return customFetch<TaskRecord>(getGetTaskUrl(taskId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetTaskQueryKey = (taskId: string,) => {
+    return [
+    `/api/tasks/${taskId}`
+    ] as const;
+    }
+
+
+export const getGetTaskQueryOptions = <TData = Awaited<ReturnType<typeof getTask>>, TError = ErrorType<ErrorResponse>>(taskId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetTaskQueryKey(taskId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getTask>>> = ({ signal }) => getTask(taskId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: taskId !== null && taskId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetTaskQueryResult = NonNullable<Awaited<ReturnType<typeof getTask>>>
+export type GetTaskQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a task
+ */
+
+export function useGetTask<TData = Awaited<ReturnType<typeof getTask>>, TError = ErrorType<ErrorResponse>>(
+ taskId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getTask>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetTaskQueryOptions(taskId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateTaskUrl = (taskId: string,) => {
+
+
+
+
+  return `/api/tasks/${taskId}`
+}
+
+/**
+ * @summary Update a task
+ */
+export const updateTask = async (taskId: string,
+    updateTaskBody: UpdateTaskBody, options?: RequestInit): Promise<TaskRecord> => {
+
+  return customFetch<TaskRecord>(getUpdateTaskUrl(taskId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateTaskBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTask>>, TError,{taskId: string;data: BodyType<UpdateTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateTask>>, TError,{taskId: string;data: BodyType<UpdateTaskBody>}, TContext> => {
+
+const mutationKey = ['updateTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateTask>>, {taskId: string;data: BodyType<UpdateTaskBody>}> = (props) => {
+          const {taskId,data} = props ?? {};
+
+          return  updateTask(taskId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateTaskMutationResult = NonNullable<Awaited<ReturnType<typeof updateTask>>>
+    export type UpdateTaskMutationBody = BodyType<UpdateTaskBody>
+    export type UpdateTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a task
+ */
+export const useUpdateTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateTask>>, TError,{taskId: string;data: BodyType<UpdateTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateTask>>,
+        TError,
+        {taskId: string;data: BodyType<UpdateTaskBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateTaskMutationOptions(options));
+    }
+
+export const getDeleteTaskUrl = (taskId: string,) => {
+
+
+
+
+  return `/api/tasks/${taskId}`
+}
+
+/**
+ * @summary Permanently delete an archived task
+ */
+export const deleteTask = async (taskId: string, options?: RequestInit): Promise<SuccessResponse> => {
+
+  return customFetch<SuccessResponse>(getDeleteTaskUrl(taskId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTask>>, TError,{taskId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteTask>>, TError,{taskId: string}, TContext> => {
+
+const mutationKey = ['deleteTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteTask>>, {taskId: string}> = (props) => {
+          const {taskId} = props ?? {};
+
+          return  deleteTask(taskId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteTaskMutationResult = NonNullable<Awaited<ReturnType<typeof deleteTask>>>
+
+    export type DeleteTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Permanently delete an archived task
+ */
+export const useDeleteTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteTask>>, TError,{taskId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteTask>>,
+        TError,
+        {taskId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteTaskMutationOptions(options));
+    }
+
+export const getArchiveTaskUrl = (taskId: string,) => {
+
+
+
+
+  return `/api/tasks/${taskId}/archive`
+}
+
+/**
+ * @summary Archive a task
+ */
+export const archiveTask = async (taskId: string, options?: RequestInit): Promise<TaskRecord> => {
+
+  return customFetch<TaskRecord>(getArchiveTaskUrl(taskId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getArchiveTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveTask>>, TError,{taskId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveTask>>, TError,{taskId: string}, TContext> => {
+
+const mutationKey = ['archiveTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveTask>>, {taskId: string}> = (props) => {
+          const {taskId} = props ?? {};
+
+          return  archiveTask(taskId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveTaskMutationResult = NonNullable<Awaited<ReturnType<typeof archiveTask>>>
+
+    export type ArchiveTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Archive a task
+ */
+export const useArchiveTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveTask>>, TError,{taskId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveTask>>,
+        TError,
+        {taskId: string},
+        TContext
+      > => {
+      return useMutation(getArchiveTaskMutationOptions(options));
+    }
+
+export const getRestoreTaskUrl = (taskId: string,) => {
+
+
+
+
+  return `/api/tasks/${taskId}/restore`
+}
+
+/**
+ * @summary Restore an archived task
+ */
+export const restoreTask = async (taskId: string,
+    restoreTaskBody: RestoreTaskBody, options?: RequestInit): Promise<TaskRecord> => {
+
+  return customFetch<TaskRecord>(getRestoreTaskUrl(taskId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(restoreTaskBody)
+  }
+);}
+
+
+
+
+
+export const getRestoreTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreTask>>, TError,{taskId: string;data: BodyType<RestoreTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof restoreTask>>, TError,{taskId: string;data: BodyType<RestoreTaskBody>}, TContext> => {
+
+const mutationKey = ['restoreTask'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof restoreTask>>, {taskId: string;data: BodyType<RestoreTaskBody>}> = (props) => {
+          const {taskId,data} = props ?? {};
+
+          return  restoreTask(taskId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RestoreTaskMutationResult = NonNullable<Awaited<ReturnType<typeof restoreTask>>>
+    export type RestoreTaskMutationBody = BodyType<RestoreTaskBody>
+    export type RestoreTaskMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Restore an archived task
+ */
+export const useRestoreTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreTask>>, TError,{taskId: string;data: BodyType<RestoreTaskBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof restoreTask>>,
+        TError,
+        {taskId: string;data: BodyType<RestoreTaskBody>},
+        TContext
+      > => {
+      return useMutation(getRestoreTaskMutationOptions(options));
+    }
 
