@@ -597,6 +597,231 @@ export interface SuccessResponse {
   success: boolean;
 }
 
+export interface DiagnosticRecord {
+  id: string;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  diagnosticName: string;
+  diagnosticType: string;
+  status: string;
+  currentVersionNumber: number;
+  /** @nullable */
+  startedAt?: string | null;
+  /** @nullable */
+  completedAt?: string | null;
+  /** @nullable */
+  reviewedAt?: string | null;
+  /** @nullable */
+  reviewedBy?: string | null;
+  /** @nullable */
+  summaryNotes?: string | null;
+  /** @nullable */
+  overallHealthScore?: number | null;
+  /** @nullable */
+  overallPriorityScore?: number | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  projectName?: string | null;
+}
+
+export interface DiagnosticVersionRecord {
+  id: string;
+  diagnosticId: string;
+  versionNumber: number;
+  status: string;
+  /** @nullable */
+  overallHealthScore?: number | null;
+  /** @nullable */
+  overallPriorityScore?: number | null;
+  /** @nullable */
+  executiveSummary?: string | null;
+  /** @nullable */
+  recommendedFirstAction?: string | null;
+  /** @nullable */
+  recommendedSoftwareOpportunity?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  createdAt: string;
+  /** @nullable */
+  completedAt?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  approvedBy?: string | null;
+}
+
+export interface DiagnosticScoreRecord {
+  id: string;
+  diagnosticVersionId: string;
+  categoryKey: string;
+  categoryLabel: string;
+  /** @nullable */
+  categoryDescription?: string | null;
+  displayOrder: number;
+  /** @nullable */
+  currentPerformance?: number | null;
+  /** @nullable */
+  businessImpact?: number | null;
+  /** @nullable */
+  urgency?: number | null;
+  /** @nullable */
+  performanceGap?: number | null;
+  /** @nullable */
+  priorityScore?: number | null;
+  /** @nullable */
+  severity?: string | null;
+  /** @nullable */
+  evidence?: string | null;
+  /** @nullable */
+  observations?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  /** @nullable */
+  recommendedAction?: string | null;
+  resolutionStatus: string;
+  /** @nullable */
+  resolvedAt?: string | null;
+  /** @nullable */
+  resolvedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BottleneckRecommendationRecord {
+  id: string;
+  diagnosticScoreId: string;
+  /** @nullable */
+  systemGeneratedDraft?: string | null;
+  /** @nullable */
+  administratorFinalRecommendation?: string | null;
+  recommendationStatus: string;
+  priorityOrder: number;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateDiagnosticBody {
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  /** @minLength 1 */
+  diagnosticName: string;
+  diagnosticType: string;
+  /** @nullable */
+  summaryNotes?: string | null;
+}
+
+export interface UpdateDiagnosticBody {
+  /** @nullable */
+  diagnosticName?: string | null;
+  /** @nullable */
+  diagnosticType?: string | null;
+  /** @nullable */
+  summaryNotes?: string | null;
+  /** @nullable */
+  status?: string | null;
+}
+
+export type SaveDraftScoresBodyScoresItem = { [key: string]: unknown };
+
+export interface SaveDraftScoresBody {
+  /** @nullable */
+  versionId?: string | null;
+  scores?: SaveDraftScoresBodyScoresItem[];
+}
+
+export interface UpdateExecutiveSummaryBody {
+  /** @nullable */
+  executiveSummary?: string | null;
+  /** @nullable */
+  recommendedFirstAction?: string | null;
+  /** @nullable */
+  recommendedSoftwareOpportunity?: string | null;
+}
+
+export interface UpdateScoreResolutionBody {
+  resolutionStatus: string;
+  /** @nullable */
+  resolutionNotes?: string | null;
+}
+
+export interface UpdateRecommendationBody {
+  /** @nullable */
+  administratorFinalRecommendation?: string | null;
+  /** @nullable */
+  recommendationStatus?: string | null;
+}
+
+export interface ApproveDiagnosticBody {
+  action: string;
+}
+
+export interface DiagnosticMetricsSummary {
+  total: number;
+  draftInProgress: number;
+  awaitingReview: number;
+  completed: number;
+  approved: number;
+  criticalBottlenecks: number;
+  highBottlenecks: number;
+}
+
+export interface PaginatedDiagnostics {
+  data: DiagnosticRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export type DiagnosticVersionComparisonVersionA = { [key: string]: unknown };
+
+export type DiagnosticVersionComparisonVersionB = { [key: string]: unknown };
+
+export type DiagnosticVersionComparisonCategoryComparisonsItem = { [key: string]: unknown };
+
+export interface DiagnosticVersionComparison {
+  versionA: DiagnosticVersionComparisonVersionA;
+  versionB: DiagnosticVersionComparisonVersionB;
+  /** @nullable */
+  healthScoreDelta?: number | null;
+  categoryComparisons: DiagnosticVersionComparisonCategoryComparisonsItem[];
+}
+
+export type DashboardDiagnosticsMetricsTopBottlenecksItem = { [key: string]: unknown };
+
+export type DashboardDiagnosticsMetricsAwaitingReviewListItem = { [key: string]: unknown };
+
+export type DashboardDiagnosticsMetricsRecentDiagnosticsItem = { [key: string]: unknown };
+
+export interface DashboardDiagnosticsMetrics {
+  total: number;
+  draftInProgress: number;
+  awaitingReview: number;
+  completed: number;
+  approved: number;
+  criticalBottlenecks: number;
+  highBottlenecks: number;
+  topBottlenecks: DashboardDiagnosticsMetricsTopBottlenecksItem[];
+  awaitingReviewList: DashboardDiagnosticsMetricsAwaitingReviewListItem[];
+  recentDiagnostics: DashboardDiagnosticsMetricsRecentDiagnosticsItem[];
+  recentActivity: ActivityRecord[];
+}
+
 export type ListActivityParams = {
 /**
  * @minimum 1
@@ -684,5 +909,44 @@ showArchived?: string;
 sort?: string;
 page?: number;
 pageSize?: number;
+};
+
+export type GetDefaultTemplateCategories200 = { [key: string]: unknown };
+
+export type ListDiagnosticsParams = {
+search?: string;
+clientId?: string;
+projectId?: string;
+diagnosticType?: string;
+status?: string;
+showArchived?: string;
+sort?: string;
+page?: number;
+pageSize?: number;
+};
+
+export type SaveDiagnosticDraft200 = { [key: string]: unknown };
+
+export type CompleteDiagnosticBody = {
+  versionId?: string;
+};
+
+export type RestoreDiagnosticBody = {
+  status?: string;
+};
+
+export type CreateDiagnosticVersionBody = {
+  copyScores?: boolean;
+};
+
+export type GetDiagnosticVersion200 = { [key: string]: unknown };
+
+export type CompareDiagnosticVersionsParams = {
+v1: number;
+v2: number;
+};
+
+export type ApproveRecommendationBody = {
+  action?: string;
 };
 

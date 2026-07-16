@@ -5,6 +5,7 @@ import {
   useGetProject, useGetProjectProgress, useGetProjectActivity,
   useListProjectTasks, useArchiveProject, useRestoreProject, useDeleteProject,
   useUpdateProject, useCreateTask, useUpdateTask, useArchiveTask, useRestoreTask, useDeleteTask,
+  useListProjectDiagnostics,
   getGetProjectQueryKey, getGetProjectProgressQueryKey, getGetProjectActivityQueryKey,
   getListProjectTasksQueryKey, getListProjectsQueryKey, TaskRecord,
 } from '@workspace/api-client-react';
@@ -26,7 +27,7 @@ import {
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus,
   MoreHorizontal, Loader2, Calendar, DollarSign, User,
-  CheckCircle2, LayoutGrid, List,
+  CheckCircle2, LayoutGrid, List, Stethoscope,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ProjectStatusBadge } from '@/components/projects/status-badge';
@@ -48,7 +49,7 @@ import {
   getEffortLabel, TASK_STATUSES, TASK_CATEGORIES, PRIORITIES, PROJECT_STATUSES,
 } from '@/lib/project-constants';
 
-type Tab = 'overview' | 'tasks' | 'activity' | 'notes';
+type Tab = 'overview' | 'tasks' | 'activity' | 'notes' | 'diagnostics';
 type ProjectDialogType = 'archive' | 'restore' | 'delete' | null;
 type TaskDialogType = 'add' | 'edit' | 'archive' | 'restore' | 'delete' | null;
 type ViewMode = 'list' | 'kanban';
@@ -91,6 +92,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   const { data: tasks = [], isLoading: tasksLoading } = useListProjectTasks(projectId, taskParams, {
     query: { enabled: tab === 'tasks', queryKey: getListProjectTasksQueryKey(projectId, taskParams) },
   });
+  const { data: projectDiagnostics } = useListProjectDiagnostics(projectId);
 
   const archiveProject = useArchiveProject();
   const restoreProject = useRestoreProject();
@@ -117,11 +119,13 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
   if (!project) return <div className="p-6 text-destructive text-sm">Project not found.</div>;
 
   const isArchived = Boolean(project.archivedAt);
+  const projectDiagnosticsList = Array.isArray(projectDiagnostics) ? projectDiagnostics : [];
   const TABS: { id: Tab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'tasks', label: `Tasks${progress ? ` (${progress.completed}/${progress.total})` : ''}` },
     { id: 'activity', label: 'Activity' },
     { id: 'notes', label: 'Notes' },
+    { id: 'diagnostics', label: `Diagnostics${projectDiagnosticsList.length ? ` (${projectDiagnosticsList.length})` : ''}` },
   ];
 
   const handleSaveNotes = () => {
@@ -464,6 +468,52 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* ── Diagnostics Tab ── */}
+      {tab === 'diagnostics' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Business diagnostics linked to this project.</p>
+            <Link href={`/diagnostics/new`}>
+              <Button size="sm" className="gap-2"><Plus className="h-4 w-4" /> New Diagnostic</Button>
+            </Link>
+          </div>
+          {projectDiagnosticsList.length === 0 ? (
+            <Card className="border-border/50 border-dashed">
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Stethoscope className="h-8 w-8 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No diagnostics linked to this project.</p>
+                <Link href="/diagnostics/new">
+                  <Button className="mt-3 gap-2" size="sm"><Plus className="h-4 w-4" /> Create Diagnostic</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {projectDiagnosticsList.map((d: any) => (
+                <Link key={d.id} href={`/diagnostics/${d.id}`}>
+                  <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="font-medium">{d.diagnosticName}</p>
+                          <p className="text-xs text-muted-foreground">{d.diagnosticType?.replace(/_/g, ' ')}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0 text-sm text-muted-foreground">
+                          {d.overallHealthScore != null && (
+                            <span className="font-mono font-semibold">{Math.round(Number(d.overallHealthScore))}/100</span>
+                          )}
+                          <Badge variant="outline" className="capitalize">{d.status.replace(/_/g, ' ')}</Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Project Dialogs */}

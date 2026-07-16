@@ -24,30 +24,47 @@ import type {
   ActivityRecord,
   AppSettings,
   AppSettingsUpdate,
+  ApproveDiagnosticBody,
+  ApproveRecommendationBody,
   AuthUser,
+  BottleneckRecommendationRecord,
   ClientDuplicateCheckBody,
   ClientDuplicateCheckResult,
   ClientListResult,
   ClientMetrics,
   ClientNoteRecord,
   ClientRecord,
+  CompareDiagnosticVersionsParams,
+  CompleteDiagnosticBody,
   CreateClientBody,
   CreateClientNoteBody,
+  CreateDiagnosticBody,
+  CreateDiagnosticVersionBody,
   CreateProjectBody,
   CreateTaskBody,
+  DashboardDiagnosticsMetrics,
   DashboardProjectsMetrics,
+  DiagnosticMetricsSummary,
+  DiagnosticRecord,
+  DiagnosticScoreRecord,
+  DiagnosticVersionComparison,
+  DiagnosticVersionRecord,
   ErrorResponse,
   FoundationStatus,
+  GetDefaultTemplateCategories200,
+  GetDiagnosticVersion200,
   HealthStatus,
   ListActivityParams,
   ListClientActivityParams,
   ListClientNotesParams,
   ListClientProjectsParams,
   ListClientsParams,
+  ListDiagnosticsParams,
   ListProjectTasksParams,
   ListProjectsParams,
   ListTasksParams,
   LoginInput,
+  PaginatedDiagnostics,
   PaginatedProjects,
   PaginatedTasks,
   PasswordChangeInput,
@@ -55,8 +72,11 @@ import type {
   ProjectProgress,
   ProjectRecord,
   RestoreClientBody,
+  RestoreDiagnosticBody,
   RestoreProjectBody,
   RestoreTaskBody,
+  SaveDiagnosticDraft200,
+  SaveDraftScoresBody,
   SetupInput,
   SetupStatus,
   SuccessResponse,
@@ -65,7 +85,11 @@ import type {
   ToggleNotePinBody,
   UpdateClientBody,
   UpdateClientNoteBody,
+  UpdateDiagnosticBody,
+  UpdateExecutiveSummaryBody,
   UpdateProjectBody,
+  UpdateRecommendationBody,
+  UpdateScoreResolutionBody,
   UpdateTaskBody
 } from './api.schemas';
 
@@ -3874,4 +3898,1735 @@ export const useRestoreTask = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getRestoreTaskMutationOptions(options));
     }
+
+export const getGetDashboardDiagnosticsUrl = () => {
+
+
+
+
+  return `/api/dashboard/diagnostics`
+}
+
+/**
+ * @summary Dashboard diagnostic metrics
+ */
+export const getDashboardDiagnostics = async ( options?: RequestInit): Promise<DashboardDiagnosticsMetrics> => {
+
+  return customFetch<DashboardDiagnosticsMetrics>(getGetDashboardDiagnosticsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDashboardDiagnosticsQueryKey = () => {
+    return [
+    `/api/dashboard/diagnostics`
+    ] as const;
+    }
+
+
+export const getGetDashboardDiagnosticsQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardDiagnostics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardDiagnosticsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardDiagnostics>>> = ({ signal }) => getDashboardDiagnostics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboardDiagnostics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDashboardDiagnosticsQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardDiagnostics>>>
+export type GetDashboardDiagnosticsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Dashboard diagnostic metrics
+ */
+
+export function useGetDashboardDiagnostics<TData = Awaited<ReturnType<typeof getDashboardDiagnostics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDashboardDiagnosticsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetDiagnosticMetricsUrl = () => {
+
+
+
+
+  return `/api/diagnostics/metrics/summary`
+}
+
+/**
+ * @summary Diagnostic metrics summary
+ */
+export const getDiagnosticMetrics = async ( options?: RequestInit): Promise<DiagnosticMetricsSummary> => {
+
+  return customFetch<DiagnosticMetricsSummary>(getGetDiagnosticMetricsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDiagnosticMetricsQueryKey = () => {
+    return [
+    `/api/diagnostics/metrics/summary`
+    ] as const;
+    }
+
+
+export const getGetDiagnosticMetricsQueryOptions = <TData = Awaited<ReturnType<typeof getDiagnosticMetrics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDiagnosticMetricsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDiagnosticMetrics>>> = ({ signal }) => getDiagnosticMetrics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticMetrics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDiagnosticMetricsQueryResult = NonNullable<Awaited<ReturnType<typeof getDiagnosticMetrics>>>
+export type GetDiagnosticMetricsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Diagnostic metrics summary
+ */
+
+export function useGetDiagnosticMetrics<TData = Awaited<ReturnType<typeof getDiagnosticMetrics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticMetrics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDiagnosticMetricsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetDefaultTemplateCategoriesUrl = () => {
+
+
+
+
+  return `/api/diagnostic-templates/default/categories`
+}
+
+/**
+ * @summary Get default template with categories
+ */
+export const getDefaultTemplateCategories = async ( options?: RequestInit): Promise<GetDefaultTemplateCategories200> => {
+
+  return customFetch<GetDefaultTemplateCategories200>(getGetDefaultTemplateCategoriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDefaultTemplateCategoriesQueryKey = () => {
+    return [
+    `/api/diagnostic-templates/default/categories`
+    ] as const;
+    }
+
+
+export const getGetDefaultTemplateCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getDefaultTemplateCategories>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDefaultTemplateCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDefaultTemplateCategoriesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDefaultTemplateCategories>>> = ({ signal }) => getDefaultTemplateCategories({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDefaultTemplateCategories>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDefaultTemplateCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getDefaultTemplateCategories>>>
+export type GetDefaultTemplateCategoriesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get default template with categories
+ */
+
+export function useGetDefaultTemplateCategories<TData = Awaited<ReturnType<typeof getDefaultTemplateCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDefaultTemplateCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDefaultTemplateCategoriesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListDiagnosticsUrl = (params?: ListDiagnosticsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/diagnostics?${stringifiedParams}` : `/api/diagnostics`
+}
+
+/**
+ * @summary List diagnostics
+ */
+export const listDiagnostics = async (params?: ListDiagnosticsParams, options?: RequestInit): Promise<PaginatedDiagnostics> => {
+
+  return customFetch<PaginatedDiagnostics>(getListDiagnosticsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListDiagnosticsQueryKey = (params?: ListDiagnosticsParams,) => {
+    return [
+    `/api/diagnostics`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListDiagnosticsQueryOptions = <TData = Awaited<ReturnType<typeof listDiagnostics>>, TError = ErrorType<unknown>>(params?: ListDiagnosticsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListDiagnosticsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDiagnostics>>> = ({ signal }) => listDiagnostics(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDiagnostics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListDiagnosticsQueryResult = NonNullable<Awaited<ReturnType<typeof listDiagnostics>>>
+export type ListDiagnosticsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List diagnostics
+ */
+
+export function useListDiagnostics<TData = Awaited<ReturnType<typeof listDiagnostics>>, TError = ErrorType<unknown>>(
+ params?: ListDiagnosticsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListDiagnosticsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateDiagnosticUrl = () => {
+
+
+
+
+  return `/api/diagnostics`
+}
+
+/**
+ * @summary Create a diagnostic
+ */
+export const createDiagnostic = async (createDiagnosticBody: CreateDiagnosticBody, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getCreateDiagnosticUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createDiagnosticBody)
+  }
+);}
+
+
+
+
+
+export const getCreateDiagnosticMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDiagnostic>>, TError,{data: BodyType<CreateDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDiagnostic>>, TError,{data: BodyType<CreateDiagnosticBody>}, TContext> => {
+
+const mutationKey = ['createDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDiagnostic>>, {data: BodyType<CreateDiagnosticBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDiagnostic(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof createDiagnostic>>>
+    export type CreateDiagnosticMutationBody = BodyType<CreateDiagnosticBody>
+    export type CreateDiagnosticMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a diagnostic
+ */
+export const useCreateDiagnostic = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDiagnostic>>, TError,{data: BodyType<CreateDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createDiagnostic>>,
+        TError,
+        {data: BodyType<CreateDiagnosticBody>},
+        TContext
+      > => {
+      return useMutation(getCreateDiagnosticMutationOptions(options));
+    }
+
+export const getGetDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}`
+}
+
+/**
+ * @summary Get a diagnostic
+ */
+export const getDiagnostic = async (diagnosticId: string, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getGetDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDiagnosticQueryKey = (diagnosticId: string,) => {
+    return [
+    `/api/diagnostics/${diagnosticId}`
+    ] as const;
+    }
+
+
+export const getGetDiagnosticQueryOptions = <TData = Awaited<ReturnType<typeof getDiagnostic>>, TError = ErrorType<ErrorResponse>>(diagnosticId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnostic>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDiagnosticQueryKey(diagnosticId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDiagnostic>>> = ({ signal }) => getDiagnostic(diagnosticId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: diagnosticId !== null && diagnosticId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDiagnostic>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDiagnosticQueryResult = NonNullable<Awaited<ReturnType<typeof getDiagnostic>>>
+export type GetDiagnosticQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a diagnostic
+ */
+
+export function useGetDiagnostic<TData = Awaited<ReturnType<typeof getDiagnostic>>, TError = ErrorType<ErrorResponse>>(
+ diagnosticId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnostic>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDiagnosticQueryOptions(diagnosticId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}`
+}
+
+/**
+ * @summary Update a diagnostic
+ */
+export const updateDiagnostic = async (diagnosticId: string,
+    updateDiagnosticBody: UpdateDiagnosticBody, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getUpdateDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateDiagnosticBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateDiagnosticMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiagnostic>>, TError,{diagnosticId: string;data: BodyType<UpdateDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDiagnostic>>, TError,{diagnosticId: string;data: BodyType<UpdateDiagnosticBody>}, TContext> => {
+
+const mutationKey = ['updateDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDiagnostic>>, {diagnosticId: string;data: BodyType<UpdateDiagnosticBody>}> = (props) => {
+          const {diagnosticId,data} = props ?? {};
+
+          return  updateDiagnostic(diagnosticId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof updateDiagnostic>>>
+    export type UpdateDiagnosticMutationBody = BodyType<UpdateDiagnosticBody>
+    export type UpdateDiagnosticMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a diagnostic
+ */
+export const useUpdateDiagnostic = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiagnostic>>, TError,{diagnosticId: string;data: BodyType<UpdateDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateDiagnostic>>,
+        TError,
+        {diagnosticId: string;data: BodyType<UpdateDiagnosticBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateDiagnosticMutationOptions(options));
+    }
+
+export const getDeleteDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}`
+}
+
+/**
+ * @summary Permanently delete an archived diagnostic
+ */
+export const deleteDiagnostic = async (diagnosticId: string, options?: RequestInit): Promise<SuccessResponse> => {
+
+  return customFetch<SuccessResponse>(getDeleteDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteDiagnosticMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDiagnostic>>, TError,{diagnosticId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDiagnostic>>, TError,{diagnosticId: string}, TContext> => {
+
+const mutationKey = ['deleteDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDiagnostic>>, {diagnosticId: string}> = (props) => {
+          const {diagnosticId} = props ?? {};
+
+          return  deleteDiagnostic(diagnosticId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDiagnostic>>>
+
+    export type DeleteDiagnosticMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Permanently delete an archived diagnostic
+ */
+export const useDeleteDiagnostic = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDiagnostic>>, TError,{diagnosticId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDiagnostic>>,
+        TError,
+        {diagnosticId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteDiagnosticMutationOptions(options));
+    }
+
+export const getSaveDiagnosticDraftUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/save-draft`
+}
+
+/**
+ * @summary Save draft scores without completing
+ */
+export const saveDiagnosticDraft = async (diagnosticId: string,
+    saveDraftScoresBody: SaveDraftScoresBody, options?: RequestInit): Promise<SaveDiagnosticDraft200> => {
+
+  return customFetch<SaveDiagnosticDraft200>(getSaveDiagnosticDraftUrl(diagnosticId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(saveDraftScoresBody)
+  }
+);}
+
+
+
+
+
+export const getSaveDiagnosticDraftMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveDiagnosticDraft>>, TError,{diagnosticId: string;data: BodyType<SaveDraftScoresBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveDiagnosticDraft>>, TError,{diagnosticId: string;data: BodyType<SaveDraftScoresBody>}, TContext> => {
+
+const mutationKey = ['saveDiagnosticDraft'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveDiagnosticDraft>>, {diagnosticId: string;data: BodyType<SaveDraftScoresBody>}> = (props) => {
+          const {diagnosticId,data} = props ?? {};
+
+          return  saveDiagnosticDraft(diagnosticId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveDiagnosticDraftMutationResult = NonNullable<Awaited<ReturnType<typeof saveDiagnosticDraft>>>
+    export type SaveDiagnosticDraftMutationBody = BodyType<SaveDraftScoresBody>
+    export type SaveDiagnosticDraftMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Save draft scores without completing
+ */
+export const useSaveDiagnosticDraft = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveDiagnosticDraft>>, TError,{diagnosticId: string;data: BodyType<SaveDraftScoresBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveDiagnosticDraft>>,
+        TError,
+        {diagnosticId: string;data: BodyType<SaveDraftScoresBody>},
+        TContext
+      > => {
+      return useMutation(getSaveDiagnosticDraftMutationOptions(options));
+    }
+
+export const getCompleteDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/complete`
+}
+
+/**
+ * @summary Complete a diagnostic (server-side recalculation)
+ */
+export const completeDiagnostic = async (diagnosticId: string,
+    completeDiagnosticBody?: CompleteDiagnosticBody, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getCompleteDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(completeDiagnosticBody)
+  }
+);}
+
+
+
+
+
+export const getCompleteDiagnosticMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDiagnostic>>, TError,{diagnosticId: string;data?: BodyType<CompleteDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeDiagnostic>>, TError,{diagnosticId: string;data?: BodyType<CompleteDiagnosticBody>}, TContext> => {
+
+const mutationKey = ['completeDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeDiagnostic>>, {diagnosticId: string;data?: BodyType<CompleteDiagnosticBody>}> = (props) => {
+          const {diagnosticId,data} = props ?? {};
+
+          return  completeDiagnostic(diagnosticId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof completeDiagnostic>>>
+    export type CompleteDiagnosticMutationBody = BodyType<CompleteDiagnosticBody> | undefined
+    export type CompleteDiagnosticMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Complete a diagnostic (server-side recalculation)
+ */
+export const useCompleteDiagnostic = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDiagnostic>>, TError,{diagnosticId: string;data?: BodyType<CompleteDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeDiagnostic>>,
+        TError,
+        {diagnosticId: string;data?: BodyType<CompleteDiagnosticBody>},
+        TContext
+      > => {
+      return useMutation(getCompleteDiagnosticMutationOptions(options));
+    }
+
+export const getArchiveDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/archive`
+}
+
+/**
+ * @summary Archive a diagnostic
+ */
+export const archiveDiagnostic = async (diagnosticId: string, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getArchiveDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getArchiveDiagnosticMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveDiagnostic>>, TError,{diagnosticId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveDiagnostic>>, TError,{diagnosticId: string}, TContext> => {
+
+const mutationKey = ['archiveDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveDiagnostic>>, {diagnosticId: string}> = (props) => {
+          const {diagnosticId} = props ?? {};
+
+          return  archiveDiagnostic(diagnosticId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof archiveDiagnostic>>>
+
+    export type ArchiveDiagnosticMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Archive a diagnostic
+ */
+export const useArchiveDiagnostic = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveDiagnostic>>, TError,{diagnosticId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveDiagnostic>>,
+        TError,
+        {diagnosticId: string},
+        TContext
+      > => {
+      return useMutation(getArchiveDiagnosticMutationOptions(options));
+    }
+
+export const getRestoreDiagnosticUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/restore`
+}
+
+/**
+ * @summary Restore an archived diagnostic
+ */
+export const restoreDiagnostic = async (diagnosticId: string,
+    restoreDiagnosticBody: RestoreDiagnosticBody, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getRestoreDiagnosticUrl(diagnosticId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(restoreDiagnosticBody)
+  }
+);}
+
+
+
+
+
+export const getRestoreDiagnosticMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreDiagnostic>>, TError,{diagnosticId: string;data: BodyType<RestoreDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof restoreDiagnostic>>, TError,{diagnosticId: string;data: BodyType<RestoreDiagnosticBody>}, TContext> => {
+
+const mutationKey = ['restoreDiagnostic'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof restoreDiagnostic>>, {diagnosticId: string;data: BodyType<RestoreDiagnosticBody>}> = (props) => {
+          const {diagnosticId,data} = props ?? {};
+
+          return  restoreDiagnostic(diagnosticId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RestoreDiagnosticMutationResult = NonNullable<Awaited<ReturnType<typeof restoreDiagnostic>>>
+    export type RestoreDiagnosticMutationBody = BodyType<RestoreDiagnosticBody>
+    export type RestoreDiagnosticMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Restore an archived diagnostic
+ */
+export const useRestoreDiagnostic = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof restoreDiagnostic>>, TError,{diagnosticId: string;data: BodyType<RestoreDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof restoreDiagnostic>>,
+        TError,
+        {diagnosticId: string;data: BodyType<RestoreDiagnosticBody>},
+        TContext
+      > => {
+      return useMutation(getRestoreDiagnosticMutationOptions(options));
+    }
+
+export const getListDiagnosticVersionsUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/versions`
+}
+
+/**
+ * @summary List all versions of a diagnostic
+ */
+export const listDiagnosticVersions = async (diagnosticId: string, options?: RequestInit): Promise<DiagnosticVersionRecord[]> => {
+
+  return customFetch<DiagnosticVersionRecord[]>(getListDiagnosticVersionsUrl(diagnosticId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListDiagnosticVersionsQueryKey = (diagnosticId: string,) => {
+    return [
+    `/api/diagnostics/${diagnosticId}/versions`
+    ] as const;
+    }
+
+
+export const getListDiagnosticVersionsQueryOptions = <TData = Awaited<ReturnType<typeof listDiagnosticVersions>>, TError = ErrorType<unknown>>(diagnosticId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDiagnosticVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListDiagnosticVersionsQueryKey(diagnosticId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDiagnosticVersions>>> = ({ signal }) => listDiagnosticVersions(diagnosticId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: diagnosticId !== null && diagnosticId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDiagnosticVersions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListDiagnosticVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof listDiagnosticVersions>>>
+export type ListDiagnosticVersionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all versions of a diagnostic
+ */
+
+export function useListDiagnosticVersions<TData = Awaited<ReturnType<typeof listDiagnosticVersions>>, TError = ErrorType<unknown>>(
+ diagnosticId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDiagnosticVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListDiagnosticVersionsQueryOptions(diagnosticId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateDiagnosticVersionUrl = (diagnosticId: string,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/versions`
+}
+
+/**
+ * @summary Create a new version of a diagnostic
+ */
+export const createDiagnosticVersion = async (diagnosticId: string,
+    createDiagnosticVersionBody?: CreateDiagnosticVersionBody, options?: RequestInit): Promise<DiagnosticVersionRecord> => {
+
+  return customFetch<DiagnosticVersionRecord>(getCreateDiagnosticVersionUrl(diagnosticId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createDiagnosticVersionBody)
+  }
+);}
+
+
+
+
+
+export const getCreateDiagnosticVersionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDiagnosticVersion>>, TError,{diagnosticId: string;data?: BodyType<CreateDiagnosticVersionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDiagnosticVersion>>, TError,{diagnosticId: string;data?: BodyType<CreateDiagnosticVersionBody>}, TContext> => {
+
+const mutationKey = ['createDiagnosticVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDiagnosticVersion>>, {diagnosticId: string;data?: BodyType<CreateDiagnosticVersionBody>}> = (props) => {
+          const {diagnosticId,data} = props ?? {};
+
+          return  createDiagnosticVersion(diagnosticId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDiagnosticVersionMutationResult = NonNullable<Awaited<ReturnType<typeof createDiagnosticVersion>>>
+    export type CreateDiagnosticVersionMutationBody = BodyType<CreateDiagnosticVersionBody> | undefined
+    export type CreateDiagnosticVersionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a new version of a diagnostic
+ */
+export const useCreateDiagnosticVersion = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDiagnosticVersion>>, TError,{diagnosticId: string;data?: BodyType<CreateDiagnosticVersionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createDiagnosticVersion>>,
+        TError,
+        {diagnosticId: string;data?: BodyType<CreateDiagnosticVersionBody>},
+        TContext
+      > => {
+      return useMutation(getCreateDiagnosticVersionMutationOptions(options));
+    }
+
+export const getGetDiagnosticVersionUrl = (diagnosticId: string,
+    versionNumber: number,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/versions/${versionNumber}`
+}
+
+/**
+ * @summary Get a specific version with scores and recommendations
+ */
+export const getDiagnosticVersion = async (diagnosticId: string,
+    versionNumber: number, options?: RequestInit): Promise<GetDiagnosticVersion200> => {
+
+  return customFetch<GetDiagnosticVersion200>(getGetDiagnosticVersionUrl(diagnosticId,versionNumber),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDiagnosticVersionQueryKey = (diagnosticId: string,
+    versionNumber: number,) => {
+    return [
+    `/api/diagnostics/${diagnosticId}/versions/${versionNumber}`
+    ] as const;
+    }
+
+
+export const getGetDiagnosticVersionQueryOptions = <TData = Awaited<ReturnType<typeof getDiagnosticVersion>>, TError = ErrorType<unknown>>(diagnosticId: string,
+    versionNumber: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDiagnosticVersionQueryKey(diagnosticId,versionNumber);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDiagnosticVersion>>> = ({ signal }) => getDiagnosticVersion(diagnosticId,versionNumber, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: diagnosticId !== null && diagnosticId !== undefined && versionNumber !== null && versionNumber !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticVersion>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDiagnosticVersionQueryResult = NonNullable<Awaited<ReturnType<typeof getDiagnosticVersion>>>
+export type GetDiagnosticVersionQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get a specific version with scores and recommendations
+ */
+
+export function useGetDiagnosticVersion<TData = Awaited<ReturnType<typeof getDiagnosticVersion>>, TError = ErrorType<unknown>>(
+ diagnosticId: string,
+    versionNumber: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDiagnosticVersion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDiagnosticVersionQueryOptions(diagnosticId,versionNumber,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateDiagnosticSummaryUrl = (diagnosticId: string,
+    versionNumber: number,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/versions/${versionNumber}/summary`
+}
+
+/**
+ * @summary Update executive summary fields
+ */
+export const updateDiagnosticSummary = async (diagnosticId: string,
+    versionNumber: number,
+    updateExecutiveSummaryBody: UpdateExecutiveSummaryBody, options?: RequestInit): Promise<DiagnosticVersionRecord> => {
+
+  return customFetch<DiagnosticVersionRecord>(getUpdateDiagnosticSummaryUrl(diagnosticId,versionNumber),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateExecutiveSummaryBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateDiagnosticSummaryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiagnosticSummary>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<UpdateExecutiveSummaryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDiagnosticSummary>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<UpdateExecutiveSummaryBody>}, TContext> => {
+
+const mutationKey = ['updateDiagnosticSummary'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDiagnosticSummary>>, {diagnosticId: string;versionNumber: number;data: BodyType<UpdateExecutiveSummaryBody>}> = (props) => {
+          const {diagnosticId,versionNumber,data} = props ?? {};
+
+          return  updateDiagnosticSummary(diagnosticId,versionNumber,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDiagnosticSummaryMutationResult = NonNullable<Awaited<ReturnType<typeof updateDiagnosticSummary>>>
+    export type UpdateDiagnosticSummaryMutationBody = BodyType<UpdateExecutiveSummaryBody>
+    export type UpdateDiagnosticSummaryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update executive summary fields
+ */
+export const useUpdateDiagnosticSummary = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDiagnosticSummary>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<UpdateExecutiveSummaryBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateDiagnosticSummary>>,
+        TError,
+        {diagnosticId: string;versionNumber: number;data: BodyType<UpdateExecutiveSummaryBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateDiagnosticSummaryMutationOptions(options));
+    }
+
+export const getApproveDiagnosticVersionUrl = (diagnosticId: string,
+    versionNumber: number,) => {
+
+
+
+
+  return `/api/diagnostics/${diagnosticId}/versions/${versionNumber}/approve`
+}
+
+/**
+ * @summary Approve, return to review, or mark awaiting review
+ */
+export const approveDiagnosticVersion = async (diagnosticId: string,
+    versionNumber: number,
+    approveDiagnosticBody: ApproveDiagnosticBody, options?: RequestInit): Promise<DiagnosticRecord> => {
+
+  return customFetch<DiagnosticRecord>(getApproveDiagnosticVersionUrl(diagnosticId,versionNumber),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(approveDiagnosticBody)
+  }
+);}
+
+
+
+
+
+export const getApproveDiagnosticVersionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveDiagnosticVersion>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<ApproveDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveDiagnosticVersion>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<ApproveDiagnosticBody>}, TContext> => {
+
+const mutationKey = ['approveDiagnosticVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveDiagnosticVersion>>, {diagnosticId: string;versionNumber: number;data: BodyType<ApproveDiagnosticBody>}> = (props) => {
+          const {diagnosticId,versionNumber,data} = props ?? {};
+
+          return  approveDiagnosticVersion(diagnosticId,versionNumber,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveDiagnosticVersionMutationResult = NonNullable<Awaited<ReturnType<typeof approveDiagnosticVersion>>>
+    export type ApproveDiagnosticVersionMutationBody = BodyType<ApproveDiagnosticBody>
+    export type ApproveDiagnosticVersionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Approve, return to review, or mark awaiting review
+ */
+export const useApproveDiagnosticVersion = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveDiagnosticVersion>>, TError,{diagnosticId: string;versionNumber: number;data: BodyType<ApproveDiagnosticBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveDiagnosticVersion>>,
+        TError,
+        {diagnosticId: string;versionNumber: number;data: BodyType<ApproveDiagnosticBody>},
+        TContext
+      > => {
+      return useMutation(getApproveDiagnosticVersionMutationOptions(options));
+    }
+
+export const getCompareDiagnosticVersionsUrl = (diagnosticId: string,
+    params: CompareDiagnosticVersionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/diagnostics/${diagnosticId}/compare?${stringifiedParams}` : `/api/diagnostics/${diagnosticId}/compare`
+}
+
+/**
+ * @summary Compare two versions of a diagnostic
+ */
+export const compareDiagnosticVersions = async (diagnosticId: string,
+    params: CompareDiagnosticVersionsParams, options?: RequestInit): Promise<DiagnosticVersionComparison> => {
+
+  return customFetch<DiagnosticVersionComparison>(getCompareDiagnosticVersionsUrl(diagnosticId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getCompareDiagnosticVersionsQueryKey = (diagnosticId: string,
+    params?: CompareDiagnosticVersionsParams,) => {
+    return [
+    `/api/diagnostics/${diagnosticId}/compare`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getCompareDiagnosticVersionsQueryOptions = <TData = Awaited<ReturnType<typeof compareDiagnosticVersions>>, TError = ErrorType<unknown>>(diagnosticId: string,
+    params: CompareDiagnosticVersionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareDiagnosticVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCompareDiagnosticVersionsQueryKey(diagnosticId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof compareDiagnosticVersions>>> = ({ signal }) => compareDiagnosticVersions(diagnosticId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: diagnosticId !== null && diagnosticId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof compareDiagnosticVersions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CompareDiagnosticVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof compareDiagnosticVersions>>>
+export type CompareDiagnosticVersionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Compare two versions of a diagnostic
+ */
+
+export function useCompareDiagnosticVersions<TData = Awaited<ReturnType<typeof compareDiagnosticVersions>>, TError = ErrorType<unknown>>(
+ diagnosticId: string,
+    params: CompareDiagnosticVersionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareDiagnosticVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getCompareDiagnosticVersionsQueryOptions(diagnosticId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateScoreResolutionUrl = (scoreId: string,) => {
+
+
+
+
+  return `/api/diagnostic-scores/${scoreId}/resolution`
+}
+
+/**
+ * @summary Update bottleneck resolution status
+ */
+export const updateScoreResolution = async (scoreId: string,
+    updateScoreResolutionBody: UpdateScoreResolutionBody, options?: RequestInit): Promise<DiagnosticScoreRecord> => {
+
+  return customFetch<DiagnosticScoreRecord>(getUpdateScoreResolutionUrl(scoreId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateScoreResolutionBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateScoreResolutionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateScoreResolution>>, TError,{scoreId: string;data: BodyType<UpdateScoreResolutionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateScoreResolution>>, TError,{scoreId: string;data: BodyType<UpdateScoreResolutionBody>}, TContext> => {
+
+const mutationKey = ['updateScoreResolution'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateScoreResolution>>, {scoreId: string;data: BodyType<UpdateScoreResolutionBody>}> = (props) => {
+          const {scoreId,data} = props ?? {};
+
+          return  updateScoreResolution(scoreId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateScoreResolutionMutationResult = NonNullable<Awaited<ReturnType<typeof updateScoreResolution>>>
+    export type UpdateScoreResolutionMutationBody = BodyType<UpdateScoreResolutionBody>
+    export type UpdateScoreResolutionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update bottleneck resolution status
+ */
+export const useUpdateScoreResolution = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateScoreResolution>>, TError,{scoreId: string;data: BodyType<UpdateScoreResolutionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateScoreResolution>>,
+        TError,
+        {scoreId: string;data: BodyType<UpdateScoreResolutionBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateScoreResolutionMutationOptions(options));
+    }
+
+export const getUpdateRecommendationUrl = (recId: string,) => {
+
+
+
+
+  return `/api/bottleneck-recommendations/${recId}`
+}
+
+/**
+ * @summary Edit a bottleneck recommendation
+ */
+export const updateRecommendation = async (recId: string,
+    updateRecommendationBody: UpdateRecommendationBody, options?: RequestInit): Promise<BottleneckRecommendationRecord> => {
+
+  return customFetch<BottleneckRecommendationRecord>(getUpdateRecommendationUrl(recId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateRecommendationBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateRecommendationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRecommendation>>, TError,{recId: string;data: BodyType<UpdateRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateRecommendation>>, TError,{recId: string;data: BodyType<UpdateRecommendationBody>}, TContext> => {
+
+const mutationKey = ['updateRecommendation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRecommendation>>, {recId: string;data: BodyType<UpdateRecommendationBody>}> = (props) => {
+          const {recId,data} = props ?? {};
+
+          return  updateRecommendation(recId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateRecommendationMutationResult = NonNullable<Awaited<ReturnType<typeof updateRecommendation>>>
+    export type UpdateRecommendationMutationBody = BodyType<UpdateRecommendationBody>
+    export type UpdateRecommendationMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Edit a bottleneck recommendation
+ */
+export const useUpdateRecommendation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateRecommendation>>, TError,{recId: string;data: BodyType<UpdateRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateRecommendation>>,
+        TError,
+        {recId: string;data: BodyType<UpdateRecommendationBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateRecommendationMutationOptions(options));
+    }
+
+export const getApproveRecommendationUrl = (recId: string,) => {
+
+
+
+
+  return `/api/bottleneck-recommendations/${recId}/approve`
+}
+
+/**
+ * @summary Approve, reject, or mark implemented
+ */
+export const approveRecommendation = async (recId: string,
+    approveRecommendationBody: ApproveRecommendationBody, options?: RequestInit): Promise<BottleneckRecommendationRecord> => {
+
+  return customFetch<BottleneckRecommendationRecord>(getApproveRecommendationUrl(recId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(approveRecommendationBody)
+  }
+);}
+
+
+
+
+
+export const getApproveRecommendationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveRecommendation>>, TError,{recId: string;data: BodyType<ApproveRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveRecommendation>>, TError,{recId: string;data: BodyType<ApproveRecommendationBody>}, TContext> => {
+
+const mutationKey = ['approveRecommendation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveRecommendation>>, {recId: string;data: BodyType<ApproveRecommendationBody>}> = (props) => {
+          const {recId,data} = props ?? {};
+
+          return  approveRecommendation(recId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveRecommendationMutationResult = NonNullable<Awaited<ReturnType<typeof approveRecommendation>>>
+    export type ApproveRecommendationMutationBody = BodyType<ApproveRecommendationBody>
+    export type ApproveRecommendationMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Approve, reject, or mark implemented
+ */
+export const useApproveRecommendation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveRecommendation>>, TError,{recId: string;data: BodyType<ApproveRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveRecommendation>>,
+        TError,
+        {recId: string;data: BodyType<ApproveRecommendationBody>},
+        TContext
+      > => {
+      return useMutation(getApproveRecommendationMutationOptions(options));
+    }
+
+export const getListClientDiagnosticsUrl = (clientId: string,) => {
+
+
+
+
+  return `/api/clients/${clientId}/diagnostics`
+}
+
+/**
+ * @summary List diagnostics for a client
+ */
+export const listClientDiagnostics = async (clientId: string, options?: RequestInit): Promise<DiagnosticRecord[]> => {
+
+  return customFetch<DiagnosticRecord[]>(getListClientDiagnosticsUrl(clientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListClientDiagnosticsQueryKey = (clientId: string,) => {
+    return [
+    `/api/clients/${clientId}/diagnostics`
+    ] as const;
+    }
+
+
+export const getListClientDiagnosticsQueryOptions = <TData = Awaited<ReturnType<typeof listClientDiagnostics>>, TError = ErrorType<unknown>>(clientId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListClientDiagnosticsQueryKey(clientId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listClientDiagnostics>>> = ({ signal }) => listClientDiagnostics(clientId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: clientId !== null && clientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listClientDiagnostics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListClientDiagnosticsQueryResult = NonNullable<Awaited<ReturnType<typeof listClientDiagnostics>>>
+export type ListClientDiagnosticsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List diagnostics for a client
+ */
+
+export function useListClientDiagnostics<TData = Awaited<ReturnType<typeof listClientDiagnostics>>, TError = ErrorType<unknown>>(
+ clientId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListClientDiagnosticsQueryOptions(clientId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListProjectDiagnosticsUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/projects/${projectId}/diagnostics`
+}
+
+/**
+ * @summary List diagnostics for a project
+ */
+export const listProjectDiagnostics = async (projectId: string, options?: RequestInit): Promise<DiagnosticRecord[]> => {
+
+  return customFetch<DiagnosticRecord[]>(getListProjectDiagnosticsUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListProjectDiagnosticsQueryKey = (projectId: string,) => {
+    return [
+    `/api/projects/${projectId}/diagnostics`
+    ] as const;
+    }
+
+
+export const getListProjectDiagnosticsQueryOptions = <TData = Awaited<ReturnType<typeof listProjectDiagnostics>>, TError = ErrorType<unknown>>(projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListProjectDiagnosticsQueryKey(projectId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProjectDiagnostics>>> = ({ signal }) => listProjectDiagnostics(projectId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: projectId !== null && projectId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProjectDiagnostics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListProjectDiagnosticsQueryResult = NonNullable<Awaited<ReturnType<typeof listProjectDiagnostics>>>
+export type ListProjectDiagnosticsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List diagnostics for a project
+ */
+
+export function useListProjectDiagnostics<TData = Awaited<ReturnType<typeof listProjectDiagnostics>>, TError = ErrorType<unknown>>(
+ projectId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listProjectDiagnostics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListProjectDiagnosticsQueryOptions(projectId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 

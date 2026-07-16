@@ -7,6 +7,7 @@ import dashboardRouter from "./dashboard";
 import clientsRouter from "./clients";
 import projectsRouter from "./projects";
 import tasksRouter from "./tasks";
+import diagnosticsRouter from "./diagnostics";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(dashboardRouter);
 router.use(clientsRouter);
 router.use(projectsRouter);
 router.use(tasksRouter);
+router.use(diagnosticsRouter);
 
 export default router;

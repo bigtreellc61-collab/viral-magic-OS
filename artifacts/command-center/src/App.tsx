@@ -16,6 +16,10 @@ import { ProjectsPage } from '@/pages/projects';
 import { ProjectDetailPage } from '@/pages/project-detail';
 import { ProjectFormPage } from '@/pages/project-form';
 import { TasksPage } from '@/pages/tasks';
+import DiagnosticsPage from '@/pages/diagnostics';
+import DiagnosticCreatePage from '@/pages/diagnostic-create';
+import DiagnosticDetailPage from '@/pages/diagnostic-detail';
+import DiagnosticComparePage from '@/pages/diagnostic-compare';
 import NotFound from '@/pages/not-found';
 import { useGetSetupStatus, useGetCurrentUser, getGetCurrentUserQueryKey } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
@@ -106,6 +110,18 @@ function AuthWall() {
         </Route>
         <Route path="/tasks">
           {() => <TasksPage />}
+        </Route>
+        <Route path="/diagnostics/new">
+          {() => <DiagnosticCreatePage />}
+        </Route>
+        <Route path="/diagnostics/:id/compare">
+          {() => <DiagnosticComparePage />}
+        </Route>
+        <Route path="/diagnostics/:id">
+          {() => <DiagnosticDetailPage />}
+        </Route>
+        <Route path="/diagnostics">
+          {() => <DiagnosticsPage />}
         </Route>
         <Route path="/settings">
           {() => <SettingsPage user={user} />}

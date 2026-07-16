@@ -24,6 +24,8 @@ tags:
     description: Project management
   - name: tasks
     description: Task management
+  - name: diagnostics
+    description: Business Diagnostic Engine
 paths:
   /healthz:
     get:
@@ -1395,6 +1397,518 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TaskRecord"
+  /dashboard/diagnostics:
+    get:
+      operationId: getDashboardDiagnostics
+      tags: [diagnostics]
+      summary: Dashboard diagnostic metrics
+      responses:
+        "200":
+          description: Diagnostic dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardDiagnosticsMetrics"
+  /diagnostics/metrics/summary:
+    get:
+      operationId: getDiagnosticMetrics
+      tags: [diagnostics]
+      summary: Diagnostic metrics summary
+      responses:
+        "200":
+          description: Metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticMetricsSummary"
+  /diagnostic-templates/default/categories:
+    get:
+      operationId: getDefaultTemplateCategories
+      tags: [diagnostics]
+      summary: Get default template with categories
+      responses:
+        "200":
+          description: Template and categories
+          content:
+            application/json:
+              schema:
+                type: object
+  /diagnostics:
+    get:
+      operationId: listDiagnostics
+      tags: [diagnostics]
+      summary: List diagnostics
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: clientId
+          in: query
+          schema: { type: string }
+        - name: projectId
+          in: query
+          schema: { type: string }
+        - name: diagnosticType
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string }
+        - name: showArchived
+          in: query
+          schema: { type: string }
+        - name: sort
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer }
+        - name: pageSize
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Paginated diagnostics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedDiagnostics"
+    post:
+      operationId: createDiagnostic
+      tags: [diagnostics]
+      summary: Create a diagnostic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDiagnosticBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /diagnostics/{diagnosticId}:
+    get:
+      operationId: getDiagnostic
+      tags: [diagnostics]
+      summary: Get a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Diagnostic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateDiagnostic
+      tags: [diagnostics]
+      summary: Update a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDiagnosticBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+    delete:
+      operationId: deleteDiagnostic
+      tags: [diagnostics]
+      summary: Permanently delete an archived diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /diagnostics/{diagnosticId}/save-draft:
+    post:
+      operationId: saveDiagnosticDraft
+      tags: [diagnostics]
+      summary: Save draft scores without completing
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveDraftScoresBody"
+      responses:
+        "200":
+          description: Draft saved
+          content:
+            application/json:
+              schema:
+                type: object
+  /diagnostics/{diagnosticId}/complete:
+    post:
+      operationId: completeDiagnostic
+      tags: [diagnostics]
+      summary: Complete a diagnostic (server-side recalculation)
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                versionId:
+                  type: string
+      responses:
+        "200":
+          description: Completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /diagnostics/{diagnosticId}/archive:
+    post:
+      operationId: archiveDiagnostic
+      tags: [diagnostics]
+      summary: Archive a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+  /diagnostics/{diagnosticId}/restore:
+    post:
+      operationId: restoreDiagnostic
+      tags: [diagnostics]
+      summary: Restore an archived diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Restored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+  /diagnostics/{diagnosticId}/versions:
+    get:
+      operationId: listDiagnosticVersions
+      tags: [diagnostics]
+      summary: List all versions of a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiagnosticVersionRecord"
+    post:
+      operationId: createDiagnosticVersion
+      tags: [diagnostics]
+      summary: Create a new version of a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                copyScores:
+                  type: boolean
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticVersionRecord"
+  /diagnostics/{diagnosticId}/versions/{versionNumber}:
+    get:
+      operationId: getDiagnosticVersion
+      tags: [diagnostics]
+      summary: Get a specific version with scores and recommendations
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: versionNumber
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Version with scores
+          content:
+            application/json:
+              schema:
+                type: object
+  /diagnostics/{diagnosticId}/versions/{versionNumber}/summary:
+    put:
+      operationId: updateDiagnosticSummary
+      tags: [diagnostics]
+      summary: Update executive summary fields
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: versionNumber
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateExecutiveSummaryBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticVersionRecord"
+  /diagnostics/{diagnosticId}/versions/{versionNumber}/approve:
+    post:
+      operationId: approveDiagnosticVersion
+      tags: [diagnostics]
+      summary: Approve, return to review, or mark awaiting review
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: versionNumber
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApproveDiagnosticBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticRecord"
+  /diagnostics/{diagnosticId}/compare:
+    get:
+      operationId: compareDiagnosticVersions
+      tags: [diagnostics]
+      summary: Compare two versions of a diagnostic
+      parameters:
+        - name: diagnosticId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: v1
+          in: query
+          required: true
+          schema: { type: integer }
+        - name: v2
+          in: query
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticVersionComparison"
+  /diagnostic-scores/{scoreId}/resolution:
+    patch:
+      operationId: updateScoreResolution
+      tags: [diagnostics]
+      summary: Update bottleneck resolution status
+      parameters:
+        - name: scoreId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateScoreResolutionBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiagnosticScoreRecord"
+  /bottleneck-recommendations/{recId}:
+    put:
+      operationId: updateRecommendation
+      tags: [diagnostics]
+      summary: Edit a bottleneck recommendation
+      parameters:
+        - name: recId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRecommendationBody"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BottleneckRecommendationRecord"
+  /bottleneck-recommendations/{recId}/approve:
+    post:
+      operationId: approveRecommendation
+      tags: [diagnostics]
+      summary: Approve, reject, or mark implemented
+      parameters:
+        - name: recId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BottleneckRecommendationRecord"
+  /clients/{clientId}/diagnostics:
+    get:
+      operationId: listClientDiagnostics
+      tags: [diagnostics]
+      summary: List diagnostics for a client
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Client diagnostics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiagnosticRecord"
+  /projects/{projectId}/diagnostics:
+    get:
+      operationId: listProjectDiagnostics
+      tags: [diagnostics]
+      summary: List diagnostics for a project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Project diagnostics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiagnosticRecord"
 components:
   schemas:
     HealthStatus:
@@ -2313,3 +2827,371 @@ components:
           type: boolean
       required:
         - success
+    DiagnosticRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        diagnosticName:
+          type: string
+        diagnosticType:
+          type: string
+        status:
+          type: string
+        currentVersionNumber:
+          type: integer
+        startedAt:
+          type: ["string", "null"]
+          format: date-time
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+        reviewedAt:
+          type: ["string", "null"]
+          format: date-time
+        reviewedBy:
+          type: ["string", "null"]
+        summaryNotes:
+          type: ["string", "null"]
+        overallHealthScore:
+          type: ["number", "null"]
+        overallPriorityScore:
+          type: ["number", "null"]
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        clientName:
+          type: ["string", "null"]
+        projectName:
+          type: ["string", "null"]
+      required:
+        - id
+        - clientId
+        - diagnosticName
+        - diagnosticType
+        - status
+        - currentVersionNumber
+        - createdAt
+        - updatedAt
+    DiagnosticVersionRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        diagnosticId:
+          type: string
+        versionNumber:
+          type: integer
+        status:
+          type: string
+        overallHealthScore:
+          type: ["number", "null"]
+        overallPriorityScore:
+          type: ["number", "null"]
+        executiveSummary:
+          type: ["string", "null"]
+        recommendedFirstAction:
+          type: ["string", "null"]
+        recommendedSoftwareOpportunity:
+          type: ["string", "null"]
+        createdBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        approvedBy:
+          type: ["string", "null"]
+      required:
+        - id
+        - diagnosticId
+        - versionNumber
+        - status
+        - createdAt
+    DiagnosticScoreRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        diagnosticVersionId:
+          type: string
+        categoryKey:
+          type: string
+        categoryLabel:
+          type: string
+        categoryDescription:
+          type: ["string", "null"]
+        displayOrder:
+          type: integer
+        currentPerformance:
+          type: ["number", "null"]
+        businessImpact:
+          type: ["number", "null"]
+        urgency:
+          type: ["number", "null"]
+        performanceGap:
+          type: ["number", "null"]
+        priorityScore:
+          type: ["number", "null"]
+        severity:
+          type: ["string", "null"]
+        evidence:
+          type: ["string", "null"]
+        observations:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        recommendedAction:
+          type: ["string", "null"]
+        resolutionStatus:
+          type: string
+        resolvedAt:
+          type: ["string", "null"]
+          format: date-time
+        resolvedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - diagnosticVersionId
+        - categoryKey
+        - categoryLabel
+        - displayOrder
+        - resolutionStatus
+        - createdAt
+        - updatedAt
+    BottleneckRecommendationRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        diagnosticScoreId:
+          type: string
+        systemGeneratedDraft:
+          type: ["string", "null"]
+        administratorFinalRecommendation:
+          type: ["string", "null"]
+        recommendationStatus:
+          type: string
+        priorityOrder:
+          type: integer
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - diagnosticScoreId
+        - recommendationStatus
+        - priorityOrder
+        - createdAt
+        - updatedAt
+    CreateDiagnosticBody:
+      type: object
+      properties:
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        diagnosticName:
+          type: string
+          minLength: 1
+        diagnosticType:
+          type: string
+        summaryNotes:
+          type: ["string", "null"]
+      required:
+        - clientId
+        - diagnosticName
+        - diagnosticType
+    UpdateDiagnosticBody:
+      type: object
+      properties:
+        diagnosticName:
+          type: ["string", "null"]
+        diagnosticType:
+          type: ["string", "null"]
+        summaryNotes:
+          type: ["string", "null"]
+        status:
+          type: ["string", "null"]
+    SaveDraftScoresBody:
+      type: object
+      properties:
+        versionId:
+          type: ["string", "null"]
+        scores:
+          type: array
+          items:
+            type: object
+    UpdateExecutiveSummaryBody:
+      type: object
+      properties:
+        executiveSummary:
+          type: ["string", "null"]
+        recommendedFirstAction:
+          type: ["string", "null"]
+        recommendedSoftwareOpportunity:
+          type: ["string", "null"]
+    UpdateScoreResolutionBody:
+      type: object
+      properties:
+        resolutionStatus:
+          type: string
+        resolutionNotes:
+          type: ["string", "null"]
+      required:
+        - resolutionStatus
+    UpdateRecommendationBody:
+      type: object
+      properties:
+        administratorFinalRecommendation:
+          type: ["string", "null"]
+        recommendationStatus:
+          type: ["string", "null"]
+    ApproveDiagnosticBody:
+      type: object
+      properties:
+        action:
+          type: string
+      required:
+        - action
+    DiagnosticMetricsSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        draftInProgress:
+          type: integer
+        awaitingReview:
+          type: integer
+        completed:
+          type: integer
+        approved:
+          type: integer
+        criticalBottlenecks:
+          type: integer
+        highBottlenecks:
+          type: integer
+      required:
+        - total
+        - draftInProgress
+        - awaitingReview
+        - completed
+        - approved
+        - criticalBottlenecks
+        - highBottlenecks
+    PaginatedDiagnostics:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiagnosticRecord"
+        total:
+          type: integer
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - data
+        - total
+        - page
+        - pageSize
+        - totalPages
+    DiagnosticVersionComparison:
+      type: object
+      properties:
+        versionA:
+          type: object
+        versionB:
+          type: object
+        healthScoreDelta:
+          type: ["number", "null"]
+        categoryComparisons:
+          type: array
+          items:
+            type: object
+      required:
+        - versionA
+        - versionB
+        - categoryComparisons
+    DashboardDiagnosticsMetrics:
+      type: object
+      properties:
+        total:
+          type: integer
+        draftInProgress:
+          type: integer
+        awaitingReview:
+          type: integer
+        completed:
+          type: integer
+        approved:
+          type: integer
+        criticalBottlenecks:
+          type: integer
+        highBottlenecks:
+          type: integer
+        topBottlenecks:
+          type: array
+          items:
+            type: object
+        awaitingReviewList:
+          type: array
+          items:
+            type: object
+        recentDiagnostics:
+          type: array
+          items:
+            type: object
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityRecord"
+      required:
+        - total
+        - draftInProgress
+        - awaitingReview
+        - completed
+        - approved
+        - criticalBottlenecks
+        - highBottlenecks
+        - topBottlenecks
+        - awaitingReviewList
+        - recentDiagnostics
+        - recentActivity

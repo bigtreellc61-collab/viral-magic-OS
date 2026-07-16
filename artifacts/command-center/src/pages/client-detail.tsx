@@ -6,7 +6,7 @@ import {
   useArchiveClient, useRestoreClient, useDeleteClient,
   useCreateClientNote, useUpdateClientNote, useToggleClientNotePin,
   useArchiveClientNote, useRestoreClientNote, useDeleteClientNote,
-  useListClientProjects,
+  useListClientProjects, useListClientDiagnostics,
   getGetClientQueryKey, getListClientNotesQueryKey, getListClientsQueryKey,
   getListClientActivityQueryKey, getListClientProjectsQueryKey,
   ClientRecord, ClientNoteRecord,
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus, Pin, PinOff,
-  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen,
+  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen, Stethoscope,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ClientStatusBadge } from '@/components/clients/status-badge';
@@ -38,7 +38,7 @@ import { ProjectProgressBar } from '@/components/projects/progress-bar';
 
 interface ClientDetailPageProps { clientId: string; }
 
-type Tab = 'overview' | 'notes' | 'activity' | 'projects';
+type Tab = 'overview' | 'notes' | 'activity' | 'projects' | 'diagnostics';
 
 export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const [, setLocation] = useLocation();
@@ -59,6 +59,7 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const { data: clientProjects, isLoading: projectsLoading } = useListClientProjects(clientId, undefined, {
     query: { enabled: tab === 'projects', queryKey: getListClientProjectsQueryKey(clientId) },
   });
+  const { data: clientDiagnostics } = useListClientDiagnostics(clientId);
 
   const archiveClient = useArchiveClient();
   const restoreClient = useRestoreClient();
@@ -143,11 +144,13 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const isArchived = Boolean(client.archivedAt);
 
   const clientProjectsList = (clientProjects as any)?.data ?? [];
+  const clientDiagnosticsList = Array.isArray(clientDiagnostics) ? clientDiagnostics : [];
   const TABS: { id: Tab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'notes', label: `Notes${notes.length ? ` (${notes.length})` : ''}` },
     { id: 'activity', label: 'Activity' },
     { id: 'projects', label: `Projects${clientProjectsList.length ? ` (${clientProjectsList.length})` : ''}` },
+    { id: 'diagnostics', label: `Diagnostics${clientDiagnosticsList.length ? ` (${clientDiagnosticsList.length})` : ''}` },
   ];
 
   return (
@@ -263,6 +266,50 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
       )}
       {tab === 'activity' && (
         <ActivityTab items={activity as any[]} isLoading={activityLoading} />
+      )}
+      {tab === 'diagnostics' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">Business diagnostics run for this client.</p>
+            <Link href={`/diagnostics/new`}>
+              <Button size="sm" className="gap-2"><Plus className="h-4 w-4" /> New Diagnostic</Button>
+            </Link>
+          </div>
+          {clientDiagnosticsList.length === 0 ? (
+            <Card className="border-border/50 border-dashed">
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <Stethoscope className="h-8 w-8 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No diagnostics yet for this client.</p>
+                <Link href="/diagnostics/new">
+                  <Button className="mt-3 gap-2" size="sm"><Plus className="h-4 w-4" /> Create Diagnostic</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {clientDiagnosticsList.map((d: any) => (
+                <Link key={d.id} href={`/diagnostics/${d.id}`}>
+                  <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="font-medium">{d.diagnosticName}</p>
+                          <p className="text-xs text-muted-foreground">{d.diagnosticType?.replace(/_/g, ' ')}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0 text-sm text-muted-foreground">
+                          {d.overallHealthScore != null && (
+                            <span className="font-mono font-semibold">{Math.round(Number(d.overallHealthScore))}/100</span>
+                          )}
+                          <Badge variant="outline" className="capitalize">{d.status.replace(/_/g, ' ')}</Badge>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       )}
       {tab === 'projects' && (
         <div className="space-y-4">

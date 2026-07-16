@@ -1533,3 +1533,665 @@ export const RestoreTaskResponse = zod.object({
 })
 
 
+/**
+ * @summary Dashboard diagnostic metrics
+ */
+export const GetDashboardDiagnosticsResponse = zod.object({
+  "total": zod.number(),
+  "draftInProgress": zod.number(),
+  "awaitingReview": zod.number(),
+  "completed": zod.number(),
+  "approved": zod.number(),
+  "criticalBottlenecks": zod.number(),
+  "highBottlenecks": zod.number(),
+  "topBottlenecks": zod.array(zod.object({
+
+})),
+  "awaitingReviewList": zod.array(zod.object({
+
+})),
+  "recentDiagnostics": zod.array(zod.object({
+
+})),
+  "recentActivity": zod.array(zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Diagnostic metrics summary
+ */
+export const GetDiagnosticMetricsResponse = zod.object({
+  "total": zod.number(),
+  "draftInProgress": zod.number(),
+  "awaitingReview": zod.number(),
+  "completed": zod.number(),
+  "approved": zod.number(),
+  "criticalBottlenecks": zod.number(),
+  "highBottlenecks": zod.number()
+})
+
+
+/**
+ * @summary Get default template with categories
+ */
+export const GetDefaultTemplateCategoriesResponse = zod.object({
+
+})
+
+
+/**
+ * @summary List diagnostics
+ */
+export const ListDiagnosticsQueryParams = zod.object({
+  "search": zod.coerce.string().optional(),
+  "clientId": zod.coerce.string().optional(),
+  "projectId": zod.coerce.string().optional(),
+  "diagnosticType": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "showArchived": zod.coerce.string().optional(),
+  "sort": zod.coerce.string().optional(),
+  "page": zod.coerce.number().optional(),
+  "pageSize": zod.coerce.number().optional()
+})
+
+export const ListDiagnosticsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})),
+  "total": zod.number(),
+  "page": zod.number(),
+  "pageSize": zod.number(),
+  "totalPages": zod.number()
+})
+
+
+/**
+ * @summary Create a diagnostic
+ */
+
+
+
+export const CreateDiagnosticBody = zod.object({
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string().min(1),
+  "diagnosticType": zod.string(),
+  "summaryNotes": zod.string().nullish()
+})
+
+export const CreateDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a diagnostic
+ */
+export const GetDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const GetDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update a diagnostic
+ */
+export const UpdateDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const UpdateDiagnosticBody = zod.object({
+  "diagnosticName": zod.string().nullish(),
+  "diagnosticType": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "status": zod.string().nullish()
+})
+
+export const UpdateDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Permanently delete an archived diagnostic
+ */
+export const DeleteDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const DeleteDiagnosticResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary Save draft scores without completing
+ */
+export const SaveDiagnosticDraftParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const SaveDiagnosticDraftBody = zod.object({
+  "versionId": zod.string().nullish(),
+  "scores": zod.array(zod.object({
+
+})).optional()
+})
+
+export const SaveDiagnosticDraftResponse = zod.object({
+
+})
+
+
+/**
+ * @summary Complete a diagnostic (server-side recalculation)
+ */
+export const CompleteDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const CompleteDiagnosticBody = zod.object({
+  "versionId": zod.string().optional()
+})
+
+export const CompleteDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Archive a diagnostic
+ */
+export const ArchiveDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const ArchiveDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Restore an archived diagnostic
+ */
+export const RestoreDiagnosticParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const RestoreDiagnosticBody = zod.object({
+  "status": zod.string().optional()
+})
+
+export const RestoreDiagnosticResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary List all versions of a diagnostic
+ */
+export const ListDiagnosticVersionsParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const ListDiagnosticVersionsResponseItem = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "versionNumber": zod.number(),
+  "status": zod.string(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "executiveSummary": zod.string().nullish(),
+  "recommendedFirstAction": zod.string().nullish(),
+  "recommendedSoftwareOpportunity": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish()
+})
+export const ListDiagnosticVersionsResponse = zod.array(ListDiagnosticVersionsResponseItem)
+
+
+/**
+ * @summary Create a new version of a diagnostic
+ */
+export const CreateDiagnosticVersionParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const CreateDiagnosticVersionBody = zod.object({
+  "copyScores": zod.boolean().optional()
+})
+
+export const CreateDiagnosticVersionResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "versionNumber": zod.number(),
+  "status": zod.string(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "executiveSummary": zod.string().nullish(),
+  "recommendedFirstAction": zod.string().nullish(),
+  "recommendedSoftwareOpportunity": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get a specific version with scores and recommendations
+ */
+export const GetDiagnosticVersionParams = zod.object({
+  "diagnosticId": zod.coerce.string(),
+  "versionNumber": zod.coerce.number()
+})
+
+export const GetDiagnosticVersionResponse = zod.object({
+
+})
+
+
+/**
+ * @summary Update executive summary fields
+ */
+export const UpdateDiagnosticSummaryParams = zod.object({
+  "diagnosticId": zod.coerce.string(),
+  "versionNumber": zod.coerce.number()
+})
+
+export const UpdateDiagnosticSummaryBody = zod.object({
+  "executiveSummary": zod.string().nullish(),
+  "recommendedFirstAction": zod.string().nullish(),
+  "recommendedSoftwareOpportunity": zod.string().nullish()
+})
+
+export const UpdateDiagnosticSummaryResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "versionNumber": zod.number(),
+  "status": zod.string(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "executiveSummary": zod.string().nullish(),
+  "recommendedFirstAction": zod.string().nullish(),
+  "recommendedSoftwareOpportunity": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "completedAt": zod.coerce.date().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish()
+})
+
+
+/**
+ * @summary Approve, return to review, or mark awaiting review
+ */
+export const ApproveDiagnosticVersionParams = zod.object({
+  "diagnosticId": zod.coerce.string(),
+  "versionNumber": zod.coerce.number()
+})
+
+export const ApproveDiagnosticVersionBody = zod.object({
+  "action": zod.string()
+})
+
+export const ApproveDiagnosticVersionResponse = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Compare two versions of a diagnostic
+ */
+export const CompareDiagnosticVersionsParams = zod.object({
+  "diagnosticId": zod.coerce.string()
+})
+
+export const CompareDiagnosticVersionsQueryParams = zod.object({
+  "v1": zod.coerce.number(),
+  "v2": zod.coerce.number()
+})
+
+export const CompareDiagnosticVersionsResponse = zod.object({
+  "versionA": zod.object({
+
+}),
+  "versionB": zod.object({
+
+}),
+  "healthScoreDelta": zod.number().nullish(),
+  "categoryComparisons": zod.array(zod.object({
+
+}))
+})
+
+
+/**
+ * @summary Update bottleneck resolution status
+ */
+export const UpdateScoreResolutionParams = zod.object({
+  "scoreId": zod.coerce.string()
+})
+
+export const UpdateScoreResolutionBody = zod.object({
+  "resolutionStatus": zod.string(),
+  "resolutionNotes": zod.string().nullish()
+})
+
+export const UpdateScoreResolutionResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "categoryKey": zod.string(),
+  "categoryLabel": zod.string(),
+  "categoryDescription": zod.string().nullish(),
+  "displayOrder": zod.number(),
+  "currentPerformance": zod.number().nullish(),
+  "businessImpact": zod.number().nullish(),
+  "urgency": zod.number().nullish(),
+  "performanceGap": zod.number().nullish(),
+  "priorityScore": zod.number().nullish(),
+  "severity": zod.string().nullish(),
+  "evidence": zod.string().nullish(),
+  "observations": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "recommendedAction": zod.string().nullish(),
+  "resolutionStatus": zod.string(),
+  "resolvedAt": zod.coerce.date().nullish(),
+  "resolvedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Edit a bottleneck recommendation
+ */
+export const UpdateRecommendationParams = zod.object({
+  "recId": zod.coerce.string()
+})
+
+export const UpdateRecommendationBody = zod.object({
+  "administratorFinalRecommendation": zod.string().nullish(),
+  "recommendationStatus": zod.string().nullish()
+})
+
+export const UpdateRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticScoreId": zod.string(),
+  "systemGeneratedDraft": zod.string().nullish(),
+  "administratorFinalRecommendation": zod.string().nullish(),
+  "recommendationStatus": zod.string(),
+  "priorityOrder": zod.number(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Approve, reject, or mark implemented
+ */
+export const ApproveRecommendationParams = zod.object({
+  "recId": zod.coerce.string()
+})
+
+export const ApproveRecommendationBody = zod.object({
+  "action": zod.string().optional()
+})
+
+export const ApproveRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticScoreId": zod.string(),
+  "systemGeneratedDraft": zod.string().nullish(),
+  "administratorFinalRecommendation": zod.string().nullish(),
+  "recommendationStatus": zod.string(),
+  "priorityOrder": zod.number(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List diagnostics for a client
+ */
+export const ListClientDiagnosticsParams = zod.object({
+  "clientId": zod.coerce.string()
+})
+
+export const ListClientDiagnosticsResponseItem = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+export const ListClientDiagnosticsResponse = zod.array(ListClientDiagnosticsResponseItem)
+
+
+/**
+ * @summary List diagnostics for a project
+ */
+export const ListProjectDiagnosticsParams = zod.object({
+  "projectId": zod.coerce.string()
+})
+
+export const ListProjectDiagnosticsResponseItem = zod.object({
+  "id": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "diagnosticName": zod.string(),
+  "diagnosticType": zod.string(),
+  "status": zod.string(),
+  "currentVersionNumber": zod.number(),
+  "startedAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "reviewedBy": zod.string().nullish(),
+  "summaryNotes": zod.string().nullish(),
+  "overallHealthScore": zod.number().nullish(),
+  "overallPriorityScore": zod.number().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+export const ListProjectDiagnosticsResponse = zod.array(ListProjectDiagnosticsResponseItem)
+
+

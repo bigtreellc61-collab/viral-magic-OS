@@ -1,9 +1,9 @@
-import { useGetFoundationStatus, useGetClientMetrics, useGetDashboardProjects } from '@workspace/api-client-react';
+import { useGetFoundationStatus, useGetClientMetrics, useGetDashboardProjects, useGetDashboardDiagnostics } from '@workspace/api-client-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Activity, Database, Key, ShieldCheck, Settings2, Code2, Loader2,
   Users, UserCheck, FolderOpen, CheckSquare, AlertTriangle, Calendar,
-  ArrowRight, TrendingUp, Clock, CheckCircle2,
+  ArrowRight, TrendingUp, Clock, CheckCircle2, Stethoscope,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ export function DashboardPage() {
   const { data: status, isLoading: loadingStatus, error: statusError } = useGetFoundationStatus();
   const { data: clientMetrics, isLoading: loadingClientMetrics } = useGetClientMetrics();
   const { data: projectData, isLoading: loadingProjectData } = useGetDashboardProjects();
+  const { data: diagData, isLoading: loadingDiagnostics } = useGetDashboardDiagnostics();
   const [, setLocation] = useLocation();
 
   if (loadingStatus) {
@@ -410,6 +411,117 @@ export function DashboardPage() {
             </ScrollArea>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Diagnostics Overview */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold tracking-tight flex items-center gap-2">
+            <Stethoscope className="h-4 w-4 text-muted-foreground" />
+            Diagnostics
+          </h3>
+          <Link href="/diagnostics">
+            <button className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+              View all <ArrowRight className="h-3 w-3" />
+            </button>
+          </Link>
+        </div>
+
+        {/* Diagnostic summary metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          {[
+            { label: 'Total Diagnostics', value: (diagData as any)?.metrics?.total, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
+            { label: 'Awaiting Review', value: (diagData as any)?.metrics?.awaitingReview, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+            { label: 'Critical Bottlenecks', value: (diagData as any)?.metrics?.criticalBottlenecks, color: 'text-red-400', bg: 'bg-red-500/10' },
+            { label: 'Completed', value: (diagData as any)?.metrics?.completed, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          ].map((m) => (
+            <Link key={m.label} href="/diagnostics">
+              <button className="w-full rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:shadow-md transition-all duration-200 group">
+                <p className="text-2xl font-bold group-hover:text-primary transition-colors">
+                  {loadingDiagnostics ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" /> : (m.value ?? '—')}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-tight">{m.label}</p>
+              </button>
+            </Link>
+          ))}
+        </div>
+
+        {/* Top bottlenecks + Awaiting review */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="border-border/50 shadow-md bg-card/80">
+            <CardHeader className="border-b border-border/50 bg-muted/20 pb-4">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-red-400" />
+                <CardTitle className="text-sm text-red-400">Top Bottlenecks</CardTitle>
+              </div>
+              <CardDescription className="text-xs">Highest priority issues across all diagnostics.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingDiagnostics ? (
+                <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : !(diagData as any)?.topBottlenecks?.length ? (
+                <div className="py-8 text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                  <span>No critical bottlenecks.</span>
+                </div>
+              ) : (
+                <div className="divide-y divide-border/50">
+                  {(diagData as any).topBottlenecks.slice(0, 5).map((b: any) => (
+                    <Link key={b.scoreId ?? b.id} href={`/diagnostics/${b.diagnosticId}`}>
+                      <div className="px-4 py-3 hover:bg-muted/20 transition-colors cursor-pointer">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-medium truncate flex-1">{(b.categoryLabel ?? b.categoryKey)?.replace(/_/g, ' ')}</p>
+                          <span className={`text-xs font-semibold shrink-0 ${
+                            b.severity === 'critical' ? 'text-red-400' :
+                            b.severity === 'high' ? 'text-orange-400' : 'text-amber-400'
+                          }`}>{b.severity}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">{b.diagnosticName}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50 shadow-md bg-card/80">
+            <CardHeader className="border-b border-border/50 bg-muted/20 pb-4">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-amber-400" />
+                <CardTitle className="text-sm text-amber-400">Awaiting Review</CardTitle>
+              </div>
+              <CardDescription className="text-xs">Diagnostics pending approval or review.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingDiagnostics ? (
+                <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : !(diagData as any)?.awaitingReviewList?.length ? (
+                <div className="py-8 text-center text-muted-foreground text-sm">
+                  No diagnostics awaiting review.
+                </div>
+              ) : (
+                <div className="divide-y divide-border/50">
+                  {(diagData as any).awaitingReviewList.slice(0, 5).map((d: any) => (
+                    <Link key={d.id} href={`/diagnostics/${d.id}`}>
+                      <div className="px-4 py-3 hover:bg-muted/20 transition-colors cursor-pointer flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{d.diagnosticName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{d.clientName ?? '—'}</p>
+                        </div>
+                        {d.overallHealthScore != null && (
+                          <span className="text-xs font-mono font-semibold shrink-0 text-muted-foreground">
+                            {Math.round(Number(d.overallHealthScore))}/100
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* System Status (collapsed) */}
