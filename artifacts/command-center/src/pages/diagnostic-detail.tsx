@@ -93,6 +93,24 @@ export default function DiagnosticDetailPage() {
 
   const { toast } = useToast();
 
+  // ── Load assessment exactly once when the assessment tab becomes active ──
+  // Must live here, BEFORE any early returns, to satisfy Rules of Hooks.
+  useEffect(() => {
+    if (tab !== "assessment" || assessmentLoaded || assessmentLoading || !id || !version?.id) return;
+    setAssessmentLoading(true);
+    setAssessmentError(null);
+    fetch(`/api/growth-assessments?diagnosticId=${id}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        const list: any[] = data.data ?? [];
+        const forVersion = list.find((a: any) => a.diagnosticVersionId === version?.id);
+        setAssessment(forVersion ?? list[0] ?? null);
+      })
+      .catch(() => { setAssessmentError("Failed to load assessment."); })
+      .finally(() => { setAssessmentLoading(false); setAssessmentLoaded(true); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, version?.id, assessmentLoaded]);
+
   const isArchived = !!diagnostic?.archivedAt;
   const isDraft = diagnostic?.status === "draft" || diagnostic?.status === "in_progress";
   const isCompleted = diagnostic?.status === "completed" || diagnostic?.status === "awaiting_review" || diagnostic?.status === "approved";
@@ -297,7 +315,7 @@ export default function DiagnosticDetailPage() {
     { id: "assessment", label: "Growth Assessment", icon: TrendingUp },
   ];
 
-  // ── Load assessment when tab is selected ──
+  // ── Refresh assessment after generate (used by handleGenerateAssessment) ──
   const loadAssessment = () => {
     if (!id || !version?.id) return;
     setAssessmentLoading(true);
@@ -306,21 +324,12 @@ export default function DiagnosticDetailPage() {
       .then((r) => r.json())
       .then((data) => {
         const list: any[] = data.data ?? [];
-        // Find the one for the current version, otherwise newest
-        const forVersion = list.find((a) => a.diagnosticVersionId === version?.id);
+        const forVersion = list.find((a: any) => a.diagnosticVersionId === version?.id);
         setAssessment(forVersion ?? list[0] ?? null);
       })
       .catch(() => { setAssessmentError("Failed to load assessment."); })
       .finally(() => { setAssessmentLoading(false); setAssessmentLoaded(true); });
   };
-
-  // Trigger load exactly once when the assessment tab becomes active and version is ready
-  useEffect(() => {
-    if (tab === "assessment" && !assessmentLoaded && !assessmentLoading && version?.id) {
-      loadAssessment();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, version?.id, assessmentLoaded]);
 
   const handleGenerateAssessment = async () => {
     if (!id || !version?.id) return;
