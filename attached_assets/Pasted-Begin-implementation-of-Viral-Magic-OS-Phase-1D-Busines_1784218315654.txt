@@ -1,0 +1,1066 @@
+Begin implementation of Viral Magic OS — Phase 1D: Business Diagnostic Engine only.
+
+Use the approved architecture document:
+
+docs/viral-magic-os-architecture.md
+
+Preserve all working Phase 1A, Phase 1B, and Phase 1C functionality.
+
+IMPORTANT SCOPE RULE
+
+Build only Phase 1D.
+
+Do not begin:
+
+- Platform Matcher
+- Solution Architect
+- Software Blueprint Generator
+- Prompt Library
+- Software Factory
+- Proposal Generator
+- Client Reports
+- Viral Growth Engine
+- AI integrations
+- Billing
+- Public registration
+- Client portal
+- Multi-company SaaS features
+
+Do not remove, replace, or weaken:
+
+- Administrator authentication
+- PostgreSQL persistence
+- Settings
+- Activity logging
+- Client Management
+- Project Management
+- Task Management
+- Dashboard functionality
+- Existing responsive application shell
+
+# PHASE 1D OBJECTIVE
+
+Build a complete internal Business Diagnostic Engine that allows the Administrator to:
+
+1. Create a diagnostic for a client
+2. Optionally link it to a project
+3. Score 15 business categories
+4. Add evidence, observations, and notes
+5. Calculate performance gaps and priority scores
+6. Assign severity levels
+7. Calculate an overall Business Health Score
+8. Identify the highest-priority bottlenecks
+9. Generate rule-based draft recommendations
+10. Edit and approve final recommendations
+11. Preserve diagnostic version history
+12. Compare diagnostic versions
+13. Track unresolved and resolved bottlenecks
+14. View diagnostic activity history
+15. See real diagnostic metrics on the Dashboard
+
+All diagnostic data must persist in PostgreSQL.
+
+# 1. NAVIGATION
+
+Update the sidebar to contain only working modules:
+
+1. Dashboard
+2. Clients
+3. Projects
+4. Tasks
+5. Diagnostics
+6. Settings
+
+Update the application phase label to:
+
+Phase 1D
+
+Do not display unfinished modules.
+
+# 2. DATABASE TABLES
+
+Create migrations for the Phase 1D tables required by the approved architecture.
+
+Create or implement equivalent normalized tables for:
+
+- diagnostic_templates
+- diagnostic_template_categories
+- diagnostics
+- diagnostic_versions
+- diagnostic_scores
+- bottleneck_recommendations
+
+Use proper foreign keys, indexes, timestamps, and archive fields.
+
+## DIAGNOSTICS TABLE
+
+Include:
+
+- id
+- client_id
+- project_id, optional
+- diagnostic_name
+- diagnostic_type
+- status
+- current_version_number
+- started_at
+- completed_at
+- reviewed_at
+- reviewed_by
+- summary_notes
+- overall_health_score
+- overall_priority_score
+- archived_at
+- created_by
+- updated_by
+- created_at
+- updated_at
+
+DIAGNOSTIC TYPE OPTIONS:
+
+- Business Growth Assessment
+- Business Bottleneck Assessment
+- Technology Assessment
+- Marketing Assessment
+- Operations Assessment
+- Custom
+
+DIAGNOSTIC STATUS OPTIONS:
+
+- Draft
+- In Progress
+- Completed
+- Awaiting Review
+- Approved
+- Superseded
+- Archived
+
+## DIAGNOSTIC VERSIONS TABLE
+
+Include:
+
+- id
+- diagnostic_id
+- version_number
+- status
+- overall_health_score
+- overall_priority_score
+- executive_summary
+- recommended_first_action
+- recommended_software_opportunity
+- created_by
+- created_at
+- completed_at
+- approved_at
+- approved_by
+
+Every completed rerun must create a new immutable historical version.
+
+Older versions may be marked Superseded but must not be overwritten or deleted automatically.
+
+## DIAGNOSTIC SCORES TABLE
+
+Include:
+
+- id
+- diagnostic_version_id
+- category_key
+- category_label
+- category_description
+- display_order
+- current_performance
+- business_impact
+- urgency
+- performance_gap
+- priority_score
+- severity
+- evidence
+- observations
+- notes
+- recommended_action
+- resolution_status
+- resolved_at
+- resolved_by
+- created_at
+- updated_at
+
+RESOLUTION STATUS OPTIONS:
+
+- Unresolved
+- In Progress
+- Resolved
+- Accepted Risk
+- Deferred
+
+## BOTTLENECK RECOMMENDATIONS TABLE
+
+Include:
+
+- id
+- diagnostic_score_id
+- system_generated_draft
+- administrator_final_recommendation
+- recommendation_status
+- priority_order
+- approved_by
+- approved_at
+- created_at
+- updated_at
+
+RECOMMENDATION STATUS OPTIONS:
+
+- Draft
+- Edited
+- Approved
+- Rejected
+- Implemented
+
+# 3. DEFAULT DIAGNOSTIC CATEGORIES
+
+Create one reusable default template with these 15 categories:
+
+1. Lead Generation
+2. Traffic and Visibility
+3. Lead Capture
+4. Speed to Lead
+5. Follow-Up
+6. Sales Conversion
+7. Customer Retention
+8. Reputation and Reviews
+9. Content Marketing
+10. Website Performance
+11. Automation
+12. Technology Integration
+13. Reporting and Analytics
+14. Operational Efficiency
+15. Scalability
+
+Every new standard diagnostic should start with these categories.
+
+Each category must include:
+
+- Stable internal category key
+- Editable display label
+- Editable description
+- Display order
+- Active or inactive status
+
+Allow the Administrator to customize categories at the diagnostic level by:
+
+- Renaming the display label
+- Editing the description
+- Deactivating a category
+- Adding a custom category
+- Reordering categories
+
+Do not build automatic industry-specific templates yet.
+
+# 4. SCORING INPUTS
+
+For every category collect:
+
+CURRENT PERFORMANCE:
+
+- Range: 0 to 10
+- 0 means completely broken or nonexistent
+- 10 means excellent and consistently performing
+
+BUSINESS IMPACT:
+
+- Range: 1 to 5
+- 1 means minimal business impact
+- 5 means major revenue, operational, or strategic impact
+
+URGENCY:
+
+- Range: 1 to 5
+- 1 means low urgency
+- 5 means immediate attention required
+
+Also collect:
+
+- Evidence
+- Observations
+- Notes
+- Recommended action
+
+Use sliders, number inputs, or a combination with clear labels.
+
+Do not allow values outside the defined ranges.
+
+# 5. SCORING FORMULAS
+
+Calculate on the server and display live previews on the client.
+
+PERFORMANCE GAP:
+
+10 minus Current Performance
+
+PRIORITY SCORE:
+
+Performance Gap × Business Impact × Urgency
+
+Possible range:
+
+0 to 250
+
+SEVERITY LEVELS:
+
+- 0–39: Healthy
+- 40–79: Monitor
+- 80–129: Moderate
+- 130–189: High
+- 190–250: Critical
+
+Store the calculated values with each score record.
+
+Never trust client-side calculations alone.
+
+Recalculate server-side before saving or completing a diagnostic.
+
+# 6. BUSINESS HEALTH SCORE
+
+Calculate an overall Business Health Score from 0 to 100.
+
+Use this Phase 1D formula:
+
+For each active category:
+
+Category Health Percentage =
+Current Performance ÷ 10 × 100
+
+Weighted Category Health =
+Category Health Percentage × Business Impact
+
+Overall Business Health Score =
+Sum of Weighted Category Health ÷ Sum of Business Impact
+
+Round to the nearest whole number for display but preserve useful precision in storage.
+
+HEALTH RATING:
+
+- 85–100: Strong
+- 70–84: Stable
+- 55–69: Vulnerable
+- 40–54: At Risk
+- 0–39: Critical
+
+Do not create a false financial revenue-leak dollar estimate in Phase 1D.
+
+We do not yet have enough validated client financial data for credible dollar-loss calculations.
+
+# 7. OVERALL PRIORITY SCORE
+
+Calculate:
+
+Average Priority Score =
+Sum of active category priority scores ÷ Number of active categories
+
+Also display:
+
+- Highest category priority score
+- Number of Moderate bottlenecks
+- Number of High bottlenecks
+- Number of Critical bottlenecks
+
+Do not mix the 0–100 Health Score with the 0–250 category Priority Score.
+
+Use clear labels and tooltips so the Administrator understands the difference.
+
+# 8. RULE-BASED RECOMMENDATION ENGINE
+
+Do not use an external AI API.
+
+Generate a draft recommendation for every category using:
+
+- Category
+- Current performance
+- Business impact
+- Urgency
+- Severity
+- Evidence
+- Observations
+
+The rule system should create practical draft recommendations.
+
+Examples of recommendation logic:
+
+LEAD GENERATION:
+
+- Low performance and High/Critical severity:
+  Recommend establishing a measurable lead-generation system, clarifying the offer, defining the target customer, testing outbound and inbound channels, and tracking cost per qualified lead.
+
+SPEED TO LEAD:
+
+- Low performance and High/Critical severity:
+  Recommend immediate lead notifications, automated acknowledgment, response-time targets, CRM routing, and follow-up accountability.
+
+FOLLOW-UP:
+
+- Low performance and High/Critical severity:
+  Recommend a structured multi-touch follow-up sequence using email, phone, SMS where appropriate, task reminders, and pipeline-stage ownership.
+
+SALES CONVERSION:
+
+- Low performance and High/Critical severity:
+  Recommend reviewing qualification, sales scripts, proposal process, objection handling, follow-up, and conversion tracking.
+
+WEBSITE PERFORMANCE:
+
+- Low performance and High/Critical severity:
+  Recommend reviewing mobile speed, message clarity, calls to action, trust signals, lead capture, analytics, and conversion paths.
+
+AUTOMATION:
+
+- Low performance and High/Critical severity:
+  Recommend identifying repetitive manual work, documenting the workflow, selecting high-impact automation opportunities, and adding monitoring and fallback procedures.
+
+TECHNOLOGY INTEGRATION:
+
+- Low performance and High/Critical severity:
+  Recommend mapping the technology stack, identifying duplicate tools and disconnected data, prioritizing integrations, and creating a single source of truth.
+
+REPORTING AND ANALYTICS:
+
+- Low performance and High/Critical severity:
+  Recommend defining key operating metrics, assigning data ownership, creating a dashboard, setting review cadence, and eliminating vanity metrics.
+
+OPERATIONAL EFFICIENCY:
+
+- Low performance and High/Critical severity:
+  Recommend documenting core workflows, identifying delays and rework, standardizing procedures, assigning ownership, and automating repetitive steps.
+
+SCALABILITY:
+
+- Low performance and High/Critical severity:
+  Recommend reducing owner dependency, documenting processes, creating repeatable systems, improving reporting, and identifying capacity constraints.
+
+Create concise maintenance recommendations for Healthy and Monitor categories.
+
+Requirements:
+
+- Store the system-generated draft separately
+- Allow Administrator editing
+- Allow Approve, Reject, or Mark Implemented
+- Preserve the original draft
+- Never overwrite approved final text with a rerun
+
+Keep rules modular and editable later.
+
+# 9. DIAGNOSTICS LIST PAGE
+
+Create a Diagnostics page.
+
+Display metric cards:
+
+- Total Diagnostics
+- Draft or In Progress
+- Awaiting Review
+- Completed
+- Approved
+- Critical Bottlenecks
+- High Bottlenecks
+
+Provide:
+
+- Search
+- Client filter
+- Project filter
+- Diagnostic type filter
+- Status filter
+- Health rating filter
+- Severity filter
+- Archived filter
+- Sort control
+- Clear filters
+- Add Diagnostic button
+
+SEARCH MUST INCLUDE:
+
+- Diagnostic name
+- Client company
+- Project name
+- Diagnostic type
+- Executive summary
+- Category labels
+
+SORT OPTIONS:
+
+- Newest
+- Oldest
+- Recently Updated
+- Lowest Health Score
+- Highest Health Score
+- Highest Priority
+- Client A–Z
+
+TABLE COLUMNS:
+
+- Diagnostic
+- Client
+- Project
+- Type
+- Status
+- Version
+- Health Score
+- Top Severity
+- Completed Date
+- Updated
+- Actions
+
+ROW ACTIONS:
+
+- View
+- Continue
+- Edit Draft
+- Create New Version
+- Archive
+- Restore
+- Delete only when archived and safe
+
+# 10. CREATE DIAGNOSTIC WORKFLOW
+
+Create a guided diagnostic creation process.
+
+STEP 1 — BASIC INFORMATION
+
+- Client
+- Optional project
+- Diagnostic name
+- Diagnostic type
+- Template
+- Summary notes
+
+STEP 2 — CATEGORY SCORING
+
+For each active category display:
+
+- Category name
+- Description
+- Current performance
+- Business impact
+- Urgency
+- Live performance gap
+- Live priority score
+- Live severity
+- Evidence
+- Observations
+- Notes
+- Recommended action
+
+Support:
+
+- Save Draft
+- Save and Continue
+- Previous
+- Next
+- Exit and Resume Later
+
+STEP 3 — REVIEW
+
+Display:
+
+- Missing required scores
+- Category results
+- Highest bottlenecks
+- Health Score preview
+- Severity counts
+- Draft recommendations
+
+STEP 4 — COMPLETE
+
+Completing the diagnostic should:
+
+- Recalculate everything server-side
+- Save an immutable version
+- Set completion date
+- Generate draft recommendations
+- Display results
+- Log the activity
+
+Do not require every narrative text field, but require all active categories to have valid numeric scores before completion.
+
+# 11. DIAGNOSTIC RESULTS PAGE
+
+Create a professional results page.
+
+HEADER:
+
+- Diagnostic name
+- Client
+- Project when applicable
+- Diagnostic type
+- Version
+- Status
+- Completion date
+- Approval status
+
+SUMMARY CARDS:
+
+- Business Health Score
+- Health Rating
+- Average Priority Score
+- Critical Bottlenecks
+- High Bottlenecks
+- Moderate Bottlenecks
+
+TOP BOTTLENECKS:
+
+Display the five highest priority categories.
+
+For each show:
+
+- Rank
+- Category
+- Current performance
+- Business impact
+- Urgency
+- Priority score
+- Severity
+- Evidence
+- System recommendation
+- Final approved recommendation
+- Resolution status
+
+CATEGORY RESULTS:
+
+Display all active categories sorted by:
+
+- Priority score by default
+- Allow original category order
+- Allow severity filtering
+
+VISUALS:
+
+Use useful, simple visualizations only:
+
+- Horizontal category score bars
+- Severity distribution
+- Health Score gauge or progress ring
+- Priority ranking chart
+
+Avoid decorative charts.
+
+EXECUTIVE SUMMARY:
+
+Allow the Administrator to write or edit:
+
+- Executive summary
+- Recommended first action
+- Recommended software opportunity
+
+Do not auto-claim financial results.
+
+# 12. VERSION HISTORY
+
+Allow a completed diagnostic to be rerun.
+
+Requirements:
+
+- Create New Version action
+- Copy the latest category structure and optionally previous scores
+- Do not alter the old version
+- Increment version number
+- Preserve completion dates
+- Preserve recommendations
+- Mark older version Superseded only when a new version is approved
+- Allow viewing every version
+
+Create a version-comparison view.
+
+Compare:
+
+- Health Score
+- Average Priority Score
+- Category performance
+- Category priority scores
+- Severity changes
+- Resolution status
+- Completion dates
+
+Show:
+
+- Improved
+- Declined
+- Unchanged
+
+Do not create false trend conclusions from only one version.
+
+# 13. APPROVAL WORKFLOW
+
+Allow completed diagnostics to be reviewed.
+
+Statuses:
+
+- Completed
+- Awaiting Review
+- Approved
+
+The Administrator must be able to:
+
+- Edit the executive summary
+- Edit final recommendations
+- Approve recommendations
+- Reject draft recommendations
+- Approve the full diagnostic
+- Return it to review
+
+Log:
+
+- Who approved
+- When approved
+- What changed
+
+Approved historical versions should not be silently edited.
+
+If edits are needed after approval, require creating a new version or explicitly reopening the version with an audit-log entry.
+
+# 14. BOTTLENECK RESOLUTION TRACKING
+
+Allow the Administrator to update each bottleneck’s resolution status:
+
+- Unresolved
+- In Progress
+- Resolved
+- Accepted Risk
+- Deferred
+
+When marked Resolved:
+
+- Store resolved date
+- Store resolved by
+- Allow resolution notes
+- Log the event
+
+Do not automatically change the historical diagnostic score.
+
+Resolution status tracks what happened after the diagnostic; it does not rewrite the original assessment.
+
+# 15. CLIENT PAGE UPDATES
+
+Update the Client Detail page.
+
+Add a working Diagnostics tab.
+
+Display:
+
+- Diagnostic count
+- Latest Health Score
+- Latest approved diagnostic
+- Critical and High unresolved bottlenecks
+- Diagnostic history
+- Add Diagnostic button
+
+Do not add Solution Architect or Blueprint tabs yet.
+
+# 16. PROJECT PAGE UPDATES
+
+Update Project Detail.
+
+Add a working Diagnostic tab or section.
+
+Display:
+
+- Linked diagnostics
+- Latest Health Score
+- Top linked bottlenecks
+- Add Diagnostic button
+- Link existing diagnostic when appropriate
+
+Do not add Solution Architect or Blueprint features.
+
+# 17. DASHBOARD UPDATES
+
+Update the Dashboard using real diagnostic data.
+
+PRIMARY METRICS:
+
+- Active Clients
+- Active Projects
+- Open Tasks
+- Overdue Tasks
+- Diagnostics Completed
+- Awaiting Review
+- High Bottlenecks
+- Critical Bottlenecks
+
+DIAGNOSTIC SECTIONS:
+
+TOP UNRESOLVED BOTTLENECKS
+
+Display:
+
+- Client
+- Category
+- Priority score
+- Severity
+- Resolution status
+- Recommended first action
+
+DIAGNOSTICS AWAITING REVIEW
+
+Display completed diagnostics not yet approved.
+
+RECENT DIAGNOSTICS
+
+Display the five most recently completed or updated diagnostics.
+
+RECENT ACTIVITY
+
+Include:
+
+- Diagnostic created
+- Draft saved
+- Diagnostic completed
+- New version created
+- Diagnostic approved
+- Recommendation edited
+- Recommendation approved
+- Bottleneck resolution changed
+
+Do not add fake Platform Matcher, Solution Architect, Blueprint, or revenue data.
+
+# 18. ACTIVITY LOGGING
+
+Use the existing activity service.
+
+Add activity types:
+
+- DIAGNOSTIC.CREATED
+- DIAGNOSTIC.UPDATED
+- DIAGNOSTIC.DRAFT_SAVED
+- DIAGNOSTIC.COMPLETED
+- DIAGNOSTIC.VERSION_CREATED
+- DIAGNOSTIC.APPROVED
+- DIAGNOSTIC.REOPENED
+- DIAGNOSTIC.ARCHIVED
+- DIAGNOSTIC.RESTORED
+- DIAGNOSTIC.DELETED
+- RECOMMENDATION.GENERATED
+- RECOMMENDATION.EDITED
+- RECOMMENDATION.APPROVED
+- RECOMMENDATION.REJECTED
+- BOTTLENECK.STATUS_CHANGED
+- BOTTLENECK.RESOLVED
+
+Store:
+
+- Actor
+- Client
+- Project
+- Diagnostic
+- Diagnostic version
+- Category
+- Previous value
+- New value
+- Metadata
+- Timestamp
+
+# 19. ARCHIVE, RESTORE, AND DELETE
+
+ARCHIVE:
+
+- Set archived_at
+- Set status to Archived
+- Preserve versions, scores, and recommendations
+- Hide from default lists
+- Log activity
+
+RESTORE:
+
+- Clear archived_at
+- Require a valid restored status
+- Log activity
+
+PERMANENT DELETE:
+
+- Only archived diagnostics
+- Strong confirmation required
+- Explain that all versions, scores, and recommendations will be removed
+- Use a transaction
+- Protect diagnostics referenced by future modules
+- Log before deletion where technically possible
+
+Do not make permanent deletion a primary action.
+
+# 20. API AND SERVICE STRUCTURE
+
+Create or extend services for:
+
+- Diagnostic CRUD
+- Diagnostic templates
+- Category customization
+- Diagnostic versions
+- Score calculation
+- Health Score calculation
+- Severity calculation
+- Rule-based recommendation generation
+- Recommendation approval
+- Bottleneck resolution tracking
+- Diagnostic search and filters
+- Diagnostic metrics
+- Version comparison
+- Dashboard diagnostic metrics
+- Activity logging
+
+Requirements:
+
+- Authentication enforced server-side
+- Administrator authorization enforced
+- Input validation enforced server-side
+- Calculations performed server-side
+- Database transactions for completion and version creation
+- Safe client-facing error messages
+- Technical errors logged server-side
+- No visual-only data changes
+
+# 21. REUSABLE COMPONENTS
+
+Create or extend reusable components for:
+
+- Diagnostic status badge
+- Health Score badge
+- Health Score gauge
+- Severity badge
+- Category scoring card
+- Score slider
+- Priority score display
+- Recommendation editor
+- Bottleneck card
+- Resolution status control
+- Diagnostic summary cards
+- Category result table
+- Version history
+- Version comparison
+- Progress indicator
+- Search and filter bar
+- Archive dialog
+- Delete confirmation
+- Empty state
+- Loading state
+- Activity timeline
+
+# 22. RESPONSIVE DESIGN
+
+Test desktop, tablet, and mobile.
+
+Requirements:
+
+- Scoring cards stack cleanly
+- Sliders remain touch-friendly
+- Score values remain visible
+- Results tables adapt or become cards
+- Charts remain readable
+- Filters collapse appropriately
+- Modals fit mobile screens
+- No horizontal page overflow
+- Long recommendations remain readable
+
+# 23. SECURITY
+
+Maintain all existing security controls.
+
+Additionally:
+
+- Protect all diagnostic routes
+- Validate client and project relationships
+- Validate numeric ranges
+- Prevent modification of another diagnostic through forged IDs
+- Sanitize text input
+- Do not render unsafe HTML
+- Do not expose database errors
+- Protect approved historical versions
+- Enforce server-side ownership and authorization
+
+# 24. TESTING REQUIREMENTS
+
+Before declaring Phase 1D complete, test:
+
+1. Existing login works
+2. Existing logout works
+3. Settings work
+4. Client Management works
+5. Project Management works
+6. Task Management works
+7. Create Diagnostic works
+8. Save Draft works
+9. Resume Draft works
+10. All 15 categories load
+11. Custom category can be added
+12. Category can be deactivated
+13. Numeric validation works
+14. Performance Gap calculates correctly
+15. Priority Score calculates correctly
+16. Severity calculates correctly
+17. Health Score calculates correctly
+18. Server recalculation matches displayed values
+19. Completing a diagnostic works
+20. Recommendations generate
+21. Recommendation editing works
+22. Recommendation approval works
+23. Diagnostic approval works
+24. Client page shows diagnostics
+25. Project page shows diagnostics
+26. Dashboard diagnostic metrics update
+27. Top bottlenecks display correctly
+28. Bottleneck resolution status works
+29. Marking resolved stores metadata
+30. Create New Version works
+31. Previous version remains unchanged
+32. Version comparison works
+33. Archive works
+34. Restore works
+35. Delete requires strong confirmation
+36. Activity records are created
+37. Data persists after refresh
+38. Mobile layout works
+39. No Phase 1E modules were added
+40. No Phase 1A, 1B, or 1C functionality was broken
+
+Fix failures before reporting completion.
+
+# 25. COMPLETION CRITERIA
+
+Phase 1D is complete only when:
+
+- Diagnostic CRUD works
+- All 15 categories work
+- Scoring formulas work
+- Business Health Score works
+- Severity assignment works
+- Rule-based recommendations work
+- Recommendations are editable and approvable
+- Version history works
+- Version comparison works
+- Resolution tracking works
+- Client and project relationships work
+- Dashboard uses real diagnostic data
+- Activity logging works
+- PostgreSQL persistence works
+- Responsive behavior is verified
+- Prior phases remain operational
+- No Phase 1E or later modules were started
+
+# 26. FINAL RESPONSE
+
+When complete, report:
+
+1. What was implemented
+2. Files and folders created or modified
+3. Database migrations added
+4. Tables and fields added
+5. Scoring formulas implemented
+6. Health Score implementation
+7. Recommendation rules implemented
+8. Version-history workflow
+9. Client and project page updates
+10. Dashboard updates
+11. Activity events added
+12. Tests completed
+13. Any failures or unresolved issues
+14. Known limitations
+15. Confirmation that Phase 1E was not started
+
+Do not begin Phase 1E.
+
+Stop after Phase 1D and wait for approval.
