@@ -3,7 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useGetClient, useListClientNotes, useListClientActivity,
-  useArchiveClient, useRestoreClient, useDeleteClient,
+  useArchiveClient, useRestoreClient, useDeleteClient, useUpdateClient,
   useCreateClientNote, useUpdateClientNote, useToggleClientNotePin,
   useArchiveClientNote, useRestoreClientNote, useDeleteClientNote,
   useListClientProjects, useListClientDiagnostics,
@@ -21,10 +21,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus, Pin, PinOff,
-  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen, Stethoscope,
+  Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen, Stethoscope, ChevronDown,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ClientStatusBadge } from '@/components/clients/status-badge';
+import { CLIENT_STATUSES } from '@/lib/client-constants';
 import { NoteEditor } from '@/components/clients/note-editor';
 import { ActivityTimeline } from '@/components/clients/activity-timeline';
 import { ArchiveClientDialog, RestoreClientDialog, DeleteClientDialog } from '@/components/clients/confirm-dialogs';
@@ -64,6 +65,7 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const archiveClient = useArchiveClient();
   const restoreClient = useRestoreClient();
   const deleteClient = useDeleteClient();
+  const updateClient = useUpdateClient();
   const createNote = useCreateClientNote();
   const updateNote = useUpdateClientNote();
   const pinNote = useToggleClientNotePin();
@@ -74,6 +76,19 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const invalidateClient = () => queryClient.invalidateQueries({ queryKey: getGetClientQueryKey(clientId) });
   const invalidateNotes = () => queryClient.invalidateQueries({ queryKey: getListClientNotesQueryKey(clientId) });
   const invalidateList = () => queryClient.invalidateQueries({ queryKey: getListClientsQueryKey() });
+
+  const changeStatus = (newStatus: string) => {
+    if (newStatus === client?.status) return;
+    updateClient.mutate({ clientId, data: { status: newStatus } }, {
+      onSuccess: () => {
+        const label = CLIENT_STATUSES.find((s) => s.value === newStatus)?.label ?? newStatus;
+        toast({ title: `Status updated to ${label}` });
+        invalidateClient();
+        invalidateList();
+      },
+      onError: (err: any) => toast({ title: 'Error', description: err?.data?.error ?? 'Could not update status.', variant: 'destructive' }),
+    });
+  };
 
   const copy = (value: string, field: string) => {
     navigator.clipboard.writeText(value).then(() => {
@@ -165,8 +180,36 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
         <div className="space-y-2">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-2xl font-bold tracking-tight">{displayName}</h2>
-            <ClientStatusBadge status={client.status} />
-            {isArchived && <Badge variant="outline" className="text-xs border-orange-500/30 text-orange-400">Archived</Badge>}
+            {isArchived ? (
+              <>
+                <ClientStatusBadge status={client.status} />
+                <Badge variant="outline" className="text-xs border-orange-500/30 text-orange-400">Archived</Badge>
+              </>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-1 focus:outline-none group" aria-label="Change status">
+                    <ClientStatusBadge status={client.status} className="group-hover:opacity-80 transition-opacity cursor-pointer" />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="border-border/50 w-44">
+                  <div className="px-2 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Change Status</div>
+                  <DropdownMenuSeparator />
+                  {CLIENT_STATUSES.filter((s) => s.value !== 'archived').map((s) => (
+                    <DropdownMenuItem
+                      key={s.value}
+                      onClick={() => changeStatus(s.value)}
+                      className={`gap-2 text-sm ${client.status === s.value ? 'font-semibold' : ''}`}
+                    >
+                      {client.status === s.value && <Check className="h-3 w-3 shrink-0" />}
+                      {client.status !== s.value && <span className="w-3" />}
+                      {s.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
             {client.contactFirstName && client.companyName && (

@@ -56,7 +56,7 @@ export default function DiagnosticCreatePage() {
   const [recommendedFirstAction, setRecommendedFirstAction] = useState("");
   const [recommendedSoftwareOpportunity, setRecommendedSoftwareOpportunity] = useState("");
 
-  const { data: clientsData } = useListClients({ pageSize: "200" } as any);
+  const { data: clientsData } = useListClients({ pageSize: "100" } as any);
   const clients = clientsData?.clients ?? [];
 
   const { data: templateData } = useGetDefaultTemplateCategories();
