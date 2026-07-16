@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useGetSettings, useUpdateSettings, useUpdateAccount, useChangePassword, getGetSettingsQueryKey, getGetCurrentUserQueryKey, AuthUser } from '@workspace/api-client-react';
+import { useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,7 @@ const passwordSchema = z.object({
 export function SettingsPage({ user }: { user: AuthUser }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const { data: settings, isLoading } = useGetSettings();
   const updateSettings = useUpdateSettings();
   const updateAccount = useUpdateAccount();
@@ -134,11 +136,17 @@ export function SettingsPage({ user }: { user: AuthUser }) {
   const onPasswordSubmit = (values: z.infer<typeof passwordSchema>) => {
     changePassword.mutate({ data: { currentPassword: values.currentPassword, newPassword: values.newPassword } }, {
       onSuccess: () => {
-        toast({ title: "Password Changed", description: "Your password has been updated and other sessions invalidated." });
+        toast({ title: "Password Changed", description: "Your password has been updated. All sessions have been invalidated — please log in again." });
         passwordForm.reset();
+        // All server sessions are invalidated by the API. Clear the client
+        // query cache and redirect to the login page so the user re-authenticates.
+        queryClient.clear();
+        setLocation('/login');
       },
       onError: (err: any) => {
-        toast({ title: "Update Failed", description: err?.data?.error || "Failed to change password.", variant: "destructive" });
+        // ApiError surfaces the backend message at err.data.error.
+        const message = err?.data?.error || "Failed to change password. Please try again.";
+        toast({ title: "Password Change Failed", description: message, variant: "destructive" });
       }
     });
   };

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, sql } from "drizzle-orm";
-import { db, usersTable, rolesTable } from "@workspace/db";
+import { db, pool, usersTable, rolesTable } from "@workspace/db";
 import {
   GetSetupStatusResponse,
   CompleteSetupBody,
@@ -263,16 +263,24 @@ router.post("/auth/change-password", requireAuth, async (req, res) => {
     .set({ passwordHash, passwordChangedAt: changedAt, updatedAt: changedAt })
     .where(eq(usersTable.id, user.id));
 
-  // Rotate this session's record so it stays valid after the change.
-  req.session.passwordChangedAt = changedAt.toISOString();
+  // Invalidate ALL sessions for this user so that any concurrent sessions
+  // (including sessions created by automated tests) are immediately revoked.
+  await pool.query(
+    `DELETE FROM session WHERE sess->>'userId' = $1`,
+    [user.id],
+  );
 
-  await logActivity({
-    activityType: "account.password_changed",
-    actorUserId: user.id,
-    description: "Administrator changed their password.",
-    entityType: "user",
-    entityId: user.id,
-  });
+  try {
+    await logActivity({
+      activityType: "account.password_changed",
+      actorUserId: user.id,
+      description: "Administrator changed their password.",
+      entityType: "user",
+      entityId: user.id,
+    });
+  } catch {
+    // Activity logging failure must never abort the password-change response.
+  }
 
   res.status(204).send();
 });
