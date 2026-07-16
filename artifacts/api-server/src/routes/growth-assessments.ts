@@ -254,6 +254,90 @@ router.post("/growth-assessments/generate", requireAuth, async (req, res) => {
   }
 });
 
+// ─── Latest assessment for a client ─────────────────────────
+// Returns the most-recently-updated non-archived assessment for a client,
+// with extracted top-section highlights for overview panels.
+
+router.get("/growth-assessments/client/:clientId/latest", requireAuth, async (req, res) => {
+  try {
+    const { clientId } = req.params;
+    const [row] = await db
+      .select({
+        id: growthAssessmentsTable.id,
+        diagnosticId: growthAssessmentsTable.diagnosticId,
+        clientId: growthAssessmentsTable.clientId,
+        projectId: growthAssessmentsTable.projectId,
+        status: growthAssessmentsTable.status,
+        healthScore: growthAssessmentsTable.healthScore,
+        healthRating: growthAssessmentsTable.healthRating,
+        riskSummary: growthAssessmentsTable.riskSummary,
+        growthOpportunitySummary: growthAssessmentsTable.growthOpportunitySummary,
+        quickWinSummary: growthAssessmentsTable.quickWinSummary,
+        generatedSections: growthAssessmentsTable.generatedSections,
+        approvedAt: growthAssessmentsTable.approvedAt,
+        updatedAt: growthAssessmentsTable.updatedAt,
+        diagnosticName: diagnosticsTable.diagnosticName,
+      })
+      .from(growthAssessmentsTable)
+      .leftJoin(diagnosticsTable, eq(growthAssessmentsTable.diagnosticId, diagnosticsTable.id))
+      .where(and(
+        eq(growthAssessmentsTable.clientId, clientId),
+        isNull(growthAssessmentsTable.archivedAt),
+      ))
+      .orderBy(desc(growthAssessmentsTable.updatedAt))
+      .limit(1);
+
+    if (!row) return void res.json(null);
+
+    const sections = row.generatedSections as any;
+    const topRisks: any[] = (sections?.risks ?? []).slice(0, 3);
+    const topOpportunities: any[] = (sections?.growthOpportunities ?? []).slice(0, 3);
+    const topQuickWin: any = (sections?.quickWins ?? [])[0] ?? null;
+
+    res.json({ ...row, generatedSections: undefined, topRisks, topOpportunities, topQuickWin });
+  } catch (err) {
+    logger.error({ err }, "Get latest client assessment failed");
+    res.status(500).json({ error: "Failed to get latest client assessment." });
+  }
+});
+
+// ─── Slim summary for a specific diagnostic ──────────────────
+// Used by project-detail diagnostics tab to show per-diagnostic highlights.
+
+router.get("/growth-assessments/diagnostic/:diagnosticId/summary", requireAuth, async (req, res) => {
+  try {
+    const { diagnosticId } = req.params;
+    const [row] = await db
+      .select({
+        id: growthAssessmentsTable.id,
+        diagnosticId: growthAssessmentsTable.diagnosticId,
+        status: growthAssessmentsTable.status,
+        healthScore: growthAssessmentsTable.healthScore,
+        healthRating: growthAssessmentsTable.healthRating,
+        generatedSections: growthAssessmentsTable.generatedSections,
+        updatedAt: growthAssessmentsTable.updatedAt,
+      })
+      .from(growthAssessmentsTable)
+      .where(and(
+        eq(growthAssessmentsTable.diagnosticId, diagnosticId),
+        isNull(growthAssessmentsTable.archivedAt),
+      ))
+      .orderBy(desc(growthAssessmentsTable.updatedAt))
+      .limit(1);
+
+    if (!row) return void res.json(null);
+
+    const sections = row.generatedSections as any;
+    const primaryRisk: any = (sections?.risks ?? [])[0] ?? null;
+    const topQuickWin: any = (sections?.quickWins ?? [])[0] ?? null;
+
+    res.json({ ...row, generatedSections: undefined, primaryRisk, topQuickWin });
+  } catch (err) {
+    logger.error({ err }, "Get diagnostic assessment summary failed");
+    res.status(500).json({ error: "Failed to get diagnostic assessment summary." });
+  }
+});
+
 // ─── Get growth assessment ───────────────────────────────────
 
 router.get("/growth-assessments/:id", requireAuth, async (req, res) => {

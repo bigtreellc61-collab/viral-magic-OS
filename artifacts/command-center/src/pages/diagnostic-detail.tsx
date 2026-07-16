@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation, useParams } from "wouter";
+import { useState, useEffect } from "react";
+import { useLocation, useParams, Link } from "wouter";
 import {
   useGetDiagnostic,
   useGetDiagnosticVersion,
@@ -50,6 +50,7 @@ export default function DiagnosticDetailPage() {
   const [assessment, setAssessment] = useState<any>(null);
   const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [assessmentError, setAssessmentError] = useState<string | null>(null);
+  const [assessmentLoaded, setAssessmentLoaded] = useState(false);
   const [generatingAssessment, setGeneratingAssessment] = useState(false);
   const [viewingVersionNum, setViewingVersionNum] = useState<number | null>(null);
 
@@ -308,10 +309,18 @@ export default function DiagnosticDetailPage() {
         // Find the one for the current version, otherwise newest
         const forVersion = list.find((a) => a.diagnosticVersionId === version?.id);
         setAssessment(forVersion ?? list[0] ?? null);
-        setAssessmentLoading(false);
       })
-      .catch(() => { setAssessmentError("Failed to load assessment."); setAssessmentLoading(false); });
+      .catch(() => { setAssessmentError("Failed to load assessment."); })
+      .finally(() => { setAssessmentLoading(false); setAssessmentLoaded(true); });
   };
+
+  // Trigger load exactly once when the assessment tab becomes active and version is ready
+  useEffect(() => {
+    if (tab === "assessment" && !assessmentLoaded && !assessmentLoading && version?.id) {
+      loadAssessment();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, version?.id, assessmentLoaded]);
 
   const handleGenerateAssessment = async () => {
     if (!id || !version?.id) return;
@@ -726,8 +735,6 @@ export default function DiagnosticDetailPage() {
       {/* Tab: Growth Assessment */}
       {tab === "assessment" && (
         <div className="space-y-5">
-          {/* If no assessment loaded yet, try loading */}
-          {!assessment && !assessmentLoading && !assessmentError && (() => { loadAssessment(); return null; })()}
 
           {assessmentLoading && (
             <div className="flex items-center justify-center py-16 gap-3">
@@ -798,13 +805,13 @@ export default function DiagnosticDetailPage() {
                     )}
                   </div>
                 </div>
-                <a
-                  href={`/command-center/growth-assessments/${assessment.id}`}
+                <Link
+                  href={`/growth-assessments/${assessment.id}`}
                   className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg transition-colors"
                 >
                   <TrendingUp className="w-4 h-4" />
                   Open Full Assessment
-                </a>
+                </Link>
               </div>
 
               {/* Strength summary */}

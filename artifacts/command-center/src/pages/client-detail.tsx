@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -22,6 +22,7 @@ import {
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus, Pin, PinOff,
   Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen, Stethoscope, ChevronDown,
+  TrendingUp, ShieldAlert, Lightbulb,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ClientStatusBadge } from '@/components/clients/status-badge';
@@ -61,6 +62,17 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
     query: { enabled: tab === 'projects', queryKey: getListClientProjectsQueryKey(clientId) },
   });
   const { data: clientDiagnostics } = useListClientDiagnostics(clientId);
+  const [latestAssessment, setLatestAssessment] = useState<any>(null);
+  const [assessmentLoading, setAssessmentLoading] = useState(true);
+
+  useEffect(() => {
+    setAssessmentLoading(true);
+    fetch(`/api/growth-assessments/client/${clientId}/latest`, { credentials: 'include' })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setLatestAssessment(data))
+      .catch(() => setLatestAssessment(null))
+      .finally(() => setAssessmentLoading(false));
+  }, [clientId]);
 
   const archiveClient = useArchiveClient();
   const restoreClient = useRestoreClient();
@@ -279,7 +291,7 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
       </div>
 
       {/* Tab Content */}
-      {tab === 'overview' && <OverviewTab client={client} copy={copy} copiedField={copiedField} />}
+      {tab === 'overview' && <OverviewTab client={client} copy={copy} copiedField={copiedField} latestAssessment={latestAssessment} assessmentLoading={assessmentLoading} />}
       {tab === 'notes' && (
         <NotesTab
           notes={notes}
@@ -415,7 +427,13 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
 }
 
 // ─── Overview Tab ─────────────────────────────────────────────
-function OverviewTab({ client, copy, copiedField }: { client: ClientRecord; copy: (v: string, f: string) => void; copiedField: string | null }) {
+function OverviewTab({ client, copy, copiedField, latestAssessment, assessmentLoading }: {
+  client: ClientRecord;
+  copy: (v: string, f: string) => void;
+  copiedField: string | null;
+  latestAssessment: any;
+  assessmentLoading: boolean;
+}) {
   const CopyBtn = ({ value, field }: { value: string; field: string }) => (
     <button onClick={() => copy(value, field)} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
       {copiedField === field ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
@@ -503,6 +521,104 @@ function OverviewTab({ client, copy, copiedField }: { client: ClientRecord; copy
           )}
         </CardContent>
       </Card>
+
+      {/* Growth Assessment Summary */}
+      {(assessmentLoading || latestAssessment) && (
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Latest Growth Assessment</CardTitle>
+              </div>
+              {latestAssessment && (
+                <Link href={`/growth-assessments/${latestAssessment.id}`}>
+                  <button className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
+                    View Full Assessment <ExternalLink className="h-3 w-3" />
+                  </button>
+                </Link>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {assessmentLoading ? (
+              <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+            ) : latestAssessment ? (
+              <div className="space-y-5">
+                {/* Health + Status */}
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <span className={`text-3xl font-bold tabular-nums ${
+                      Number(latestAssessment.healthScore) >= 70 ? 'text-emerald-400' :
+                      Number(latestAssessment.healthScore) >= 50 ? 'text-amber-400' : 'text-red-400'
+                    }`}>{Math.round(Number(latestAssessment.healthScore))}</span>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Business Health Score</p>
+                      <p className={`text-sm font-semibold capitalize ${
+                        latestAssessment.healthRating === 'strong' ? 'text-emerald-400' :
+                        latestAssessment.healthRating === 'stable' ? 'text-cyan-400' :
+                        latestAssessment.healthRating === 'vulnerable' ? 'text-amber-400' :
+                        latestAssessment.healthRating === 'at_risk' ? 'text-orange-400' : 'text-red-400'
+                      }`}>{latestAssessment.healthRating?.replace('_', ' ') ?? '—'}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-semibold uppercase px-2 py-1 rounded border ${
+                    latestAssessment.status === 'approved' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                    latestAssessment.status === 'awaiting_review' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                    latestAssessment.status === 'draft' ? 'bg-slate-700/50 text-slate-400 border-slate-600/50' :
+                    'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                  }`}>{latestAssessment.status === 'awaiting_review' ? 'Awaiting Review' : latestAssessment.status}</span>
+                  {latestAssessment.diagnosticName && (
+                    <span className="text-xs text-muted-foreground truncate">{latestAssessment.diagnosticName}</span>
+                  )}
+                </div>
+
+                {/* Top Risks */}
+                {latestAssessment.topRisks?.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <ShieldAlert className="h-3.5 w-3.5 text-red-400" />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Risks</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {latestAssessment.topRisks.slice(0, 3).map((risk: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm">
+                          <span className="text-red-400 mt-0.5 shrink-0">●</span>
+                          <div>
+                            <span className="font-medium">{risk.category ?? risk.categoryLabel}</span>
+                            {risk.consequence && <span className="text-muted-foreground"> — {risk.consequence}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Top Opportunities */}
+                {latestAssessment.topOpportunities?.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Lightbulb className="h-3.5 w-3.5 text-indigo-400" />
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Opportunities</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {latestAssessment.topOpportunities.slice(0, 3).map((opp: any, i: number) => (
+                        <div key={i} className="flex items-start gap-2 text-sm">
+                          <span className="text-indigo-400 mt-0.5 shrink-0">●</span>
+                          <div>
+                            <span className="font-medium">{opp.title ?? opp.category ?? opp.categoryLabel}</span>
+                            {opp.reason && <span className="text-muted-foreground"> — {opp.reason}</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -27,7 +27,7 @@ import {
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus,
   MoreHorizontal, Loader2, Calendar, DollarSign, User,
-  CheckCircle2, LayoutGrid, List, Stethoscope,
+  CheckCircle2, LayoutGrid, List, Stethoscope, TrendingUp, ShieldAlert,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ProjectStatusBadge } from '@/components/projects/status-badge';
@@ -93,6 +93,26 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     query: { enabled: tab === 'tasks', queryKey: getListProjectTasksQueryKey(projectId, taskParams) },
   });
   const { data: projectDiagnostics } = useListProjectDiagnostics(projectId);
+  const [diagnosticAssessments, setDiagnosticAssessments] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    const list = Array.isArray(projectDiagnostics) ? projectDiagnostics : [];
+    if (!list.length) return;
+    const completed = list.filter((d: any) => ['completed', 'approved', 'awaiting_review'].includes(d.status));
+    if (!completed.length) return;
+    Promise.all(
+      completed.map((d: any) =>
+        fetch(`/api/growth-assessments/diagnostic/${d.id}/summary`, { credentials: 'include' })
+          .then((r) => r.ok ? r.json() : null)
+          .then((data) => ({ diagnosticId: d.id, data }))
+          .catch(() => ({ diagnosticId: d.id, data: null }))
+      )
+    ).then((results) => {
+      const map: Record<string, any> = {};
+      for (const r of results) if (r.data) map[r.diagnosticId] = r.data;
+      setDiagnosticAssessments(map);
+    });
+  }, [projectDiagnostics]);
 
   const archiveProject = useArchiveProject();
   const restoreProject = useRestoreProject();
@@ -490,27 +510,83 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-2">
-              {projectDiagnosticsList.map((d: any) => (
-                <Link key={d.id} href={`/diagnostics/${d.id}`}>
-                  <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <p className="font-medium">{d.diagnosticName}</p>
-                          <p className="text-xs text-muted-foreground">{d.diagnosticType?.replace(/_/g, ' ')}</p>
+            <div className="space-y-3">
+              {projectDiagnosticsList.map((d: any) => {
+                const assessment = diagnosticAssessments[d.id];
+                return (
+                  <Card key={d.id} className="border-border/50">
+                    <CardContent className="p-4 space-y-3">
+                      {/* Diagnostic header row */}
+                      <Link href={`/diagnostics/${d.id}`}>
+                        <div className="flex items-start justify-between gap-4 hover:opacity-80 transition-opacity cursor-pointer">
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <p className="font-medium">{d.diagnosticName}</p>
+                            <p className="text-xs text-muted-foreground">{d.diagnosticType?.replace(/_/g, ' ')}</p>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0 text-sm text-muted-foreground">
+                            {d.overallHealthScore != null && (
+                              <span className="font-mono font-semibold">{Math.round(Number(d.overallHealthScore))}/100</span>
+                            )}
+                            <Badge variant="outline" className="capitalize">{d.status.replace(/_/g, ' ')}</Badge>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0 text-sm text-muted-foreground">
-                          {d.overallHealthScore != null && (
-                            <span className="font-mono font-semibold">{Math.round(Number(d.overallHealthScore))}/100</span>
+                      </Link>
+
+                      {/* Linked assessment summary */}
+                      {assessment && (
+                        <div className="border-t border-border/30 pt-3">
+                          <div className="flex items-start justify-between gap-3 flex-wrap">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <div className="flex items-center gap-1.5">
+                                <TrendingUp className="h-3.5 w-3.5 text-indigo-400" />
+                                <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Growth Assessment</span>
+                              </div>
+                              <span className={`text-sm font-bold tabular-nums ${
+                                Number(assessment.healthScore) >= 70 ? 'text-emerald-400' :
+                                Number(assessment.healthScore) >= 50 ? 'text-amber-400' : 'text-red-400'
+                              }`}>{Math.round(Number(assessment.healthScore))}/100</span>
+                              <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border ${
+                                assessment.status === 'approved' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                                assessment.status === 'awaiting_review' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                                'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                              }`}>{assessment.status === 'awaiting_review' ? 'Review' : assessment.status}</span>
+                            </div>
+                            <Link href={`/growth-assessments/${assessment.id}`}>
+                              <button className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors shrink-0">
+                                View Assessment <ShieldAlert className="h-3 w-3" />
+                              </button>
+                            </Link>
+                          </div>
+
+                          {/* Primary risk + quick win */}
+                          {(assessment.primaryRisk || assessment.topQuickWin) && (
+                            <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              {assessment.primaryRisk && (
+                                <div className="rounded-lg bg-red-500/5 border border-red-500/15 p-2.5">
+                                  <p className="text-[10px] font-semibold uppercase tracking-wider text-red-400 mb-1">Primary Risk</p>
+                                  <p className="text-xs font-medium">{assessment.primaryRisk.category ?? assessment.primaryRisk.categoryLabel}</p>
+                                  {assessment.primaryRisk.consequence && (
+                                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{assessment.primaryRisk.consequence}</p>
+                                  )}
+                                </div>
+                              )}
+                              {assessment.topQuickWin && (
+                                <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/15 p-2.5">
+                                  <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-400 mb-1">Quick Win</p>
+                                  <p className="text-xs font-medium">{assessment.topQuickWin.action ?? assessment.topQuickWin.category}</p>
+                                  {assessment.topQuickWin.timeHorizon && (
+                                    <p className="text-xs text-muted-foreground mt-0.5">{assessment.topQuickWin.timeHorizon}</p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           )}
-                          <Badge variant="outline" className="capitalize">{d.status.replace(/_/g, ' ')}</Badge>
                         </div>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
-                </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
