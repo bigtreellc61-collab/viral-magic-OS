@@ -1,0 +1,478 @@
+Begin Viral Magic OS — Phase 1E: Business Growth Assessment Engine.
+
+Follow the approved Viral Magic Development Playbook:
+
+- Keep the solution simple.
+- Reuse existing Phase 1D diagnostic data and components.
+- Avoid complex workflows unless required.
+- Minimize database changes, API calls, maintenance, and Replit credit usage.
+- Preserve all working functionality from Phases 1A through 1D.1.
+- Build only what is required to interpret the assessment and make it useful for consulting.
+
+Do not begin Phase 1F or Phase 1G.
+
+==========================================================
+1. PHASE 1E OBJECTIVE
+==========================================================
+
+Turn completed diagnostic scores into a clear executive-level Business Growth Assessment.
+
+The system must explain:
+
+- What the scores mean
+- What is working
+- What is vulnerable
+- What is creating risk
+- Which problems require immediate attention
+- Which areas can be monitored
+- What the business should focus on next
+
+This phase interprets existing data.
+
+Do not create a second diagnostic form.
+
+==========================================================
+2. NAVIGATION AND VERSION
+==========================================================
+
+Keep the existing sidebar modules.
+
+Do not add unnecessary new navigation.
+
+Add a working “Growth Assessment” tab or section inside each completed Diagnostic Results page.
+
+Update the release label consistently to:
+
+Viral Magic OS
+Version 1.0 Release Candidate
+Phase 1E — Growth Assessment
+
+Remove outdated Phase 1A or Phase 1D labels where they remain.
+
+==========================================================
+3. DATABASE APPROACH
+==========================================================
+
+Reuse existing diagnostic, diagnostic-version, score, recommendation, client, project, and activity tables wherever practical.
+
+Add only the minimum database fields or table required to store an assessment interpretation.
+
+The Growth Assessment must be linked to:
+
+- Client
+- Optional project
+- Diagnostic
+- Diagnostic version
+
+Store:
+
+- Assessment status
+- Business Health Score
+- Health rating
+- Strength summary
+- Vulnerability summary
+- Risk summary
+- Growth-opportunity summary
+- Quick-win summary
+- Strategic-focus summary
+- Consultant notes
+- Reviewed by
+- Reviewed at
+- Approved by
+- Approved at
+- Created at
+- Updated at
+
+Do not duplicate all diagnostic scores inside a new table.
+
+==========================================================
+4. ASSESSMENT INTERPRETATION
+==========================================================
+
+Use deterministic, rule-based interpretation.
+
+Do not use OpenAI, Claude, Gemini, or another external AI API in Phase 1E.
+
+Interpret results using:
+
+- Business Health Score
+- Health rating
+- Category performance
+- Business impact
+- Urgency
+- Priority score
+- Severity
+- Resolution status
+- Existing rule-based recommendations
+
+The Administrator must be able to edit all generated interpretation text.
+
+Store the original system-generated text separately from the final Administrator-approved text when practical.
+
+==========================================================
+5. EXECUTIVE ASSESSMENT SUMMARY
+==========================================================
+
+Create a clear executive summary containing:
+
+BUSINESS HEALTH
+
+- Score from 0 to 100
+- Rating:
+  - Strong
+  - Stable
+  - Vulnerable
+  - At Risk
+  - Critical
+- Short plain-English explanation
+
+TOP STRENGTHS
+
+Identify up to three categories with:
+
+- Strong current performance
+- Meaningful business impact
+- Healthy or Monitor severity
+
+For each strength show:
+
+- Category
+- Why it is a strength
+- How to protect or maintain it
+
+TOP VULNERABILITIES
+
+Identify up to five categories that are weak but may not yet be the highest emergency.
+
+For each show:
+
+- Category
+- Current performance
+- Priority score
+- Severity
+- What the weakness means
+
+PRIMARY RISKS
+
+Identify High and Critical bottlenecks.
+
+For each show:
+
+- Category
+- Why it matters
+- Likely operational or growth consequence
+- Evidence entered during the diagnostic
+
+Do not invent financial losses or guaranteed outcomes.
+
+==========================================================
+6. QUICK WINS
+==========================================================
+
+Identify up to three Quick Wins using simple rules.
+
+A Quick Win should generally have:
+
+- Moderate or High priority
+- Clear recommended action
+- Lower implementation complexity
+- A realistic ability to show progress quickly
+
+Because Phase 1D does not yet store complete implementation-complexity data, use conservative category-based defaults that remain editable.
+
+Examples of likely Quick Win categories may include:
+
+- Speed to Lead
+- Follow-Up
+- Lead Capture
+- Reputation and Reviews
+- Website calls to action
+- Basic Reporting
+- Simple Automation
+
+For each Quick Win display:
+
+- Action
+- Reason
+- Suggested owner
+- Suggested time horizon:
+  - Immediate
+  - 7 Days
+  - 30 Days
+- Expected business improvement stated cautiously
+
+Do not promise revenue increases.
+
+==========================================================
+7. STRATEGIC PRIORITIES
+==========================================================
+
+Identify the top three to five Strategic Priorities.
+
+This is not yet the full Phase 1F recommendation order.
+
+For Phase 1E, classify priorities into:
+
+- Immediate Attention
+- Near-Term Improvement
+- Strategic Development
+- Monitor and Maintain
+
+Use the existing scores and severity.
+
+Display:
+
+- Category
+- Classification
+- Why it belongs there
+- Current performance
+- Business impact
+- Urgency
+- Priority score
+- Existing recommended action
+
+==========================================================
+8. GROWTH OPPORTUNITIES
+==========================================================
+
+Create a Growth Opportunities section.
+
+Identify opportunities from categories where:
+
+- Performance is weak or moderate
+- Business impact is high
+- Improvement could support growth, efficiency, visibility, conversion, retention, or scalability
+
+Group opportunities under:
+
+- Revenue and Lead Growth
+- Sales and Conversion
+- Customer Experience and Retention
+- Operations and Efficiency
+- Technology and Automation
+- Reporting and Scalability
+
+Only show groups with relevant findings.
+
+For each opportunity include:
+
+- Opportunity title
+- Related diagnostic category
+- Business reason
+- Suggested direction
+- Priority classification
+
+==========================================================
+9. ASSESSMENT PAGE
+==========================================================
+
+Create a professional Growth Assessment view within the Diagnostic Results workflow.
+
+Sections:
+
+1. Executive Summary
+2. Business Health
+3. Top Strengths
+4. Primary Risks
+5. Vulnerabilities
+6. Quick Wins
+7. Strategic Priorities
+8. Growth Opportunities
+9. Consultant Notes
+10. Approval
+
+Include:
+
+- Edit Assessment
+- Save Draft
+- Submit for Review
+- Approve Assessment
+- Return to Diagnostic
+- Print-friendly view
+
+Do not build PDF export unless a print-friendly browser view can be implemented with minimal cost and no instability.
+
+==========================================================
+10. EDITING AND APPROVAL
+==========================================================
+
+The Administrator can:
+
+- Edit generated wording
+- Add consultant notes
+- Save a draft
+- Submit for review
+- Approve the final assessment
+- Reopen an approved assessment with an audit-log entry
+
+Statuses:
+
+- Draft
+- Awaiting Review
+- Approved
+- Superseded
+- Archived
+
+Approved historical assessments should not be silently changed.
+
+If the linked diagnostic receives a new version, allow a new Growth Assessment to be generated for that version without overwriting the previous one.
+
+==========================================================
+11. CLIENT AND PROJECT UPDATES
+==========================================================
+
+Update Client Detail to display:
+
+- Latest Business Health Score
+- Latest Growth Assessment status
+- Top three risks
+- Top three opportunities
+- View Growth Assessment action
+
+Update Project Detail only when the diagnostic is linked to that project.
+
+Display:
+
+- Linked Growth Assessment
+- Health Score
+- Primary risk
+- Quick Win
+- View Assessment action
+
+Do not add Phase 1F solution-planning features.
+
+==========================================================
+12. DASHBOARD UPDATES
+==========================================================
+
+Add only useful real-data sections.
+
+Display:
+
+- Assessments Awaiting Review
+- Approved Growth Assessments
+- At-Risk Clients
+- Critical Clients
+- Recent Growth Assessments
+
+An At-Risk Client is based on the latest completed or approved diagnostic health rating.
+
+Do not add fake revenue metrics or speculative forecasts.
+
+==========================================================
+13. ACTIVITY LOGGING
+==========================================================
+
+Use the existing activity service.
+
+Add:
+
+- GROWTH_ASSESSMENT.CREATED
+- GROWTH_ASSESSMENT.GENERATED
+- GROWTH_ASSESSMENT.UPDATED
+- GROWTH_ASSESSMENT.SUBMITTED
+- GROWTH_ASSESSMENT.APPROVED
+- GROWTH_ASSESSMENT.REOPENED
+- GROWTH_ASSESSMENT.ARCHIVED
+- GROWTH_ASSESSMENT.RESTORED
+
+Store actor, client, project, diagnostic, diagnostic version, previous status, new status, and timestamp where relevant.
+
+==========================================================
+14. SIMPLE RULES
+==========================================================
+
+Keep the interpretation rules modular and readable.
+
+Do not build a complex rules editor in Phase 1E.
+
+Place rules in a clear configuration or service layer so they can be adjusted later.
+
+The final Administrator text must always override the draft system text.
+
+==========================================================
+15. RESPONSIVE AND ACCESSIBLE DESIGN
+==========================================================
+
+Ensure:
+
+- Executive summary remains readable on mobile
+- Cards stack cleanly
+- Tables convert to cards or safe responsive layouts
+- No horizontal page overflow
+- Buttons are touch-friendly
+- Print view is clean
+- Keyboard focus and contrast remain usable
+
+==========================================================
+16. TESTING
+==========================================================
+
+Test:
+
+1. Existing login and logout
+2. Clients
+3. Projects
+4. Tasks
+5. Diagnostics
+6. Diagnostic scoring
+7. Recommendation editing
+8. Create Growth Assessment from a completed diagnostic
+9. Business Health interpretation
+10. Strength identification
+11. Risk identification
+12. Vulnerability identification
+13. Quick Win identification
+14. Strategic Priority classification
+15. Growth Opportunity grouping
+16. Edit generated text
+17. Save Draft
+18. Submit for Review
+19. Approve Assessment
+20. Reopen with activity log
+21. Client page updates
+22. Project page updates
+23. Dashboard updates
+24. Data persistence after refresh
+25. Mobile view
+26. Print-friendly view
+27. Previous phases remain functional
+28. Phase 1F was not started
+
+Fix failures before completion.
+
+==========================================================
+17. DO NOT BUILD
+==========================================================
+
+Do not build:
+
+- External AI analysis
+- Final ordered implementation plan
+- Solution Recommendation Engine
+- Implementation Roadmap
+- Platform Matcher
+- Software Blueprint Generator
+- Software Factory
+- Proposal Generator
+- Billing
+- Client portal
+- Public assessment access
+
+==========================================================
+18. FINAL REPORT
+==========================================================
+
+Report:
+
+1. What was implemented
+2. Files modified
+3. Database changes
+4. Interpretation rules added
+5. Client, project, and dashboard updates
+6. Tests completed
+7. Failures or unresolved issues
+8. Known limitations
+9. Confirmation that Phase 1F was not started
+
+Stop after Phase 1E and wait for approval.

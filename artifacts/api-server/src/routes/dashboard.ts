@@ -9,7 +9,7 @@ import { logger } from "../lib/logger";
 const router: IRouter = Router();
 
 const APP_VERSION = "1.0.0-rc";
-const PHASE = "Phase 1D.1 – Polish";
+const PHASE = "Phase 1E — Growth Assessment";
 
 router.get("/dashboard/foundation", requireAuth, async (_req, res) => {
   let databaseConnected = false;

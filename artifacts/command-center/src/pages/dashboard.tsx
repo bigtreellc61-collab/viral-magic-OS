@@ -1,9 +1,9 @@
-import { useGetFoundationStatus, useGetClientMetrics, useGetDashboardProjects, useGetDashboardDiagnostics } from '@workspace/api-client-react';
+import { useGetFoundationStatus, useGetClientMetrics, useGetDashboardProjects, useGetDashboardDiagnostics, useGetDashboardGrowthAssessments } from '@workspace/api-client-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Activity, Database, Key, ShieldCheck, Settings2, Code2, Loader2,
   Users, FolderOpen, CheckSquare, AlertTriangle,
-  ArrowRight, TrendingUp, Clock, CheckCircle2, Stethoscope,
+  ArrowRight, TrendingUp, Clock, CheckCircle2, Stethoscope, Star, ShieldAlert,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,7 @@ export function DashboardPage() {
   const { data: clientMetrics, isLoading: loadingClientMetrics } = useGetClientMetrics();
   const { data: projectData, isLoading: loadingProjectData } = useGetDashboardProjects();
   const { data: diagData, isLoading: loadingDiagnostics } = useGetDashboardDiagnostics();
+  const { data: assessmentData, isLoading: loadingAssessments } = useGetDashboardGrowthAssessments();
   const [, setLocation] = useLocation();
 
   if (loadingStatus) {
@@ -557,11 +558,125 @@ export function DashboardPage() {
         </div>
       </div>
 
+      {/* Growth Assessment Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">Growth Assessments</h3>
+          <Link href="/diagnostics">
+            <button className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
+              View Diagnostics <ArrowRight className="h-3 w-3" />
+            </button>
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Assessment metrics */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setLocation('/diagnostics')}
+              className="rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:bg-card hover:shadow-md transition-all duration-200 group"
+            >
+              <div className="inline-flex p-2 rounded-lg bg-yellow-500/10 mb-3">
+                <Clock className="h-4 w-4 text-yellow-400" />
+              </div>
+              <p className="text-2xl font-bold tabular-nums text-yellow-400">
+                {loadingAssessments ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" /> : ((assessmentData as any)?.awaitingReview ?? '—')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">Awaiting Review</p>
+            </button>
+            <button
+              onClick={() => setLocation('/diagnostics')}
+              className="rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:bg-card hover:shadow-md transition-all duration-200 group"
+            >
+              <div className="inline-flex p-2 rounded-lg bg-emerald-500/10 mb-3">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              </div>
+              <p className="text-2xl font-bold tabular-nums text-emerald-400">
+                {loadingAssessments ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" /> : ((assessmentData as any)?.approved ?? '—')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">Approved</p>
+            </button>
+            <button
+              onClick={() => setLocation('/diagnostics')}
+              className="rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:bg-card hover:shadow-md transition-all duration-200 group"
+            >
+              <div className="inline-flex p-2 rounded-lg bg-orange-500/10 mb-3">
+                <AlertTriangle className="h-4 w-4 text-orange-400" />
+              </div>
+              <p className="text-2xl font-bold tabular-nums text-orange-400">
+                {loadingAssessments ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" /> : ((assessmentData as any)?.atRiskClients?.length ?? '—')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">At-Risk Clients</p>
+            </button>
+            <button
+              onClick={() => setLocation('/diagnostics')}
+              className="rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:bg-card hover:shadow-md transition-all duration-200 group"
+            >
+              <div className="inline-flex p-2 rounded-lg bg-red-500/10 mb-3">
+                <ShieldAlert className="h-4 w-4 text-red-400" />
+              </div>
+              <p className="text-2xl font-bold tabular-nums text-red-400">
+                {loadingAssessments ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" /> : ((assessmentData as any)?.criticalClients?.length ?? '—')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">Critical Clients</p>
+            </button>
+          </div>
+
+          {/* Recent Assessments */}
+          <Card className="border-border/50 shadow-md bg-card/80 lg:col-span-2">
+            <CardHeader className="border-b border-border/50 bg-muted/20 pb-3 pt-4 px-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-sm font-semibold text-indigo-400">Recent Growth Assessments</CardTitle>
+              </div>
+              <CardDescription className="text-xs mt-1">Latest assessments across all clients.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingAssessments ? (
+                <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : !(assessmentData as any)?.recentAssessments?.length ? (
+                <div className="py-10 text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
+                  <Star className="h-6 w-6 opacity-30" />
+                  <span>No assessments yet. Generate one from a completed diagnostic.</span>
+                </div>
+              ) : (
+                <div className="divide-y divide-border/50">
+                  {((assessmentData as any).recentAssessments as any[]).slice(0, 6).map((a: any) => (
+                    <div key={a.id} className="px-4 py-3 hover:bg-muted/20 transition-colors">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{a.diagnosticName ?? 'Assessment'}</p>
+                          <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                            <span className="truncate">{a.clientName ?? '—'}</span>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-2">
+                          {a.healthScore != null && (
+                            <span className={`text-sm font-bold tabular-nums ${
+                              Number(a.healthScore) >= 70 ? 'text-emerald-400' :
+                              Number(a.healthScore) >= 50 ? 'text-amber-400' : 'text-red-400'
+                            }`}>{Math.round(Number(a.healthScore))}</span>
+                          )}
+                          <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border ${
+                            a.status === 'approved' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' :
+                            a.status === 'awaiting_review' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
+                            'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                          }`}>{a.status === 'awaiting_review' ? 'Review' : a.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* System Status (collapsed) */}
       <details className="group">
         <summary className="flex items-center gap-2 cursor-pointer text-sm text-muted-foreground hover:text-foreground transition-colors list-none py-2">
           <span className="font-medium uppercase tracking-wider text-[10px]">System Status</span>
-          <span className="text-[10px] text-muted-foreground/60">Phase 1D.1 – Polish</span>
+          <span className="text-[10px] text-muted-foreground/60">Phase 1E — Growth Assessment</span>
           <span className="ml-auto text-[10px] text-muted-foreground group-open:hidden">▼ Show</span>
           <span className="ml-auto text-[10px] text-muted-foreground hidden group-open:inline">▲ Hide</span>
         </summary>

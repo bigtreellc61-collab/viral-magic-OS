@@ -9,6 +9,287 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary List growth assessments
+ */
+export const ListGrowthAssessmentsQueryParams = zod.object({
+  "diagnosticId": zod.coerce.string().optional(),
+  "clientId": zod.coerce.string().optional(),
+  "status": zod.coerce.string().optional(),
+  "showArchived": zod.coerce.string().optional()
+})
+
+export const ListGrowthAssessmentsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "healthScore": zod.string().nullish(),
+  "healthRating": zod.string().nullish(),
+  "systemStrengthSummary": zod.string().nullish(),
+  "systemVulnerabilitySummary": zod.string().nullish(),
+  "systemRiskSummary": zod.string().nullish(),
+  "systemGrowthOpportunitySummary": zod.string().nullish(),
+  "systemQuickWinSummary": zod.string().nullish(),
+  "systemStrategicFocusSummary": zod.string().nullish(),
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "generatedSections": zod.object({
+
+}).optional(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "versionNumber": zod.number().nullish(),
+  "projectName": zod.string().nullish()
+}))
+})
+
+
+/**
+ * @summary Generate a growth assessment from a completed diagnostic version
+ */
+export const GenerateGrowthAssessmentBody = zod.object({
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string()
+})
+
+export const GenerateGrowthAssessmentResponse = zod.object({
+  "assessment": zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "healthScore": zod.string().nullish(),
+  "healthRating": zod.string().nullish(),
+  "systemStrengthSummary": zod.string().nullish(),
+  "systemVulnerabilitySummary": zod.string().nullish(),
+  "systemRiskSummary": zod.string().nullish(),
+  "systemGrowthOpportunitySummary": zod.string().nullish(),
+  "systemQuickWinSummary": zod.string().nullish(),
+  "systemStrategicFocusSummary": zod.string().nullish(),
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "generatedSections": zod.object({
+
+}).optional(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "versionNumber": zod.number().nullish(),
+  "projectName": zod.string().nullish()
+}),
+  "generated": zod.boolean()
+})
+
+
+/**
+ * @summary Get a growth assessment by ID
+ */
+export const GetGrowthAssessmentParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetGrowthAssessmentResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "healthScore": zod.string().nullish(),
+  "healthRating": zod.string().nullish(),
+  "systemStrengthSummary": zod.string().nullish(),
+  "systemVulnerabilitySummary": zod.string().nullish(),
+  "systemRiskSummary": zod.string().nullish(),
+  "systemGrowthOpportunitySummary": zod.string().nullish(),
+  "systemQuickWinSummary": zod.string().nullish(),
+  "systemStrategicFocusSummary": zod.string().nullish(),
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "generatedSections": zod.object({
+
+}).optional(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "versionNumber": zod.number().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update editable text fields of a growth assessment
+ */
+export const UpdateGrowthAssessmentParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateGrowthAssessmentBody = zod.object({
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish()
+})
+
+export const UpdateGrowthAssessmentResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "healthScore": zod.string().nullish(),
+  "healthRating": zod.string().nullish(),
+  "systemStrengthSummary": zod.string().nullish(),
+  "systemVulnerabilitySummary": zod.string().nullish(),
+  "systemRiskSummary": zod.string().nullish(),
+  "systemGrowthOpportunitySummary": zod.string().nullish(),
+  "systemQuickWinSummary": zod.string().nullish(),
+  "systemStrategicFocusSummary": zod.string().nullish(),
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "generatedSections": zod.object({
+
+}).optional(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "versionNumber": zod.number().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Perform a status action on a growth assessment
+ */
+export const GrowthAssessmentActionParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GrowthAssessmentActionBody = zod.object({
+  "action": zod.string()
+})
+
+export const GrowthAssessmentActionResponse = zod.object({
+  "id": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "healthScore": zod.string().nullish(),
+  "healthRating": zod.string().nullish(),
+  "systemStrengthSummary": zod.string().nullish(),
+  "systemVulnerabilitySummary": zod.string().nullish(),
+  "systemRiskSummary": zod.string().nullish(),
+  "systemGrowthOpportunitySummary": zod.string().nullish(),
+  "systemQuickWinSummary": zod.string().nullish(),
+  "systemStrategicFocusSummary": zod.string().nullish(),
+  "strengthSummary": zod.string().nullish(),
+  "vulnerabilitySummary": zod.string().nullish(),
+  "riskSummary": zod.string().nullish(),
+  "growthOpportunitySummary": zod.string().nullish(),
+  "quickWinSummary": zod.string().nullish(),
+  "strategicFocusSummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "generatedSections": zod.object({
+
+}).optional(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "versionNumber": zod.number().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Dashboard summary for growth assessments
+ */
+export const GetDashboardGrowthAssessmentsResponse = zod.object({
+  "awaitingReview": zod.number(),
+  "approved": zod.number(),
+  "atRiskClients": zod.array(zod.object({
+
+})),
+  "criticalClients": zod.array(zod.object({
+
+})),
+  "recentAssessments": zod.array(zod.object({
+
+}))
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */

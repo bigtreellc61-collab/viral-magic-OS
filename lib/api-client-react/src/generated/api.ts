@@ -43,6 +43,7 @@ import type {
   CreateProjectBody,
   CreateTaskBody,
   DashboardDiagnosticsMetrics,
+  DashboardGrowthAssessmentsMetrics,
   DashboardProjectsMetrics,
   DiagnosticMetricsSummary,
   DiagnosticRecord,
@@ -51,8 +52,12 @@ import type {
   DiagnosticVersionRecord,
   ErrorResponse,
   FoundationStatus,
+  GenerateGrowthAssessmentBody,
+  GenerateGrowthAssessmentResponse,
   GetDefaultTemplateCategories200,
   GetDiagnosticVersion200,
+  GrowthAssessmentActionBody,
+  GrowthAssessmentRecord,
   HealthStatus,
   ListActivityParams,
   ListClientActivityParams,
@@ -60,6 +65,8 @@ import type {
   ListClientProjectsParams,
   ListClientsParams,
   ListDiagnosticsParams,
+  ListGrowthAssessmentsParams,
+  ListGrowthAssessmentsResponse,
   ListProjectTasksParams,
   ListProjectsParams,
   ListTasksParams,
@@ -87,6 +94,7 @@ import type {
   UpdateClientNoteBody,
   UpdateDiagnosticBody,
   UpdateExecutiveSummaryBody,
+  UpdateGrowthAssessmentBody,
   UpdateProjectBody,
   UpdateRecommendationBody,
   UpdateScoreResolutionBody,
@@ -119,6 +127,459 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getListGrowthAssessmentsUrl = (params?: ListGrowthAssessmentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/growth-assessments?${stringifiedParams}` : `/api/growth-assessments`
+}
+
+/**
+ * @summary List growth assessments
+ */
+export const listGrowthAssessments = async (params?: ListGrowthAssessmentsParams, options?: RequestInit): Promise<ListGrowthAssessmentsResponse> => {
+
+  return customFetch<ListGrowthAssessmentsResponse>(getListGrowthAssessmentsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGrowthAssessmentsQueryKey = (params?: ListGrowthAssessmentsParams,) => {
+    return [
+    `/api/growth-assessments`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListGrowthAssessmentsQueryOptions = <TData = Awaited<ReturnType<typeof listGrowthAssessments>>, TError = ErrorType<unknown>>(params?: ListGrowthAssessmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGrowthAssessmentsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGrowthAssessments>>> = ({ signal }) => listGrowthAssessments(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGrowthAssessments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGrowthAssessmentsQueryResult = NonNullable<Awaited<ReturnType<typeof listGrowthAssessments>>>
+export type ListGrowthAssessmentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List growth assessments
+ */
+
+export function useListGrowthAssessments<TData = Awaited<ReturnType<typeof listGrowthAssessments>>, TError = ErrorType<unknown>>(
+ params?: ListGrowthAssessmentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGrowthAssessmentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGenerateGrowthAssessmentUrl = () => {
+
+
+
+
+  return `/api/growth-assessments/generate`
+}
+
+/**
+ * @summary Generate a growth assessment from a completed diagnostic version
+ */
+export const generateGrowthAssessment = async (generateGrowthAssessmentBody: GenerateGrowthAssessmentBody, options?: RequestInit): Promise<GenerateGrowthAssessmentResponse> => {
+
+  return customFetch<GenerateGrowthAssessmentResponse>(getGenerateGrowthAssessmentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(generateGrowthAssessmentBody)
+  }
+);}
+
+
+
+
+
+export const getGenerateGrowthAssessmentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateGrowthAssessment>>, TError,{data: BodyType<GenerateGrowthAssessmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateGrowthAssessment>>, TError,{data: BodyType<GenerateGrowthAssessmentBody>}, TContext> => {
+
+const mutationKey = ['generateGrowthAssessment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateGrowthAssessment>>, {data: BodyType<GenerateGrowthAssessmentBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateGrowthAssessment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateGrowthAssessmentMutationResult = NonNullable<Awaited<ReturnType<typeof generateGrowthAssessment>>>
+    export type GenerateGrowthAssessmentMutationBody = BodyType<GenerateGrowthAssessmentBody>
+    export type GenerateGrowthAssessmentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Generate a growth assessment from a completed diagnostic version
+ */
+export const useGenerateGrowthAssessment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateGrowthAssessment>>, TError,{data: BodyType<GenerateGrowthAssessmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateGrowthAssessment>>,
+        TError,
+        {data: BodyType<GenerateGrowthAssessmentBody>},
+        TContext
+      > => {
+      return useMutation(getGenerateGrowthAssessmentMutationOptions(options));
+    }
+
+export const getGetGrowthAssessmentUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-assessments/${id}`
+}
+
+/**
+ * @summary Get a growth assessment by ID
+ */
+export const getGrowthAssessment = async (id: string, options?: RequestInit): Promise<GrowthAssessmentRecord> => {
+
+  return customFetch<GrowthAssessmentRecord>(getGetGrowthAssessmentUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthAssessmentQueryKey = (id: string,) => {
+    return [
+    `/api/growth-assessments/${id}`
+    ] as const;
+    }
+
+
+export const getGetGrowthAssessmentQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthAssessment>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthAssessmentQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthAssessment>>> = ({ signal }) => getGrowthAssessment(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthAssessmentQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthAssessment>>>
+export type GetGrowthAssessmentQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a growth assessment by ID
+ */
+
+export function useGetGrowthAssessment<TData = Awaited<ReturnType<typeof getGrowthAssessment>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthAssessmentQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateGrowthAssessmentUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-assessments/${id}`
+}
+
+/**
+ * @summary Update editable text fields of a growth assessment
+ */
+export const updateGrowthAssessment = async (id: string,
+    updateGrowthAssessmentBody: UpdateGrowthAssessmentBody, options?: RequestInit): Promise<GrowthAssessmentRecord> => {
+
+  return customFetch<GrowthAssessmentRecord>(getUpdateGrowthAssessmentUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateGrowthAssessmentBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateGrowthAssessmentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthAssessment>>, TError,{id: string;data: BodyType<UpdateGrowthAssessmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGrowthAssessment>>, TError,{id: string;data: BodyType<UpdateGrowthAssessmentBody>}, TContext> => {
+
+const mutationKey = ['updateGrowthAssessment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGrowthAssessment>>, {id: string;data: BodyType<UpdateGrowthAssessmentBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateGrowthAssessment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGrowthAssessmentMutationResult = NonNullable<Awaited<ReturnType<typeof updateGrowthAssessment>>>
+    export type UpdateGrowthAssessmentMutationBody = BodyType<UpdateGrowthAssessmentBody>
+    export type UpdateGrowthAssessmentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update editable text fields of a growth assessment
+ */
+export const useUpdateGrowthAssessment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthAssessment>>, TError,{id: string;data: BodyType<UpdateGrowthAssessmentBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateGrowthAssessment>>,
+        TError,
+        {id: string;data: BodyType<UpdateGrowthAssessmentBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateGrowthAssessmentMutationOptions(options));
+    }
+
+export const getGrowthAssessmentActionUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-assessments/${id}/action`
+}
+
+/**
+ * @summary Perform a status action on a growth assessment
+ */
+export const growthAssessmentAction = async (id: string,
+    growthAssessmentActionBody: GrowthAssessmentActionBody, options?: RequestInit): Promise<GrowthAssessmentRecord> => {
+
+  return customFetch<GrowthAssessmentRecord>(getGrowthAssessmentActionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(growthAssessmentActionBody)
+  }
+);}
+
+
+
+
+
+export const getGrowthAssessmentActionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof growthAssessmentAction>>, TError,{id: string;data: BodyType<GrowthAssessmentActionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof growthAssessmentAction>>, TError,{id: string;data: BodyType<GrowthAssessmentActionBody>}, TContext> => {
+
+const mutationKey = ['growthAssessmentAction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof growthAssessmentAction>>, {id: string;data: BodyType<GrowthAssessmentActionBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  growthAssessmentAction(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GrowthAssessmentActionMutationResult = NonNullable<Awaited<ReturnType<typeof growthAssessmentAction>>>
+    export type GrowthAssessmentActionMutationBody = BodyType<GrowthAssessmentActionBody>
+    export type GrowthAssessmentActionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Perform a status action on a growth assessment
+ */
+export const useGrowthAssessmentAction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof growthAssessmentAction>>, TError,{id: string;data: BodyType<GrowthAssessmentActionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof growthAssessmentAction>>,
+        TError,
+        {id: string;data: BodyType<GrowthAssessmentActionBody>},
+        TContext
+      > => {
+      return useMutation(getGrowthAssessmentActionMutationOptions(options));
+    }
+
+export const getGetDashboardGrowthAssessmentsUrl = () => {
+
+
+
+
+  return `/api/dashboard/growth-assessments`
+}
+
+/**
+ * @summary Dashboard summary for growth assessments
+ */
+export const getDashboardGrowthAssessments = async ( options?: RequestInit): Promise<DashboardGrowthAssessmentsMetrics> => {
+
+  return customFetch<DashboardGrowthAssessmentsMetrics>(getGetDashboardGrowthAssessmentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDashboardGrowthAssessmentsQueryKey = () => {
+    return [
+    `/api/dashboard/growth-assessments`
+    ] as const;
+    }
+
+
+export const getGetDashboardGrowthAssessmentsQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardGrowthAssessments>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardGrowthAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardGrowthAssessmentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardGrowthAssessments>>> = ({ signal }) => getDashboardGrowthAssessments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboardGrowthAssessments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDashboardGrowthAssessmentsQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardGrowthAssessments>>>
+export type GetDashboardGrowthAssessmentsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Dashboard summary for growth assessments
+ */
+
+export function useGetDashboardGrowthAssessments<TData = Awaited<ReturnType<typeof getDashboardGrowthAssessments>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardGrowthAssessments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDashboardGrowthAssessmentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getHealthCheckUrl = () => {
 

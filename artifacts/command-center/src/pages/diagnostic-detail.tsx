@@ -34,18 +34,23 @@ import {
 } from "@/lib/diagnostic-constants";
 import {
   ChevronLeft, Archive, RotateCcw, Trash2, CheckCircle2, Plus,
-  RefreshCw, AlertTriangle, ClipboardList, BarChart3, History,
+  RefreshCw, AlertTriangle, ClipboardList, BarChart3, History, TrendingUp,
+  Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-type Tab = "overview" | "scores" | "bottlenecks" | "versions";
+type Tab = "overview" | "scores" | "bottlenecks" | "versions" | "assessment";
 
 export default function DiagnosticDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const [tab, setTab] = useState<Tab>("overview");
+  const [assessment, setAssessment] = useState<any>(null);
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+  const [assessmentError, setAssessmentError] = useState<string | null>(null);
+  const [generatingAssessment, setGeneratingAssessment] = useState(false);
   const [viewingVersionNum, setViewingVersionNum] = useState<number | null>(null);
 
   // Confirm dialogs
@@ -288,7 +293,46 @@ export default function DiagnosticDetailPage() {
     { id: "scores", label: "Category Scores", icon: ClipboardList },
     { id: "bottlenecks", label: "Bottlenecks", icon: AlertTriangle },
     { id: "versions", label: "Versions", icon: History },
+    { id: "assessment", label: "Growth Assessment", icon: TrendingUp },
   ];
+
+  // ── Load assessment when tab is selected ──
+  const loadAssessment = () => {
+    if (!id || !version?.id) return;
+    setAssessmentLoading(true);
+    setAssessmentError(null);
+    fetch(`/api/growth-assessments?diagnosticId=${id}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
+        const list: any[] = data.data ?? [];
+        // Find the one for the current version, otherwise newest
+        const forVersion = list.find((a) => a.diagnosticVersionId === version?.id);
+        setAssessment(forVersion ?? list[0] ?? null);
+        setAssessmentLoading(false);
+      })
+      .catch(() => { setAssessmentError("Failed to load assessment."); setAssessmentLoading(false); });
+  };
+
+  const handleGenerateAssessment = async () => {
+    if (!id || !version?.id) return;
+    setGeneratingAssessment(true);
+    try {
+      const r = await fetch("/api/growth-assessments/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ diagnosticId: id, diagnosticVersionId: version.id }),
+      });
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      setAssessment(data.assessment);
+      toast({ title: data.generated ? "Assessment generated" : "Assessment loaded" });
+    } catch (e: any) {
+      toast({ title: "Failed to generate assessment", description: e.message, variant: "destructive" });
+    } finally {
+      setGeneratingAssessment(false);
+    }
+  };
 
   const criticalAndHighScores = scores.filter((s: any) =>
     (s.severity === "critical" || s.severity === "high") && s.resolutionStatus === "unresolved",
@@ -676,6 +720,135 @@ export default function DiagnosticDetailPage() {
             onSelect={(vn) => { setViewingVersionNum(vn); setTab("scores"); }}
             onCompare={(v1, v2) => navigate(`/diagnostics/${id}/compare?v1=${v1}&v2=${v2}`)}
           />
+        </div>
+      )}
+
+      {/* Tab: Growth Assessment */}
+      {tab === "assessment" && (
+        <div className="space-y-5">
+          {/* If no assessment loaded yet, try loading */}
+          {!assessment && !assessmentLoading && !assessmentError && (() => { loadAssessment(); return null; })()}
+
+          {assessmentLoading && (
+            <div className="flex items-center justify-center py-16 gap-3">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+              <span className="text-slate-400 text-sm">Loading assessment…</span>
+            </div>
+          )}
+
+          {assessmentError && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4 text-sm">
+              {assessmentError}
+            </div>
+          )}
+
+          {!assessmentLoading && !assessmentError && !assessment && (
+            <div className="flex flex-col items-center justify-center py-16 gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                <TrendingUp className="w-8 h-8 text-indigo-400" />
+              </div>
+              <div className="text-center max-w-md space-y-2">
+                <h3 className="text-slate-200 font-semibold">No Growth Assessment Yet</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Generate a structured Business Growth Assessment from the current diagnostic scores.
+                  The engine analyses performance, risks, opportunities, and quick wins automatically.
+                </p>
+              </div>
+              <button
+                onClick={handleGenerateAssessment}
+                disabled={generatingAssessment || !isCompleted || !version?.id}
+                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {generatingAssessment
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating…</>
+                  : <><TrendingUp className="w-4 h-4" /> Generate Assessment</>
+                }
+              </button>
+              {!isCompleted && (
+                <p className="text-xs text-slate-500 text-center">
+                  Complete and score the diagnostic first to generate an assessment.
+                </p>
+              )}
+            </div>
+          )}
+
+          {!assessmentLoading && assessment && (
+            <div className="space-y-4">
+              {/* Assessment header card */}
+              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 flex flex-wrap items-center gap-4">
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-slate-200">Growth Assessment</span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium ${
+                      assessment.status === "approved" ? "text-emerald-300 bg-emerald-500/20 border-emerald-500/30"
+                      : assessment.status === "awaiting_review" ? "text-yellow-300 bg-yellow-500/20 border-yellow-500/30"
+                      : "text-slate-400 bg-slate-700/50 border-slate-600/50"
+                    }`}>
+                      {assessment.status === "approved" ? "Approved"
+                       : assessment.status === "awaiting_review" ? "Awaiting Review"
+                       : "Draft"}
+                    </span>
+                  </div>
+                  <div className="text-sm text-slate-500 space-x-3">
+                    {assessment.healthScore && (
+                      <span>Health: <span className="text-slate-300 font-mono">{Math.round(Number(assessment.healthScore))}/100</span></span>
+                    )}
+                    {assessment.healthRating && (
+                      <span>· {assessment.healthRating.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}</span>
+                    )}
+                  </div>
+                </div>
+                <a
+                  href={`/command-center/growth-assessments/${assessment.id}`}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-lg transition-colors"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  Open Full Assessment
+                </a>
+              </div>
+
+              {/* Strength summary */}
+              {(assessment.strengthSummary || assessment.systemStrengthSummary) && (
+                <div className="bg-slate-800/50 border border-emerald-500/20 rounded-xl p-4 space-y-1.5">
+                  <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Top Strengths</div>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {assessment.strengthSummary || assessment.systemStrengthSummary}
+                  </p>
+                </div>
+              )}
+
+              {/* Risk summary */}
+              {(assessment.riskSummary || assessment.systemRiskSummary) && (
+                <div className="bg-slate-800/50 border border-red-500/20 rounded-xl p-4 space-y-1.5">
+                  <div className="text-xs font-semibold text-red-400 uppercase tracking-wide">Primary Risks</div>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {assessment.riskSummary || assessment.systemRiskSummary}
+                  </p>
+                </div>
+              )}
+
+              {/* Quick wins */}
+              {(assessment.quickWinSummary || assessment.systemQuickWinSummary) && (
+                <div className="bg-slate-800/50 border border-blue-500/20 rounded-xl p-4 space-y-1.5">
+                  <div className="text-xs font-semibold text-blue-400 uppercase tracking-wide">Quick Wins</div>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    {assessment.quickWinSummary || assessment.systemQuickWinSummary}
+                  </p>
+                </div>
+              )}
+
+              {/* Re-generate button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleGenerateAssessment}
+                  disabled={generatingAssessment}
+                  className="text-xs text-slate-500 hover:text-slate-400 transition-colors"
+                >
+                  {generatingAssessment ? "Generating…" : "Re-generate assessment"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

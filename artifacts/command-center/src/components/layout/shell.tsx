@@ -108,7 +108,7 @@ export function Shell({ children, user }: { children: React.ReactNode; user: Aut
           <SidebarFooter className="p-4">
             <div className="rounded-lg bg-muted/40 p-3 border border-border/50 space-y-0.5 text-center">
               <p className="text-[10px] text-primary font-semibold uppercase tracking-widest">Version 1.0 Release Candidate</p>
-              <p className="text-[10px] text-muted-foreground/70 uppercase tracking-widest font-medium">Phase 1D.1 – Polish</p>
+              <p className="text-[10px] text-muted-foreground/70 uppercase tracking-widest font-medium">Phase 1E — Growth Assessment</p>
             </div>
           </SidebarFooter>
         </Sidebar>

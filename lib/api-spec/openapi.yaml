@@ -26,7 +26,145 @@ tags:
     description: Task management
   - name: diagnostics
     description: Business Diagnostic Engine
+  - name: growth-assessments
+    description: Business Growth Assessment Engine
 paths:
+  /growth-assessments:
+    get:
+      operationId: listGrowthAssessments
+      tags: [growth-assessments]
+      summary: List growth assessments
+      parameters:
+        - in: query
+          name: diagnosticId
+          schema:
+            type: string
+        - in: query
+          name: clientId
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: showArchived
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of growth assessments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListGrowthAssessmentsResponse"
+  /growth-assessments/generate:
+    post:
+      operationId: generateGrowthAssessment
+      tags: [growth-assessments]
+      summary: Generate a growth assessment from a completed diagnostic version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateGrowthAssessmentBody"
+      responses:
+        "201":
+          description: Assessment generated or existing returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateGrowthAssessmentResponse"
+        "200":
+          description: Existing assessment returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateGrowthAssessmentResponse"
+  /growth-assessments/{id}:
+    get:
+      operationId: getGrowthAssessment
+      tags: [growth-assessments]
+      summary: Get a growth assessment by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Growth assessment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthAssessmentRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateGrowthAssessment
+      tags: [growth-assessments]
+      summary: Update editable text fields of a growth assessment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGrowthAssessmentBody"
+      responses:
+        "200":
+          description: Updated assessment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthAssessmentRecord"
+  /growth-assessments/{id}/action:
+    post:
+      operationId: growthAssessmentAction
+      tags: [growth-assessments]
+      summary: Perform a status action on a growth assessment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrowthAssessmentActionBody"
+      responses:
+        "200":
+          description: Updated assessment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthAssessmentRecord"
+  /dashboard/growth-assessments:
+    get:
+      operationId: getDashboardGrowthAssessments
+      tags: [growth-assessments]
+      summary: Dashboard summary for growth assessments
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardGrowthAssessmentsMetrics"
   /healthz:
     get:
       operationId: healthCheck
@@ -3150,6 +3288,165 @@ components:
         - versionA
         - versionB
         - categoryComparisons
+    GrowthAssessmentRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        diagnosticId:
+          type: string
+        diagnosticVersionId:
+          type: string
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        status:
+          type: string
+        healthScore:
+          type: ["string", "null"]
+        healthRating:
+          type: ["string", "null"]
+        systemStrengthSummary:
+          type: ["string", "null"]
+        systemVulnerabilitySummary:
+          type: ["string", "null"]
+        systemRiskSummary:
+          type: ["string", "null"]
+        systemGrowthOpportunitySummary:
+          type: ["string", "null"]
+        systemQuickWinSummary:
+          type: ["string", "null"]
+        systemStrategicFocusSummary:
+          type: ["string", "null"]
+        strengthSummary:
+          type: ["string", "null"]
+        vulnerabilitySummary:
+          type: ["string", "null"]
+        riskSummary:
+          type: ["string", "null"]
+        growthOpportunitySummary:
+          type: ["string", "null"]
+        quickWinSummary:
+          type: ["string", "null"]
+        strategicFocusSummary:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+        generatedSections:
+          type: object
+        reviewedBy:
+          type: ["string", "null"]
+        reviewedAt:
+          type: ["string", "null"]
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+        archivedAt:
+          type: ["string", "null"]
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        clientName:
+          type: ["string", "null"]
+        diagnosticName:
+          type: ["string", "null"]
+        versionNumber:
+          type: ["integer", "null"]
+        projectName:
+          type: ["string", "null"]
+      required:
+        - id
+        - diagnosticId
+        - diagnosticVersionId
+        - clientId
+        - status
+        - createdAt
+        - updatedAt
+    ListGrowthAssessmentsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GrowthAssessmentRecord"
+      required:
+        - data
+    GenerateGrowthAssessmentBody:
+      type: object
+      properties:
+        diagnosticId:
+          type: string
+        diagnosticVersionId:
+          type: string
+      required:
+        - diagnosticId
+        - diagnosticVersionId
+    GenerateGrowthAssessmentResponse:
+      type: object
+      properties:
+        assessment:
+          $ref: "#/components/schemas/GrowthAssessmentRecord"
+        generated:
+          type: boolean
+      required:
+        - assessment
+        - generated
+    UpdateGrowthAssessmentBody:
+      type: object
+      properties:
+        strengthSummary:
+          type: ["string", "null"]
+        vulnerabilitySummary:
+          type: ["string", "null"]
+        riskSummary:
+          type: ["string", "null"]
+        growthOpportunitySummary:
+          type: ["string", "null"]
+        quickWinSummary:
+          type: ["string", "null"]
+        strategicFocusSummary:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+    GrowthAssessmentActionBody:
+      type: object
+      properties:
+        action:
+          type: string
+      required:
+        - action
+    DashboardGrowthAssessmentsMetrics:
+      type: object
+      properties:
+        awaitingReview:
+          type: integer
+        approved:
+          type: integer
+        atRiskClients:
+          type: array
+          items:
+            type: object
+        criticalClients:
+          type: array
+          items:
+            type: object
+        recentAssessments:
+          type: array
+          items:
+            type: object
+      required:
+        - awaitingReview
+        - approved
+        - atRiskClients
+        - criticalClients
+        - recentAssessments
     DashboardDiagnosticsMetrics:
       type: object
       properties:

@@ -5,3 +5,4 @@
 - [api-client-react dist rebuild needed](api-client-react-dist-rebuild.md) — after Orval codegen, must run `pnpm tsc --build` in lib/api-client-react to update dist/ .d.ts files before running consumer typechecks.
 - [Sonner toast conflicts with existing Radix toast setup](sonner-radix-conflict.md) — do not add a second SonnerToaster; use existing useToast radix hook throughout.
 - [Dashboard diagnostics API shape](dashboard-diag-api-shape.md) — diagData fields are top-level (total, criticalBottlenecks, awaitingReview…), NOT nested under .metrics; historical code used .metrics which was wrong.
+- [Orval 8.x zod.looseObject Zod v3 incompatibility](orval-zod-looseobject.md) — orval 8.21+ emits zod.looseObject() for bare type:object; Zod v3 crashes. Run sed patch after every orval codegen.

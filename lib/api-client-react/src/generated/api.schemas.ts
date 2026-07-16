@@ -802,6 +802,122 @@ export interface DiagnosticVersionComparison {
   categoryComparisons: DiagnosticVersionComparisonCategoryComparisonsItem[];
 }
 
+export type GrowthAssessmentRecordGeneratedSections = { [key: string]: unknown };
+
+export interface GrowthAssessmentRecord {
+  id: string;
+  diagnosticId: string;
+  diagnosticVersionId: string;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  status: string;
+  /** @nullable */
+  healthScore?: string | null;
+  /** @nullable */
+  healthRating?: string | null;
+  /** @nullable */
+  systemStrengthSummary?: string | null;
+  /** @nullable */
+  systemVulnerabilitySummary?: string | null;
+  /** @nullable */
+  systemRiskSummary?: string | null;
+  /** @nullable */
+  systemGrowthOpportunitySummary?: string | null;
+  /** @nullable */
+  systemQuickWinSummary?: string | null;
+  /** @nullable */
+  systemStrategicFocusSummary?: string | null;
+  /** @nullable */
+  strengthSummary?: string | null;
+  /** @nullable */
+  vulnerabilitySummary?: string | null;
+  /** @nullable */
+  riskSummary?: string | null;
+  /** @nullable */
+  growthOpportunitySummary?: string | null;
+  /** @nullable */
+  quickWinSummary?: string | null;
+  /** @nullable */
+  strategicFocusSummary?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+  generatedSections?: GrowthAssessmentRecordGeneratedSections;
+  /** @nullable */
+  reviewedBy?: string | null;
+  /** @nullable */
+  reviewedAt?: string | null;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  diagnosticName?: string | null;
+  /** @nullable */
+  versionNumber?: number | null;
+  /** @nullable */
+  projectName?: string | null;
+}
+
+export interface ListGrowthAssessmentsResponse {
+  data: GrowthAssessmentRecord[];
+}
+
+export interface GenerateGrowthAssessmentBody {
+  diagnosticId: string;
+  diagnosticVersionId: string;
+}
+
+export interface GenerateGrowthAssessmentResponse {
+  assessment: GrowthAssessmentRecord;
+  generated: boolean;
+}
+
+export interface UpdateGrowthAssessmentBody {
+  /** @nullable */
+  strengthSummary?: string | null;
+  /** @nullable */
+  vulnerabilitySummary?: string | null;
+  /** @nullable */
+  riskSummary?: string | null;
+  /** @nullable */
+  growthOpportunitySummary?: string | null;
+  /** @nullable */
+  quickWinSummary?: string | null;
+  /** @nullable */
+  strategicFocusSummary?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+}
+
+export interface GrowthAssessmentActionBody {
+  action: string;
+}
+
+export type DashboardGrowthAssessmentsMetricsAtRiskClientsItem = { [key: string]: unknown };
+
+export type DashboardGrowthAssessmentsMetricsCriticalClientsItem = { [key: string]: unknown };
+
+export type DashboardGrowthAssessmentsMetricsRecentAssessmentsItem = { [key: string]: unknown };
+
+export interface DashboardGrowthAssessmentsMetrics {
+  awaitingReview: number;
+  approved: number;
+  atRiskClients: DashboardGrowthAssessmentsMetricsAtRiskClientsItem[];
+  criticalClients: DashboardGrowthAssessmentsMetricsCriticalClientsItem[];
+  recentAssessments: DashboardGrowthAssessmentsMetricsRecentAssessmentsItem[];
+}
+
 export type DashboardDiagnosticsMetricsTopBottlenecksItem = { [key: string]: unknown };
 
 export type DashboardDiagnosticsMetricsAwaitingReviewListItem = { [key: string]: unknown };
@@ -821,6 +937,13 @@ export interface DashboardDiagnosticsMetrics {
   recentDiagnostics: DashboardDiagnosticsMetricsRecentDiagnosticsItem[];
   recentActivity: ActivityRecord[];
 }
+
+export type ListGrowthAssessmentsParams = {
+diagnosticId?: string;
+clientId?: string;
+status?: string;
+showArchived?: string;
+};
 
 export type ListActivityParams = {
 /**

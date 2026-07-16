@@ -7,3 +7,4 @@ export * from "./clientNotes";
 export * from "./projects";
 export * from "./tasks";
 export * from "./diagnostics";
+export * from "./growthAssessments";
