@@ -327,7 +327,7 @@ export default function DiagnosticCreatePage() {
         <div className="space-y-4">
           {/* Live preview bar */}
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-wrap items-center gap-6">
-            <HealthScoreGauge score={liveHealthScore} size={80} strokeWidth={8} />
+            <HealthScoreGauge score={liveHealthScore} size={80} strokeWidth={8} showScale={false} />
             <div className="flex-1 min-w-0 space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-slate-400">Live Health Score Preview</span>
@@ -467,7 +467,7 @@ export default function DiagnosticCreatePage() {
 
             {/* Score summary */}
             <div className="flex flex-col sm:flex-row gap-6 items-center bg-slate-700/30 rounded-xl p-5">
-              <HealthScoreGauge score={liveHealthScore} size={120} />
+              <HealthScoreGauge score={liveHealthScore} size={120} showScale={false} />
               <div className="flex-1 space-y-3">
                 <div>
                   <div className="text-sm text-slate-400 mb-1">Diagnostic Name</div>

@@ -34,10 +34,11 @@ import {
 } from "@/lib/diagnostic-constants";
 import {
   ChevronLeft, Archive, RotateCcw, Trash2, CheckCircle2, Plus,
-  RefreshCw, GitBranch, AlertTriangle, ClipboardList, BarChart3, FileText, History,
+  RefreshCw, AlertTriangle, ClipboardList, BarChart3, History,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 type Tab = "overview" | "scores" | "bottlenecks" | "versions";
 
@@ -84,98 +85,151 @@ export default function DiagnosticDetailPage() {
   const recApproveMut = useApproveRecommendation();
   const newVersionMut = useCreateDiagnosticVersion();
 
+  const { toast } = useToast();
+
   const isArchived = !!diagnostic?.archivedAt;
   const isDraft = diagnostic?.status === "draft" || diagnostic?.status === "in_progress";
   const isCompleted = diagnostic?.status === "completed" || diagnostic?.status === "awaiting_review" || diagnostic?.status === "approved";
   const versionsList = versions ?? [];
 
   const handleSaveDraft = async () => {
-    // Use activeEditVersionId when set (after new-version creation) to target the correct version
     const targetVersionId = activeEditVersionId ?? version?.id;
-    await saveDraftMut.mutateAsync({
-      diagnosticId: id!,
-      data: { versionId: targetVersionId, scores: localScores as any },
-    });
-    refetchDiag();
-    refetchVersion();
-    setEditingScores(false);
-    setActiveEditVersionId(null);
+    try {
+      await saveDraftMut.mutateAsync({
+        diagnosticId: id!,
+        data: { versionId: targetVersionId, scores: localScores as any },
+      });
+      toast({ title: "Draft saved", description: "Scores have been saved as a draft." });
+      refetchDiag();
+      refetchVersion();
+      setEditingScores(false);
+      setActiveEditVersionId(null);
+    } catch {
+      toast({ title: "Failed to save draft", description: "Please check your inputs and try again.", variant: "destructive" });
+    }
   };
 
   const handleComplete = async () => {
-    await completeMut.mutateAsync({
-      diagnosticId: id!,
-      data: { versionId: version?.id ?? undefined },
-    });
-    setCompleteOpen(false);
-    refetchDiag();
-    refetchVersion();
-    setTab("overview");
+    try {
+      await completeMut.mutateAsync({
+        diagnosticId: id!,
+        data: { versionId: version?.id ?? undefined },
+      });
+      toast({ title: "Assessment Completed", description: "This diagnostic has been marked complete and is ready for review." });
+      setCompleteOpen(false);
+      refetchDiag();
+      refetchVersion();
+      setTab("overview");
+    } catch {
+      toast({ title: "Failed to complete assessment", description: "Please try again.", variant: "destructive" });
+    }
   };
 
   const handleApproveAction = async (action: string) => {
-    await approveMut.mutateAsync({
-      diagnosticId: id!,
-      versionNumber: activeVersionNum!,
-      data: { action },
-    });
-    refetchDiag();
+    try {
+      await approveMut.mutateAsync({
+        diagnosticId: id!,
+        versionNumber: activeVersionNum!,
+        data: { action },
+      });
+      if (action === "approve") {
+        toast({ title: "Diagnostic Approved", description: "This version has been approved." });
+      } else if (action === "mark_awaiting_review") {
+        toast({ title: "Submitted for Review", description: "The diagnostic is now awaiting review." });
+      }
+      refetchDiag();
+    } catch {
+      toast({ title: "Action failed", description: "Please try again.", variant: "destructive" });
+    }
   };
 
   const handleArchive = async () => {
-    await archiveMut.mutateAsync({ diagnosticId: id! });
-    setArchiveOpen(false);
-    navigate("/diagnostics");
+    try {
+      await archiveMut.mutateAsync({ diagnosticId: id! });
+      toast({ title: "Diagnostic archived" });
+      setArchiveOpen(false);
+      navigate("/diagnostics");
+    } catch {
+      toast({ title: "Failed to archive", description: "Please try again.", variant: "destructive" });
+    }
   };
 
   const handleRestore = async () => {
-    await restoreMut.mutateAsync({ diagnosticId: id!, data: { status: restoreStatus } });
-    refetchDiag();
+    try {
+      await restoreMut.mutateAsync({ diagnosticId: id!, data: { status: restoreStatus } });
+      toast({ title: "Diagnostic restored", description: "The diagnostic has been restored." });
+      refetchDiag();
+    } catch {
+      toast({ title: "Failed to restore", description: "Please try again.", variant: "destructive" });
+    }
   };
 
   const handleDelete = async () => {
-    await deleteMut.mutateAsync({ diagnosticId: id! });
-    setDeleteOpen(false);
-    navigate("/diagnostics");
+    try {
+      await deleteMut.mutateAsync({ diagnosticId: id! });
+      toast({ title: "Diagnostic deleted" });
+      setDeleteOpen(false);
+      navigate("/diagnostics");
+    } catch {
+      toast({ title: "Failed to delete", description: "Please try again.", variant: "destructive" });
+    }
   };
 
   const handleResolutionChange = async (scoreId: string, status: string) => {
-    await resolutionMut.mutateAsync({ scoreId, data: { resolutionStatus: status } });
-    refetchVersion();
+    try {
+      await resolutionMut.mutateAsync({ scoreId, data: { resolutionStatus: status } });
+      refetchVersion();
+    } catch {
+      toast({ title: "Failed to update resolution status", variant: "destructive" });
+    }
   };
 
   const handleRecSave = async (recId: string, text: string) => {
-    await recEditMut.mutateAsync({ recId, data: { administratorFinalRecommendation: text } });
-    refetchVersion();
+    try {
+      await recEditMut.mutateAsync({ recId, data: { administratorFinalRecommendation: text } });
+      toast({ title: "Recommendation saved" });
+      refetchVersion();
+    } catch {
+      toast({ title: "Failed to save recommendation", variant: "destructive" });
+    }
   };
 
   const handleRecApprove = async (recId: string, action: string) => {
-    await recApproveMut.mutateAsync({ recId, data: { action } });
-    refetchVersion();
+    try {
+      await recApproveMut.mutateAsync({ recId, data: { action } });
+      const label = action === "approve" ? "Recommendation Approved" : action === "mark_implemented" ? "Marked as Implemented" : "Recommendation updated";
+      toast({ title: label });
+      refetchVersion();
+    } catch {
+      toast({ title: "Failed to update recommendation", variant: "destructive" });
+    }
   };
 
   const handleNewVersion = async () => {
-    const newVer = await newVersionMut.mutateAsync({ diagnosticId: id!, data: { copyScores: true } });
-    // Bind the upcoming save-draft to the newly created version ID (not the stale fetched version)
-    setActiveEditVersionId((newVer as any).id);
-    // Initialize localScores from current scores (server copies them) before setting edit mode
-    setLocalScores(scores.map((s: any) => ({
-      categoryKey: s.categoryKey,
-      categoryLabel: s.categoryLabel,
-      categoryDescription: s.categoryDescription,
-      displayOrder: s.displayOrder,
-      currentPerformance: s.currentPerformance != null ? Number(s.currentPerformance) : null,
-      businessImpact: s.businessImpact != null ? Number(s.businessImpact) : null,
-      urgency: s.urgency != null ? Number(s.urgency) : null,
-      evidence: s.evidence,
-      observations: s.observations,
-      notes: s.notes,
-      recommendedAction: s.recommendedAction,
-    })));
-    setEditingScores(true);
-    setTab("scores");
-    refetchDiag();
-    refetchVersions();
+    try {
+      const newVer = await newVersionMut.mutateAsync({ diagnosticId: id!, data: { copyScores: true } });
+      setActiveEditVersionId((newVer as any).id);
+      setLocalScores(scores.map((s: any) => ({
+        categoryKey: s.categoryKey,
+        categoryLabel: s.categoryLabel,
+        categoryDescription: s.categoryDescription,
+        displayOrder: s.displayOrder,
+        currentPerformance: s.currentPerformance != null ? Number(s.currentPerformance) : null,
+        businessImpact: s.businessImpact != null ? Number(s.businessImpact) : null,
+        urgency: s.urgency != null ? Number(s.urgency) : null,
+        evidence: s.evidence,
+        observations: s.observations,
+        notes: s.notes,
+        recommendedAction: s.recommendedAction,
+      })));
+      toast({ title: "New version created", description: "Edit your scores and save when ready." });
+      setEditingScores(true);
+      setTab("scores");
+      refetchDiag();
+      refetchVersions();
+    } catch {
+      toast({ title: "Failed to create new version", variant: "destructive" });
+    }
   };
 
   const startEditing = () => {
@@ -203,18 +257,27 @@ export default function DiagnosticDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="w-6 h-6 animate-spin text-slate-500" />
+      <div className="flex flex-col items-center justify-center h-64 gap-3">
+        <RefreshCw className="w-6 h-6 animate-spin text-indigo-400" />
+        <p className="text-slate-500 text-sm">Loading diagnostic…</p>
       </div>
     );
   }
 
   if (!diagnostic) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <p className="text-slate-400">Diagnostic not found.</p>
-        <button onClick={() => navigate("/diagnostics")} className="text-indigo-400 hover:text-indigo-300">
-          ← Back to Diagnostics
+      <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+        <AlertTriangle className="w-10 h-10 text-slate-600" />
+        <div>
+          <p className="text-slate-300 font-medium">Diagnostic not found</p>
+          <p className="text-slate-500 text-sm mt-1">This diagnostic may have been deleted or you don't have access.</p>
+        </div>
+        <button
+          onClick={() => navigate("/diagnostics")}
+          className="flex items-center gap-1.5 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm rounded-lg transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Back to Diagnostics
         </button>
       </div>
     );
@@ -332,17 +395,20 @@ export default function DiagnosticDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-slate-700/50">
+      <div className="flex gap-1 border-b border-slate-700/50 overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id as Tab)}
             className={cn(
-              "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+              "flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px shrink-0",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 focus-visible:ring-offset-slate-900 rounded-sm",
               tab === t.id
                 ? "border-indigo-500 text-indigo-300"
                 : "border-transparent text-slate-400 hover:text-slate-200",
             )}
+            aria-selected={tab === t.id}
+            role="tab"
           >
             <t.icon className="w-4 h-4" />
             {t.label}
@@ -359,18 +425,19 @@ export default function DiagnosticDetailPage() {
       {tab === "overview" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Health gauge */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 flex flex-col items-center gap-4">
-            <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wide">Overall Business Health</h3>
+          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6 flex flex-col items-center gap-3">
+            <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wide text-center">Overall Business Health</h3>
             <HealthScoreGauge
               score={diagnostic.overallHealthScore ? Number(diagnostic.overallHealthScore) : null}
               size={160}
+              showScale={true}
             />
             {diagnostic.overallPriorityScore && (
-              <div className="text-center">
+              <div className="w-full border-t border-slate-700/50 pt-3 text-center">
                 <div className="text-xs text-slate-500 mb-0.5">Avg Priority Score</div>
                 <div className="text-lg font-mono font-semibold text-slate-200">
                   {Number(diagnostic.overallPriorityScore).toFixed(1)}
-                  <span className="text-slate-500 text-sm">/250</span>
+                  <span className="text-slate-500 text-sm font-normal">/250</span>
                 </div>
               </div>
             )}

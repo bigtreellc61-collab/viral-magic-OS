@@ -84,8 +84,8 @@ export function Shell({ children, user }: { children: React.ReactNode; user: Aut
                 <Hexagon className="size-5" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold text-sidebar-foreground tracking-tight">Viral Magic OS</span>
-                <span className="text-[10px] text-sidebar-foreground/70 uppercase tracking-widest font-medium">Command Center</span>
+                <span className="font-semibold text-sidebar-foreground tracking-tight">Viral Magic OS™</span>
+                <span className="text-[10px] text-sidebar-foreground/60 uppercase tracking-widest font-medium">Command Center</span>
               </div>
             </div>
           </SidebarHeader>
@@ -106,8 +106,9 @@ export function Shell({ children, user }: { children: React.ReactNode; user: Aut
           </SidebarContent>
 
           <SidebarFooter className="p-4">
-            <div className="flex items-center justify-center gap-2 rounded-lg bg-muted/40 p-3 text-[10px] uppercase tracking-widest text-muted-foreground font-medium border border-border/50">
-              <span>Phase 1D Release</span>
+            <div className="rounded-lg bg-muted/40 p-3 border border-border/50 space-y-0.5 text-center">
+              <p className="text-[10px] text-primary font-semibold uppercase tracking-widest">Version 1.0 Release Candidate</p>
+              <p className="text-[10px] text-muted-foreground/70 uppercase tracking-widest font-medium">Phase 1D.1 – Polish</p>
             </div>
           </SidebarFooter>
         </Sidebar>
