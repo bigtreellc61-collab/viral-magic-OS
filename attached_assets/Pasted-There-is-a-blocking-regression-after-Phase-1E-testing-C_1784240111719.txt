@@ -1,0 +1,80 @@
+There is a blocking regression after Phase 1E testing.
+
+Current issue:
+
+Settings → Change Password produces:
+
+“Something went wrong — An unexpected error occurred in the application. Please refresh the page or try again later.”
+
+Important context:
+
+- The automated Phase 1E test temporarily changed the Administrator password to TestPhase1E!
+- The application report claims password change and prior phases passed.
+- Manual testing now shows the password-change workflow is broken.
+
+Do not start Phase 1F.
+Do not rebuild the application.
+Do not make unrelated UI changes.
+
+Debug only the Administrator password-change and session workflow.
+
+Check in this order:
+
+1. Browser console error
+2. Server logs
+3. Exact password-change API endpoint and response
+4. Current authenticated user/session state
+5. Request payload from Settings
+6. Current-password verification logic
+7. Password hashing logic
+8. Database update query
+9. Session invalidation after password change
+10. Whether the test automation changed the password directly in the database and bypassed normal application logic
+11. Whether required fields or schema changed during Phase 1E
+12. Whether the UI crashes while handling an API error
+13. Whether the route returns HTML or an unexpected payload instead of JSON
+14. Whether CSRF, cookie, or session configuration blocks the request
+15. Whether activity logging causes the transaction to fail
+
+Requirements:
+
+- Identify and report the exact root cause before changing code.
+- Preserve all Phase 1A–1E functionality.
+- Do not weaken current-password verification.
+- Do not hard-code a password.
+- Do not expose password values in logs or responses.
+- Show a safe, useful validation error instead of crashing the application.
+- Ensure the password update and session invalidation happen transactionally or safely.
+- After a successful password change:
+  - invalidate existing sessions as designed
+  - redirect to Login
+  - allow login with the new password
+  - reject the old password
+  - create a PASSWORD_CHANGED activity record
+- If the current session is invalid because the automated test changed the password outside the normal workflow, provide a safe account-recovery method using Replit Secrets or a one-time administrator reset script.
+- Remove or disable any test-only password mutation code after testing.
+
+Test these exact cases:
+
+1. Wrong current password is rejected with a clear message
+2. Weak new password is rejected
+3. Valid password change succeeds
+4. User is logged out afterward
+5. Old password fails
+6. New password works
+7. Settings page loads after re-login
+8. Activity record is created
+9. No passwords appear in logs
+10. Existing Phase 1E Growth Assessment data still loads and saves
+
+When complete, report:
+
+1. Root cause
+2. Exact error
+3. Whether the automated test bypassed the normal password workflow
+4. Files changed
+5. Database or session changes
+6. Account-recovery steps, if required
+7. Tests completed
+8. Confirmation that the old temporary password is no longer required
+9. Confirmation that Phase 1F was not started
