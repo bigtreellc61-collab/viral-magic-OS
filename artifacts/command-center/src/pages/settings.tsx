@@ -384,7 +384,7 @@ export function SettingsPage({ user }: { user: AuthUser }) {
                 <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6 max-w-xl">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <FormLabel>Email Address</FormLabel>
+                      <label className="text-sm font-medium leading-none">Email Address</label>
                       <Input value={user.email} disabled className="bg-muted/50 text-muted-foreground" />
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium flex items-center gap-1 mt-1">
                         <Shield className="h-3 w-3" /> Master Administrator
