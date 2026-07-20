@@ -1,0 +1,441 @@
+PHASE 1F-C
+Viral Magic OS — Solution Recommendation Testing, Polish, and Stabilization
+
+OBJECTIVE
+
+Complete Phase 1F-C by testing, polishing, and stabilizing the Phase 1F Solution Recommendation system for Version 1.0.
+
+Phase 1F-A and Phase 1F-B are complete.
+
+This phase is not for adding major new features.
+
+Primary goals:
+
+1. Eliminate known warnings and small defects
+2. Verify the full recommendation workflow end to end
+3. Improve reliability, clarity, and usability
+4. Confirm responsive behavior
+5. Confirm accessibility basics
+6. Confirm no regressions across Phase 1A–1F
+7. Produce a final Phase 1F completion report
+
+STRICT SCOPE
+
+Work only on testing, repair, polish, and stabilization.
+
+Do not:
+
+- Start Phase 1G
+- Add billing
+- Add client portals
+- Add exports
+- Add PDF generation
+- Add print-specific features beyond fixing existing behavior
+- Add AI-generated recommendations
+- Add external APIs
+- Add new database tables unless required to repair a verified defect
+- Redesign the application
+- Replace the deterministic recommendation engine
+- Change recommendation scoring logic unless a verified bug is found
+- Perform broad refactors
+- Add unrelated features
+
+KNOWN ISSUE TO FIX FIRST
+
+There is a pre-existing React HTML nesting warning in the Sidebar:
+
+<div> cannot be a descendant of <p>
+
+Find the exact invalid nesting and correct it using semantically appropriate elements.
+
+Requirements:
+
+- Do not suppress the warning
+- Do not use console filters
+- Do not use dangerouslySetInnerHTML
+- Do not change the Sidebar design unnecessarily
+- Confirm the warning is gone after the fix
+
+SECTION 1 — FULL END-TO-END RECOMMENDATION WORKFLOW TEST
+
+Test the complete workflow through the application UI and API.
+
+Use a dedicated test client/project/assessment where possible.
+
+Verify:
+
+1. Open an approved Growth Assessment
+2. Generate a Solution Recommendation Plan
+3. Confirm the plan is created in draft status
+4. Confirm the plan appears in:
+   - Growth Assessment Recommendations tab
+   - Client Overview
+   - Project Diagnostics
+   - Dashboard Recent Plans
+5. Open the recommendation detail page
+6. Confirm all seven tabs load correctly:
+   - Executive Recommendation
+   - Priority Recommendations
+   - Action Plan
+   - Business Impact
+   - Dependencies
+   - Consultant Notes
+   - Approval
+7. Edit draft-level fields
+8. Save edits
+9. Reload and confirm persistence
+10. Edit per-recommendation admin notes
+11. Reload and confirm persistence
+12. Submit the plan for review
+13. Confirm awaiting_review status
+14. Confirm draft-only fields become read-only where intended
+15. Approve the plan
+16. Confirm approved status
+17. Confirm approval validation blocks approval when required fields are missing
+18. Reopen the approved plan
+19. Confirm reopened status allows editing
+20. Regenerate the plan
+21. Confirm the prior plan becomes superseded
+22. Confirm the new plan becomes current
+23. Confirm regeneration is atomic
+24. Archive a valid test plan
+25. Confirm archived plans remain viewable but read-only
+26. Confirm activity history records all lifecycle events
+
+Document every tested transition and result.
+
+SECTION 2 — STATUS AND PERMISSION VALIDATION
+
+Verify the correct actions are available in each status.
+
+Draft:
+
+- edit
+- submit
+- regenerate
+- archive, if designed
+- approve should not bypass required validation
+
+Awaiting review:
+
+- approve
+- reopen if supported
+- archive if supported
+- editing restrictions enforced
+
+Approved:
+
+- read-only
+- reopen
+- regenerate if supported
+- archive if supported
+
+Reopened:
+
+- editable
+- submit
+- approve after validation
+- regenerate
+
+Superseded:
+
+- read-only
+- clearly labeled
+- cannot be accidentally edited or approved
+
+Archived:
+
+- read-only
+- clearly labeled
+- excluded from current-plan displays where intended
+
+Confirm UI permissions and API permissions agree.
+
+Test direct API calls for prohibited transitions to ensure backend enforcement exists and the UI is not the only protection.
+
+SECTION 3 — DATA INTEGRITY AND ENGINE VALIDATION
+
+Verify:
+
+- Recommendation priorities are ranked consistently
+- Priority scores remain in the 0–100 range
+- Classification bands display correctly
+- Recommendations link to the correct assessment
+- Client and project relationships are correct
+- Actions belong to the correct recommendation
+- Dependencies reference the correct recommendation records
+- No duplicate current plans exist after regeneration
+- Superseded plans are preserved
+- Activity entries are timestamped and ordered correctly
+- Empty optional fields do not crash rendering
+- Missing related records return controlled errors
+- Invalid IDs return 404
+- Invalid request bodies return 400
+- Invalid workflow transitions return an appropriate 4xx response
+- Approval validation returns a clear error response
+
+Do not change scoring rules unless a real deterministic bug is reproduced.
+
+SECTION 4 — UI POLISH
+
+Inspect all Phase 1F UI surfaces:
+
+- Solution Recommendation detail page
+- Growth Assessment Recommendations tab
+- Client Latest Solution Recommendation panel
+- Project Recommendation Plans section
+- Dashboard recommendation metrics and recent plans
+
+Correct verified issues involving:
+
+- clipping
+- overflow
+- inconsistent spacing
+- broken alignment
+- unreadable labels
+- missing empty states
+- unclear loading states
+- unclear error states
+- buttons remaining enabled during requests
+- duplicate submissions
+- stale data after mutations
+- missing confirmation feedback
+- broken links
+- incorrect status badges
+- long recommendation text
+- long client or project names
+- empty arrays
+- zero-state dashboard metrics
+
+Do not redesign the visual system.
+
+Match existing Viral Magic OS styles.
+
+SECTION 5 — LOADING, ERROR, AND EMPTY STATES
+
+Every Phase 1F surface must have appropriate states.
+
+Verify or add:
+
+- loading skeleton or loading message
+- controlled error message
+- retry option where appropriate
+- empty state for no recommendation plan
+- empty state for no actions
+- empty state for no dependencies
+- empty state for no activity
+- disabled submit buttons during mutations
+- disabled save buttons when nothing changed
+- visible success or error toast after actions
+
+Prevent:
+
+- blank screens
+- uncaught promise errors
+- duplicate API submissions
+- silent failures
+- buttons that appear to work but do nothing
+
+SECTION 6 — RESPONSIVE TESTING
+
+Test at minimum:
+
+- 320 px mobile width
+- 375 px mobile width
+- 768 px tablet width
+- 1024 px desktop width
+- 1440 px desktop width
+
+Verify:
+
+- tabs remain usable
+- recommendation cards do not overflow
+- action tables or lists remain readable
+- long text wraps
+- status badges remain visible
+- dialogs fit the viewport
+- buttons remain reachable
+- no horizontal page scrolling unless intentionally required
+- dashboard metric cards stack correctly
+- client and project panels remain usable
+
+Fix only verified responsive problems.
+
+SECTION 7 — ACCESSIBILITY BASICS
+
+Verify:
+
+- interactive controls are keyboard reachable
+- dialogs can be closed by keyboard
+- buttons have accessible names
+- icon-only buttons have aria-labels
+- form labels are correctly associated
+- tab controls expose the correct selected state
+- visible focus states are not removed
+- status is not communicated only by color
+- error messages are readable by assistive technology where practical
+- heading order is reasonable
+- invalid HTML nesting warnings are eliminated
+
+Do not perform a full accessibility redesign.
+
+SECTION 8 — REACT AND FRONTEND STABILITY
+
+Confirm:
+
+- no Rules of Hooks violations
+- no conditional hooks
+- no hydration warnings
+- no invalid DOM nesting warnings
+- no duplicate React keys
+- no state updates after unmount warnings
+- no unhandled promise rejections
+- no browser console errors during the full workflow
+- no unnecessary infinite request loops
+- React Query caches invalidate or refresh correctly after mutations
+- browser refresh on a detail route works
+- direct navigation to /solution-recommendations/:id works
+- invalid recommendation ID displays a controlled 404 state
+
+SECTION 9 — SECURITY AND AUTH REGRESSION
+
+Verify:
+
+- unauthenticated recommendation routes return 401
+- authenticated users can access permitted recommendation routes
+- password change still returns 204
+- old password becomes invalid after password change
+- active session behavior remains consistent with current design
+- recommendation mutation routes reject unauthenticated requests
+- request validation remains active
+- no password values are written to logs
+- no sensitive recommendation data appears in error stack traces
+
+Use a temporary test password only if necessary.
+
+Do not include any real password in the completion report.
+
+SECTION 10 — AUTOMATED AND MANUAL TESTING
+
+Run the repository-supported checks.
+
+At minimum:
+
+1. api-client-react TypeScript build
+2. command-center TypeScript check
+3. frontend production build with required environment variables
+4. backend tests
+5. Phase 1F engine tests
+6. route/API regression tests
+7. manual browser workflow test
+8. browser console inspection
+
+Use valid repository commands.
+
+Do not report a test as passing if:
+
+- the command did not execute
+- the command exited nonzero
+- output was silently suppressed
+- a grep command was mistaken for the test exit code
+- only the development server loaded without actual verification
+
+Capture actual exit codes.
+
+SECTION 11 — REGRESSION TEST PHASE 1A–1F
+
+Verify that the following still work:
+
+- Login
+- Logout
+- Session check
+- Password change
+- Dashboard
+- Clients
+- Client detail
+- Projects
+- Project detail
+- Diagnostics
+- Diagnostic detail
+- Growth Assessments
+- Growth Assessment detail
+- Settings
+- Tasks
+- Solution Recommendation dashboard metrics
+- Solution Recommendation generation
+- Solution Recommendation detail
+- Recommendation lifecycle actions
+
+Do not alter unrelated features unless a regression caused by Phase 1F is verified.
+
+SECTION 12 — CLEANUP RULES
+
+Allowed:
+
+- small component extraction when necessary for stability
+- fixing verified typing issues
+- fixing stale cache behavior
+- fixing invalid markup
+- fixing loading/error/empty states
+- fixing accessibility attributes
+- fixing responsive styling
+- adding focused tests
+- removing dead Phase 1F code proven unused
+
+Not allowed:
+
+- broad architecture changes
+- new product modules
+- major UI redesign
+- speculative optimization
+- dependency upgrades unless absolutely required
+- changing package managers
+- replacing generated API clients
+- changing the deterministic business rules without a reproduced bug
+
+COMPLETION CRITERIA
+
+Phase 1F-C is complete only when:
+
+- The Sidebar invalid nesting warning is fixed
+- The full recommendation lifecycle works end to end
+- All status permissions are correct
+- No TypeScript errors remain
+- Frontend production build succeeds
+- Backend and Phase 1F tests pass
+- Browser console is clean during tested workflows
+- Loading, error, and empty states are usable
+- Responsive behavior is acceptable
+- Basic accessibility checks pass
+- Phase 1A–1F regression checks pass
+- No Phase 1G work has started
+
+FINAL COMPLETION REPORT
+
+Provide a structured report containing:
+
+1. Executive summary
+2. Defects found
+3. Defects fixed
+4. Files changed
+5. Sidebar nesting root cause and fix
+6. Full lifecycle test results
+7. Status-transition test matrix
+8. UI integration test results
+9. Responsive test results
+10. Accessibility results
+11. Security/auth regression results
+12. TypeScript commands and exit codes
+13. Frontend build command and exit code
+14. Backend test commands and results
+15. Phase 1A–1F regression results
+16. Remaining non-blocking warnings
+17. Known limitations
+18. Confirmation that Phase 1G was not started
+19. Final statement:
+
+“Phase 1F-C complete and Phase 1F fully stabilized.”
+
+Stop after the report.
+
+Do not begin Phase 1G.
