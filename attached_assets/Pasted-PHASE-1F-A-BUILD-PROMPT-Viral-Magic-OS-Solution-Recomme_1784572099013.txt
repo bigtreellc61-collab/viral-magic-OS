@@ -1,0 +1,754 @@
+PHASE 1F-A BUILD PROMPT
+Viral Magic OS — Solution Recommendation Engine™
+Backend Foundation Only
+
+You are continuing the existing Viral Magic OS application.
+
+Completed and stable:
+
+- Phase 1A — Foundation
+- Phase 1B — Client Management
+- Phase 1C — Projects and Tasks
+- Phase 1D — Business Diagnostic Engine
+- Phase 1D.1 — Stability and Polish
+- Phase 1E — Business Growth Assessment Engine
+
+The application is currently stable at Phase 1E.
+
+Important history:
+
+- Password-change regression was fixed.
+- A React Rules of Hooks issue was fixed.
+- Password change currently works.
+- Phase 1F has not been implemented.
+- A previous large Phase 1F prompt caused the Agent session to freeze before implementation began.
+
+Build only Phase 1F-A.
+
+Do not build Phase 1F-B.
+Do not build Phase 1F-C.
+Do not start Phase 1G.
+Do not build UI pages beyond any minimal internal testing needed.
+Do not modify authentication.
+Do not redesign existing pages.
+Do not add external AI APIs.
+Do not add platform matching, proposals, billing, software blueprints, or client portals.
+
+==================================================
+1. OBJECTIVE
+==================================================
+
+Create the backend foundation for the Solution Recommendation Engine™.
+
+Phase 1E identifies:
+
+- Business health
+- Strengths
+- Vulnerabilities
+- Primary risks
+- Quick wins
+- Strategic priorities
+- Growth opportunities
+
+Phase 1F-A must convert that assessment data into deterministic, explainable, prioritized business recommendations.
+
+The engine must answer:
+
+“What should this business address first, and why?”
+
+The engine must be:
+
+- Deterministic
+- Rule-based
+- Explainable
+- Auditable
+- Reproducible
+- Editable later in Phase 1F-B
+- Independent from external AI services
+
+Do not invent unsupported facts.
+
+==================================================
+2. PHASE 1F-A SCOPE
+==================================================
+
+Build only:
+
+1. Database schema
+2. Recommendation rule library
+3. Priority-scoring engine
+4. Recommendation generation service
+5. API routes
+6. Validation
+7. Status workflow backend
+8. Activity logging
+9. OpenAPI specification
+10. Generated API clients
+11. Backend tests
+
+Do not build the full recommendation UI yet.
+
+==================================================
+3. RECOMMENDATION PLAN
+==================================================
+
+A Solution Recommendation Plan must be generated from a Growth Assessment.
+
+Default rule:
+
+- Plan should be generated from an approved Growth Assessment.
+- If the assessment is not approved, reject generation with a clear message.
+- Only one active plan may exist for the same Growth Assessment.
+- Older approved plans must never be overwritten.
+- Regeneration is allowed only while the plan is Draft or Reopened.
+
+Required plan statuses:
+
+- draft
+- awaiting_review
+- approved
+- reopened
+- superseded
+- archived
+
+Status transitions:
+
+draft
+→ awaiting_review
+→ approved
+
+approved
+→ reopened
+→ draft
+
+approved
+→ superseded
+
+draft / approved / superseded
+→ archived
+
+==================================================
+4. DATABASE SCHEMA
+==================================================
+
+Use the project’s current Drizzle and PostgreSQL conventions.
+
+Create these tables or equivalent normalized structures.
+
+A. solution_recommendation_plans
+
+Fields:
+
+- id
+- growth_assessment_id
+- diagnostic_id
+- diagnostic_version_id
+- client_id
+- project_id
+- status
+- overall_priority_score
+- system_executive_recommendation
+- executive_recommendation
+- system_business_impact_summary
+- business_impact_summary
+- system_dependency_summary
+- dependency_summary
+- consultant_notes
+- generated_metadata JSONB
+- recommendation_engine_version
+- reviewed_by
+- reviewed_at
+- approved_by
+- approved_at
+- reopened_by
+- reopened_at
+- archived_at
+- created_by
+- updated_by
+- created_at
+- updated_at
+
+B. solution_recommendations
+
+Fields:
+
+- id
+- plan_id
+- source_category_key
+- source_assessment_data JSONB
+- rank
+- title
+- domain
+- problem_statement
+- why_it_matters
+- recommended_outcome
+- priority_score
+- priority_classification
+- severity_score
+- business_impact_score
+- urgency_score
+- performance_gap_score
+- quick_win_bonus
+- dependency_bonus
+- effort_penalty
+- quick_win_flag
+- effort
+- confidence
+- timeframe
+- suggested_owner
+- success_metric
+- dependency_notes
+- scoring_explanation JSONB
+- admin_notes
+- status
+- sort_order
+- created_at
+- updated_at
+
+C. solution_recommendation_actions
+
+Fields:
+
+- id
+- recommendation_id
+- title
+- description
+- time_horizon
+- suggested_owner
+- expected_outcome
+- success_metric
+- completion_status
+- sort_order
+- created_at
+- updated_at
+
+D. solution_recommendation_dependencies
+
+Fields:
+
+- id
+- plan_id
+- recommendation_id
+- depends_on_recommendation_id
+- dependency_type
+- notes
+- created_at
+
+E. solution_recommendation_rules
+
+Fields:
+
+- id
+- rule_key
+- version
+- domain
+- category_match
+- trigger_conditions JSONB
+- templates JSONB
+- default_actions JSONB
+- default_effort
+- default_timeframe
+- default_owner
+- default_metrics JSONB
+- dependency_rules JSONB
+- is_active
+- created_at
+- updated_at
+
+Requirements:
+
+- Use foreign keys
+- Add useful indexes
+- Do not duplicate entire Growth Assessment records
+- Preserve source references
+- Prevent cross-client linking
+- Use transactions where appropriate
+- Prevent orphaned actions and dependencies
+
+If drizzle-kit requires a TTY, use the same safe migration method used in Phase 1E and document it.
+
+==================================================
+5. RECOMMENDATION DOMAINS
+==================================================
+
+Use these domains:
+
+1. Revenue and Lead Growth
+2. Sales and Conversion
+3. Customer Experience and Retention
+4. Operations and Efficiency
+5. Technology and Automation
+6. Reporting and Scalability
+7. Strategy and Offer Clarity
+8. Team and Accountability
+
+Map existing Phase 1D and Phase 1E categories into these domains.
+
+Do not generate recommendations in domains unsupported by assessment data.
+
+==================================================
+6. RULE LIBRARY
+==================================================
+
+Create a reusable internal recommendation-rule library.
+
+Initial rules should cover:
+
+- Inconsistent lead generation
+- Poor lead capture
+- Slow speed to lead
+- Weak follow-up
+- Low sales conversion
+- Unclear offer
+- Weak differentiation
+- High customer acquisition cost
+- Poor customer retention
+- Inconsistent customer experience
+- Manual repetitive processes
+- Disconnected systems
+- Missing CRM process
+- Weak reporting
+- Missing KPI tracking
+- Lack of operational documentation
+- Unclear accountability
+- Limited scalability
+- Paid advertising before foundations are ready
+
+Each rule must contain:
+
+- Rule key
+- Trigger conditions
+- Domain
+- Recommendation title
+- Problem statement template
+- Why-it-matters template
+- Recommended outcome template
+- Default actions
+- Default owner
+- Default effort
+- Default timeframe
+- Suggested metrics
+- Dependency rules
+- Rule version
+- Active status
+
+Use generic business language.
+
+Do not mention specific software vendors.
+
+Do not create recommendations unsupported by assessment data.
+
+==================================================
+7. PRIORITY SCORING
+==================================================
+
+Create named constants at the top of the recommendation engine.
+
+Priority score components:
+
+- Severity
+- Business impact
+- Urgency
+- Performance gap
+- Quick-win bonus
+- Dependency importance
+- Effort penalty
+
+Normalize the score to 0–100.
+
+Suggested classification:
+
+- 90–100 — Critical Priority
+- 80–89 — High Priority
+- 65–79 — Important
+- 50–64 — Planned Improvement
+- 0–49 — Monitor
+
+Store a scoring explanation for every recommendation.
+
+Example scoring explanation:
+
+{
+  "severity": 20,
+  "businessImpact": 20,
+  "urgency": 15,
+  "performanceGap": 18,
+  "quickWinBonus": 8,
+  "dependencyBonus": 5,
+  "effortPenalty": -6,
+  "finalScore": 80
+}
+
+Do not rely only on the existing Phase 1E priority score.
+
+==================================================
+8. EFFORT AND TIMEFRAME
+==================================================
+
+Effort values:
+
+- low
+- moderate
+- high
+- major_initiative
+
+Timeframe values:
+
+- immediate
+- 7_days
+- 30_days
+- 60_90_days
+- strategic_90_plus_days
+
+Quick-win rule:
+
+A recommendation may be marked quick win only when:
+
+- Impact is high
+- Effort is low or moderate
+- No unresolved critical dependency exists
+- Work can begin within 30 days
+
+Do not mark foundational dependency work as a quick win when another critical issue must be resolved first.
+
+==================================================
+9. GENERATED OUTPUT
+==================================================
+
+Generate:
+
+A. Executive Recommendation
+
+Include:
+
+- Overall business condition
+- Highest-priority risk
+- Strongest growth opportunity
+- Recommended 90-day focus
+- Why the order matters
+
+B. Top Recommendations
+
+Generate the top 3 to 5.
+
+Each must include:
+
+- Rank
+- Title
+- Domain
+- Problem statement
+- Why it matters
+- Recommended outcome
+- Priority score
+- Classification
+- Effort
+- Confidence
+- Timeframe
+- Suggested owner
+- Success metric
+- Dependency notes
+- Scoring explanation
+
+C. Action Steps
+
+For each recommendation, generate action steps in:
+
+- Immediate
+- Within 7 Days
+- Within 30 Days
+- Within 60–90 Days
+
+Each action includes:
+
+- Title
+- Description
+- Owner
+- Time horizon
+- Expected outcome
+- Success metric
+- Sort order
+
+D. Business Impact Summary
+
+Score expected impact from 1–5 across:
+
+- Revenue growth
+- Lead generation
+- Sales conversion
+- Customer retention
+- Customer experience
+- Operational efficiency
+- Technology and automation
+- Reporting and visibility
+- Scalability
+
+E. Dependency Summary
+
+Identify sequencing relationships such as:
+
+- Tracking before optimization
+- Lead capture before advertising
+- CRM before advanced automation
+- Response process before scaling lead volume
+- Offer clarity before funnel expansion
+- Follow-up before increasing traffic
+- Process documentation before delegation
+
+Prevent circular dependencies.
+
+==================================================
+10. API ROUTES
+==================================================
+
+Use the project’s existing route conventions.
+
+Required endpoints:
+
+POST /api/solution-recommendations/generate
+
+GET /api/solution-recommendations/:id
+
+PATCH /api/solution-recommendations/:id
+
+GET /api/growth-assessments/:id/solution-recommendation
+
+GET /api/clients/:id/latest-solution-recommendation
+
+GET /api/projects/:id/solution-recommendations
+
+POST /api/solution-recommendations/:id/submit
+
+POST /api/solution-recommendations/:id/approve
+
+POST /api/solution-recommendations/:id/reopen
+
+POST /api/solution-recommendations/:id/archive
+
+POST /api/solution-recommendations/:id/regenerate
+
+GET /api/solution-recommendations/:id/activity
+
+Backend requirements:
+
+- Generate plan only from valid assessment
+- Prevent duplicate active plan
+- Validate client/project relationships
+- Save all generated recommendations transactionally
+- Prevent invalid score ranges
+- Prevent duplicate ranks
+- Prevent circular dependencies
+- Prevent approved plan overwrite
+- Return clear user-safe errors
+- Never expose stack traces or secrets
+
+==================================================
+11. STATUS RULES
+==================================================
+
+Draft:
+
+- Editable
+- Can regenerate
+- Can submit for review
+
+Awaiting Review:
+
+- Cannot regenerate
+- Can approve
+- Can reopen
+
+Approved:
+
+- Read-only
+- Can reopen
+- Can archive
+- Can be superseded by a newer approved plan
+
+Reopened:
+
+- Editable
+- Can regenerate
+- Returns to Draft when saved
+
+Archived:
+
+- Read-only
+
+Approval requirements:
+
+- At least one recommendation
+- Executive Recommendation exists
+- Every top recommendation has a success metric
+- No circular dependencies
+- No invalid recommendation rank
+- No score outside 0–100
+
+==================================================
+12. ACTIVITY LOG
+==================================================
+
+Log:
+
+- Plan generated
+- Plan regenerated
+- Draft saved
+- Submitted for review
+- Approved
+- Reopened
+- Archived
+- Recommendation edited
+- Recommendation reordered
+- Action added
+- Action edited
+- Dependency added
+- Dependency removed
+
+Use existing activity logging conventions.
+
+==================================================
+13. OPENAPI AND GENERATED CLIENTS
+==================================================
+
+Update:
+
+- OpenAPI paths
+- Request schemas
+- Response schemas
+- Status enums
+- Recommendation schemas
+- Action schemas
+- Dependency schemas
+
+Regenerate the existing Zod and React API clients.
+
+The project previously required this workaround:
+
+sed -i 's/zod\.looseObject(/zod.object(/g' lib/api-zod/src/generated/api.ts
+
+Then:
+
+cd lib/api-client-react
+pnpm tsc --build
+
+Apply this only if the issue still exists.
+
+Do not leave generated clients out of sync.
+
+==================================================
+14. TESTS
+==================================================
+
+Run and report:
+
+1. Login still works
+2. Logout still works
+3. Password change still works
+4. Clients still work
+5. Projects still work
+6. Tasks still work
+7. Diagnostics still work
+8. Growth Assessments still load
+9. Growth Assessment save still works
+10. Generate plan from approved assessment
+11. Reject generation from unapproved assessment
+12. Prevent duplicate active plan
+13. Generate 3–5 ranked recommendations
+14. Score remains 0–100
+15. Scoring explanation is stored
+16. Quick-win rule works
+17. Effort classification works
+18. Timeframe classification works
+19. Action steps are created
+20. Dependencies are created
+21. Circular dependencies are rejected
+22. Submit for review works
+23. Approval works
+24. Approval validation works
+25. Reopen works
+26. Regenerate Draft works
+27. Approved plan cannot be overwritten
+28. Archive works
+29. Activity log works
+30. API responses match OpenAPI
+31. Generated clients compile
+32. Backend TypeScript is clean
+33. Existing Phase 1A–1E functionality remains operational
+34. Phase 1F-B was not started
+35. Phase 1G was not started
+
+Create safe test data if needed.
+
+==================================================
+15. STABILITY REQUIREMENTS
+==================================================
+
+Do not modify React components beyond minimal compile-safe changes required for generated hooks.
+
+Do not introduce conditional React hooks.
+
+Do not modify authentication unless a test uncovers a regression.
+
+Do not perform broad refactors.
+
+Do not rename existing tables or routes.
+
+Do not delete current Phase 1E data.
+
+Do not silently change existing assessment logic.
+
+==================================================
+16. IMPLEMENTATION ORDER
+==================================================
+
+Use this order:
+
+1. Inspect Phase 1D and Phase 1E schemas
+2. Inspect existing migration conventions
+3. Design Phase 1F-A schema
+4. Build schema and migration
+5. Build rule library
+6. Build scoring engine
+7. Build generation service
+8. Build API routes
+9. Build validation
+10. Add activity logging
+11. Update OpenAPI
+12. Regenerate API clients
+13. Run backend tests
+14. Run regression tests
+15. Fix all failures
+16. Produce final report
+
+Before changing code, briefly report:
+
+- Planned files
+- Planned tables
+- Planned endpoints
+- Any architecture conflicts
+
+Then implement Phase 1F-A only.
+
+==================================================
+17. COMPLETION REPORT
+==================================================
+
+When finished, report:
+
+1. What was implemented
+2. Files changed
+3. Database tables created
+4. Migration method
+5. Rule library created
+6. Scoring formula
+7. Recommendation domains
+8. API endpoints
+9. Status workflow
+10. Activity logging
+11. OpenAPI and client generation results
+12. Tests completed
+13. Failures and fixes
+14. Known limitations
+15. Confirmation password change still works
+16. Confirmation Phase 1A–1E still work
+17. Confirmation Phase 1F-B was not started
+18. Confirmation Phase 1G was not started

@@ -1,0 +1,938 @@
+PHASE 1F BUILD PROMPT
+Viral Magic OS — Solution Recommendation Engine™
+
+You are continuing an existing production application.
+
+Current completed phases:
+
+- Phase 1A — Foundation
+- Phase 1B — Client Management
+- Phase 1C — Projects & Tasks
+- Phase 1D — Business Diagnostic Engine
+- Phase 1D.1 — Polish and Stability
+- Phase 1E — Business Growth Assessment Engine
+
+Phase 1E is complete and working.
+
+Important stability history:
+
+- A React Rules of Hooks error was previously found in DiagnosticDetailPage.
+- The useEffect was moved above early returns.
+- Password-change functionality now works.
+- Do not reintroduce conditional hooks.
+- Do not modify authentication unless strictly necessary.
+- Preserve all existing data and functionality.
+
+Build only:
+
+PHASE 1F — SOLUTION RECOMMENDATION ENGINE™
+
+Do not start Phase 1G.
+Do not build an implementation roadmap.
+Do not build platform matching.
+Do not build software blueprints.
+Do not build proposal generation.
+Do not build billing.
+Do not build a client portal.
+Do not add AI API calls.
+
+==================================================
+1. PHASE 1F PURPOSE
+==================================================
+
+Phase 1F must convert an approved or completed Business Growth Assessment into a clear, prioritized set of business recommendations.
+
+Phase 1E answers:
+
+“What is happening in this business?”
+
+Phase 1F must answer:
+
+“What should the business fix first, why does it matter, and what outcome should it create?”
+
+The engine must be:
+
+- Deterministic
+- Rule-based
+- Explainable
+- Editable by an administrator or consultant
+- Auditable
+- Reproducible
+- Independent from third-party AI services
+
+Recommendations must be grounded in:
+
+- Diagnostic category scores
+- Severity
+- Performance
+- Priority score
+- Business impact
+- Growth Assessment risks
+- Vulnerabilities
+- Quick wins
+- Strategic priorities
+- Growth opportunities
+- Existing recommendation text from Phase 1D, when available
+
+Do not invent unsupported business facts.
+
+==================================================
+2. CORE WORKFLOW
+==================================================
+
+Required workflow:
+
+Completed Diagnostic
+→ Growth Assessment
+→ Approved Growth Assessment
+→ Generate Solution Recommendations
+→ Draft
+→ Awaiting Review
+→ Approved
+→ Reopen if changes are required
+→ Superseded or Archived
+
+Default requirement:
+
+A Solution Recommendation Plan should normally be created from an approved Growth Assessment.
+
+If the system allows creation from an unapproved assessment, show a clear warning and require administrator confirmation.
+
+Only one active recommendation plan should exist for the same assessment version.
+
+Generating a new plan from a newer assessment version should not overwrite an older approved plan.
+
+Older plans must remain available for audit history.
+
+==================================================
+3. RECOMMENDATION OUTPUT
+==================================================
+
+Each Solution Recommendation Plan must contain the following sections.
+
+A. Executive Recommendation
+
+Create a concise system-generated summary explaining:
+
+- Overall business condition
+- Most important risk
+- Most promising growth opportunity
+- Recommended focus for the next 90 days
+- Why the recommended order matters
+
+Store the original system-generated version separately from the editable administrator version.
+
+B. Top Priority Recommendations
+
+Generate the top 3 to 5 recommendations.
+
+Each recommendation must include:
+
+- Rank
+- Recommendation title
+- Business domain
+- Source assessment category
+- Problem statement
+- Why it matters
+- Recommended outcome
+- Business impact score
+- Urgency score
+- Effort estimate
+- Confidence level
+- Recommended timeframe
+- Suggested owner
+- Dependency notes
+- Success metric
+- Current status
+- Administrator notes
+
+C. Recommended Actions
+
+Each priority recommendation must contain action steps grouped into:
+
+- Immediate
+- Within 7 Days
+- Within 30 Days
+- Within 60–90 Days
+
+Each action step must include:
+
+- Action title
+- Description
+- Suggested owner
+- Time horizon
+- Expected outcome
+- Success metric
+- Completion status
+- Sort order
+
+D. Business Impact Summary
+
+Summarize expected influence across:
+
+- Revenue growth
+- Lead generation
+- Sales conversion
+- Customer retention
+- Customer experience
+- Operational efficiency
+- Technology and automation
+- Reporting and visibility
+- Scalability
+
+Use a consistent impact scale, such as:
+
+1 — Minimal
+2 — Low
+3 — Moderate
+4 — High
+5 — Transformational
+
+E. Dependencies and Sequencing
+
+Identify prerequisite relationships.
+
+Examples:
+
+- Lead capture before increasing advertising
+- CRM setup before advanced automation
+- Response process before scaling lead volume
+- Tracking before optimization
+- Offer clarity before funnel expansion
+- Sales follow-up before traffic growth
+- Standard operating process before delegation
+
+The system must prevent circular dependencies.
+
+F. Consultant Notes
+
+Provide an editable free-text section for:
+
+- Client context
+- Exceptions
+- Strategic judgment
+- Risks not captured by the engine
+- Presentation notes
+- Follow-up questions
+
+G. Approval
+
+Include:
+
+- Draft status
+- Submit for Review
+- Approve
+- Reopen
+- Archive
+- Approval history
+- Reviewed by and reviewed at
+- Approved by and approved at
+- Activity log
+
+==================================================
+4. RECOMMENDATION DOMAINS
+==================================================
+
+Group recommendations into these domains:
+
+1. Revenue and Lead Growth
+2. Sales and Conversion
+3. Customer Experience and Retention
+4. Operations and Efficiency
+5. Technology and Automation
+6. Reporting and Scalability
+7. Strategy and Offer Clarity
+8. Team and Accountability
+
+Use existing Phase 1D or Phase 1E categories where possible.
+
+Do not hard-code assumptions that every client needs every domain.
+
+==================================================
+5. PRIORITY SCORING
+==================================================
+
+Create a transparent priority-scoring method.
+
+Suggested components:
+
+- Severity score
+- Business impact score
+- Urgency score
+- Performance gap
+- Quick-win potential
+- Dependency importance
+- Confidence score
+
+Create named constants at the top of the recommendation engine so the thresholds and weights can be changed later without rewriting the logic.
+
+Suggested initial formula:
+
+priority score =
+severity weight
++ business impact weight
++ urgency weight
++ performance gap weight
++ quick-win bonus
++ dependency bonus
+- effort penalty
+
+Normalize the final score to 0–100.
+
+Suggested classification:
+
+90–100 — Critical Priority
+80–89 — High Priority
+65–79 — Important
+50–64 — Planned Improvement
+0–49 — Monitor
+
+Do not rely only on the Phase 1E priority score.
+
+The new score must remain explainable.
+
+For each recommendation, store a scoring explanation showing which inputs produced the score.
+
+==================================================
+6. EFFORT AND TIMEFRAME RULES
+==================================================
+
+Effort estimate:
+
+- Low
+- Moderate
+- High
+- Major Initiative
+
+Recommended timeframe:
+
+- Immediate
+- 7 Days
+- 30 Days
+- 60–90 Days
+- Strategic / 90+ Days
+
+Quick wins should generally meet these conditions:
+
+- High impact
+- Low or moderate effort
+- No unresolved critical dependency
+- Can begin within 30 days
+
+Do not classify a recommendation as a quick win when it depends on an unresolved foundational issue.
+
+==================================================
+7. RECOMMENDATION LIBRARY
+==================================================
+
+Create a reusable internal recommendation-rule library.
+
+Each rule should support:
+
+- Rule ID
+- Category or domain
+- Trigger conditions
+- Recommendation title
+- Problem statement template
+- Why-it-matters template
+- Recommended outcome template
+- Default actions
+- Default owner
+- Default effort
+- Default timeframe
+- Suggested success metrics
+- Dependency rules
+- Active or inactive status
+- Version
+
+Initial recommendation patterns should include common business bottlenecks such as:
+
+- Inconsistent lead generation
+- Poor lead capture
+- Slow speed to lead
+- Weak follow-up
+- Low sales conversion
+- Unclear offer
+- Weak differentiation
+- High customer acquisition cost
+- Poor retention
+- Inconsistent customer experience
+- Manual repetitive processes
+- Disconnected technology
+- Missing CRM process
+- Weak reporting
+- No defined KPIs
+- Lack of operational documentation
+- Unclear accountability
+- Limited scalability
+- Paid advertising before foundational systems are ready
+
+Use generic business language.
+
+Do not mention specific vendors or platforms.
+
+Do not create recommendations unsupported by assessment data.
+
+==================================================
+8. DATA MODEL
+==================================================
+
+Create appropriate database tables and relationships.
+
+Suggested structure:
+
+solution_recommendation_plans
+
+Fields may include:
+
+- id
+- growth_assessment_id
+- growth_assessment_version reference if available
+- diagnostic_id
+- diagnostic_version_id
+- client_id
+- project_id
+- status
+- overall_priority_score
+- system_executive_recommendation
+- executive_recommendation
+- system_business_impact_summary
+- business_impact_summary
+- system_dependency_summary
+- dependency_summary
+- consultant_notes
+- generated_metadata JSONB
+- recommendation_engine_version
+- reviewed_by
+- reviewed_at
+- approved_by
+- approved_at
+- reopened_by
+- reopened_at
+- archived_at
+- created_by
+- updated_by
+- created_at
+- updated_at
+
+solution_recommendations
+
+Suggested fields:
+
+- id
+- plan_id
+- source_category_id or source category key
+- source_assessment_data JSONB
+- rank
+- title
+- domain
+- problem_statement
+- why_it_matters
+- recommended_outcome
+- priority_score
+- priority_classification
+- severity_score
+- business_impact_score
+- urgency_score
+- performance_gap_score
+- quick_win_score or flag
+- effort
+- confidence
+- timeframe
+- suggested_owner
+- success_metric
+- dependency_notes
+- scoring_explanation JSONB
+- admin_notes
+- status
+- sort_order
+- created_at
+- updated_at
+
+solution_recommendation_actions
+
+Suggested fields:
+
+- id
+- recommendation_id
+- title
+- description
+- time_horizon
+- suggested_owner
+- expected_outcome
+- success_metric
+- completion_status
+- sort_order
+- created_at
+- updated_at
+
+solution_recommendation_dependencies
+
+Suggested fields:
+
+- id
+- plan_id
+- recommendation_id
+- depends_on_recommendation_id
+- dependency_type
+- notes
+- created_at
+
+solution_recommendation_rules
+
+Suggested fields:
+
+- id
+- rule_key
+- version
+- domain
+- category_match
+- trigger_conditions JSONB
+- templates JSONB
+- default_actions JSONB
+- default_effort
+- default_timeframe
+- default_owner
+- default_metrics JSONB
+- dependency_rules JSONB
+- is_active
+- created_at
+- updated_at
+
+Use foreign keys where appropriate.
+
+Add indexes for common lookups.
+
+Do not duplicate full Growth Assessment records.
+
+Preserve source references for auditability.
+
+Use the project's existing database conventions.
+
+If drizzle-kit requires a TTY, use the same safe migration method used previously and document it.
+
+==================================================
+9. API REQUIREMENTS
+==================================================
+
+Create REST endpoints consistent with the existing API architecture.
+
+Required capabilities:
+
+- Generate recommendation plan from Growth Assessment
+- Get plan by ID
+- Get latest plan for an assessment
+- Get latest plan for a client
+- Get plans for a project
+- Update editable summary fields
+- Update recommendations
+- Reorder recommendations
+- Add, edit, and remove action steps
+- Add and remove dependencies
+- Save Draft
+- Submit for Review
+- Approve
+- Reopen
+- Archive
+- Regenerate a Draft
+- Retrieve activity history
+
+Suggested routes:
+
+POST /api/solution-recommendations/generate
+GET /api/solution-recommendations/:id
+PATCH /api/solution-recommendations/:id
+POST /api/solution-recommendations/:id/submit
+POST /api/solution-recommendations/:id/approve
+POST /api/solution-recommendations/:id/reopen
+POST /api/solution-recommendations/:id/archive
+POST /api/solution-recommendations/:id/regenerate
+GET /api/growth-assessments/:id/solution-recommendation
+GET /api/clients/:id/latest-solution-recommendation
+GET /api/projects/:id/solution-recommendations
+
+Use the existing route, validation, OpenAPI, Zod, Orval, and React query conventions.
+
+Important:
+
+The project previously required this Orval patch after code generation:
+
+sed -i 's/zod\.looseObject(/zod.object(/g' lib/api-zod/src/generated/api.ts
+cd lib/api-client-react
+pnpm tsc --build
+
+Preserve and follow the documented workaround unless a safer permanent fix is verified.
+
+Do not leave generated client code out of sync with the API specification.
+
+==================================================
+10. USER INTERFACE
+==================================================
+
+Create a full Solution Recommendation Plan page.
+
+Suggested route:
+
+/solution-recommendations/:id
+
+Recommended tabs:
+
+1. Executive Recommendation
+2. Priority Recommendations
+3. Action Plan
+4. Business Impact
+5. Dependencies
+6. Consultant Notes
+7. Approval
+
+Top summary area should show:
+
+- Client
+- Project
+- Source Growth Assessment
+- Business health score
+- Recommendation plan status
+- Overall priority score
+- Number of critical and high-priority recommendations
+- Quick-win count
+- Last updated
+- Print button
+
+Priority Recommendation cards should display:
+
+- Rank
+- Title
+- Domain
+- Priority score
+- Priority classification
+- Effort
+- Timeframe
+- Suggested owner
+- Why it matters
+- Recommended outcome
+- Success metric
+- Dependencies
+- Editable consultant notes
+
+Allow administrators to:
+
+- Edit generated text
+- Change rank
+- Change effort
+- Change timeframe
+- Change owner
+- Change success metric
+- Add or remove action steps
+- Reorder action steps
+- Add dependency relationships
+- Save changes
+
+Preserve original system-generated content for audit.
+
+Use confirmation dialogs for:
+
+- Regenerate
+- Reopen
+- Archive
+
+Regeneration warning:
+
+“Regenerating may replace unapproved system-generated recommendations. Administrator edits must not be silently overwritten.”
+
+If a Draft has administrator edits, require explicit confirmation and either:
+
+- Preserve edits where possible, or
+- Create a new version
+
+Never silently delete consultant work.
+
+==================================================
+11. EXISTING PAGE INTEGRATION
+==================================================
+
+Growth Assessment page:
+
+Add a new section or tab:
+
+Solution Recommendations
+
+Display:
+
+- No plan created
+- Generate Recommendation Plan button
+- Existing plan status
+- Top recommendations
+- View Full Plan link
+
+Client Detail page:
+
+Add Latest Solution Recommendation panel showing:
+
+- Status
+- Overall priority
+- Top 3 recommendations
+- Quick-win count
+- View Full Plan
+
+Project Detail page:
+
+Show recommendation plans linked to project diagnostics or assessments.
+
+Dashboard:
+
+Add a Solution Recommendations section with:
+
+- Draft
+- Awaiting Review
+- Approved
+- Critical Priority Plans
+- Recent Recommendation Plans
+
+Do not overcrowd the existing dashboard.
+
+Use the current design system and responsive patterns.
+
+==================================================
+12. STATUS RULES
+==================================================
+
+Use this status workflow:
+
+Draft
+→ Awaiting Review
+→ Approved
+→ Reopened
+→ Draft
+→ Superseded or Archived
+
+Rules:
+
+- Draft can be edited
+- Awaiting Review can be reviewed but requires reopen before major edits
+- Approved is read-only unless reopened
+- Archived is read-only
+- Regeneration is permitted only for Draft or Reopened plans
+- Approval requires at least one recommendation
+- Approval requires Executive Recommendation
+- Approval requires a success metric for every top-priority recommendation
+- Approval requires no circular dependencies
+
+Record all status changes in the activity log.
+
+==================================================
+13. VALIDATION AND SAFETY
+==================================================
+
+Required validation:
+
+- Assessment exists
+- Assessment belongs to the selected client and project
+- Source diagnostic exists
+- No invalid cross-client links
+- No duplicate active plan for same assessment version
+- Priority scores remain between 0 and 100
+- Impact scores remain between 1 and 5
+- Recommendation ranks are unique within a plan
+- Dependencies reference recommendations in the same plan
+- No circular dependencies
+- Required text fields are not empty
+- Approved plans cannot be silently overwritten
+- Deleted recommendations do not leave broken action or dependency records
+
+Use database transactions where appropriate.
+
+Return clear, user-friendly errors.
+
+Do not expose stack traces, secrets, password values, or internal database details in UI messages.
+
+==================================================
+14. PRINT-FRIENDLY REPORT
+==================================================
+
+Create a print-friendly version of the approved Solution Recommendation Plan.
+
+It should include:
+
+- Client name
+- Date
+- Business health summary
+- Executive Recommendation
+- Top priorities
+- Action steps
+- Business impact summary
+- Dependencies
+- Consultant Notes, if marked for client display
+- Approval information
+
+Hide:
+
+- Edit controls
+- Internal system metadata
+- Technical scoring JSON
+- Internal-only consultant notes
+- Navigation
+- Buttons
+
+Do not build PDF generation yet unless an existing print-to-PDF capability already supports it without adding a new service.
+
+==================================================
+15. ACTIVITY LOG
+==================================================
+
+Log:
+
+- Plan generated
+- Draft saved
+- Summary edited
+- Recommendation edited
+- Recommendation reordered
+- Action added
+- Action edited
+- Action completed
+- Dependency added
+- Dependency removed
+- Submitted for Review
+- Approved
+- Reopened
+- Regenerated
+- Archived
+
+Use existing user and activity-log conventions.
+
+==================================================
+16. REQUIRED TESTS
+==================================================
+
+Run and report these tests:
+
+1. Login and logout
+2. Password change still works
+3. Clients still work
+4. Projects still work
+5. Tasks still work
+6. Diagnostics still work
+7. Growth Assessments still load
+8. Growth Assessment Save Draft still works
+9. Growth Assessment approval still works
+10. Generate Solution Recommendation from approved assessment
+11. Attempt generation from unapproved assessment
+12. Duplicate active plan prevention
+13. Executive Recommendation generation
+14. Top recommendation ranking
+15. Priority scoring explanation
+16. Quick-win classification
+17. Effort classification
+18. Timeframe classification
+19. Business impact summary
+20. Add action step
+21. Edit action step
+22. Reorder action steps
+23. Add dependency
+24. Circular dependency prevention
+25. Edit generated recommendation text
+26. Original system text remains preserved
+27. Save Draft
+28. Submit for Review
+29. Approve
+30. Approval validation
+31. Reopen
+32. Regenerate Draft
+33. Administrator edits are not silently lost
+34. Archive
+35. Client page update
+36. Project page update
+37. Dashboard update
+38. Data persistence after refresh
+39. Mobile view at approximately 390 × 844
+40. Print-friendly view
+41. Browser console has no React hook errors
+42. Zero TypeScript errors
+43. Existing Phase 1A–1E functionality remains operational
+44. Phase 1G was not started
+
+Create test data if no suitable project records exist.
+
+Do not skip Project Detail testing because the environment lacks project records. Create safe test records, verify the feature, and clean them up afterward if appropriate.
+
+==================================================
+17. REACT STABILITY REQUIREMENTS
+==================================================
+
+All React hooks must be called unconditionally and before early returns.
+
+Do not place:
+
+- useEffect
+- useState
+- useMemo
+- useCallback
+- custom hooks
+
+after conditional returns.
+
+Check all modified components for Rules of Hooks compliance.
+
+Avoid render-time data-fetching IIFEs.
+
+Use stable loading and loaded-state sentinels where APIs may return empty lists.
+
+Prevent infinite fetch loops.
+
+Ensure all error states have a recovery path.
+
+==================================================
+18. IMPLEMENTATION ORDER
+==================================================
+
+Use this order:
+
+1. Inspect existing Phase 1D and Phase 1E schemas and APIs
+2. Design rule library and scoring constants
+3. Create database schema and migration
+4. Build deterministic recommendation engine
+5. Build API routes and validation
+6. Update OpenAPI
+7. Generate and patch API clients
+8. Build plan detail page
+9. Add action and dependency editing
+10. Add Growth Assessment integration
+11. Add Client and Project integration
+12. Add Dashboard integration
+13. Add print styling
+14. Run TypeScript and build checks
+15. Run the complete test suite
+16. Fix all regressions
+17. Produce final report
+
+Do not redesign unrelated pages.
+
+Do not replace working architecture.
+
+Do not perform a broad refactor.
+
+==================================================
+19. COMPLETION REPORT
+==================================================
+
+When Phase 1F is complete, provide a final report containing:
+
+1. What was implemented
+2. Files modified
+3. Database changes
+4. Recommendation rules
+5. Priority-scoring method
+6. Recommendation domains
+7. Status workflow
+8. API endpoints
+9. Page and dashboard updates
+10. Tests completed
+11. Failures found and fixes applied
+12. Known limitations
+13. Confirmation that password change still works
+14. Confirmation that no React hook errors remain
+15. Confirmation that existing Phase 1A–1E features still work
+16. Confirmation that Phase 1G was not started
+
+Before making changes, briefly summarize your planned implementation and identify any conflicts with the existing architecture.
+
+Then build Phase 1F only.
