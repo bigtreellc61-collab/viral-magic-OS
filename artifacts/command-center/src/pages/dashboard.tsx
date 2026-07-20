@@ -791,12 +791,12 @@ export function DashboardPage() {
                 <Icon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold flex items-center gap-2">
+                <div className="text-sm font-semibold flex items-center gap-2">
                   {label}
                   <Badge variant="outline" className={`text-[9px] uppercase tracking-wider ${active ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/5' : 'border-red-500/30 text-red-500'}`}>
                     {active ? 'OK' : 'OFFLINE'}
                   </Badge>
-                </p>
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
               </div>
             </div>
