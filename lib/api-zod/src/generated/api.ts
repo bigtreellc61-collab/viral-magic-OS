@@ -9,6 +9,492 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Generate a Solution Recommendation Plan from an approved Growth Assessment
+ */
+export const GenerateSolutionRecommendationPlanBody = zod.object({
+  "growthAssessmentId": zod.string()
+})
+
+export const GenerateSolutionRecommendationPlanResponse = zod.object({
+  "plan": zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+}),
+  "generated": zod.boolean()
+})
+
+
+/**
+ * @summary Get a Solution Recommendation Plan by ID (includes recommendations, actions, dependencies)
+ */
+export const GetSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.string(),
+  "overallPriorityScore": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.string().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "archivedAt": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish(),
+  "recommendations": zod.array(zod.object({
+  "id": zod.string(),
+  "planId": zod.string(),
+  "sourceCategoryKey": zod.string().nullish(),
+  "rank": zod.number(),
+  "title": zod.string(),
+  "domain": zod.string(),
+  "problemStatement": zod.string().nullish(),
+  "whyItMatters": zod.string().nullish(),
+  "recommendedOutcome": zod.string().nullish(),
+  "priorityScore": zod.string(),
+  "priorityClassification": zod.string(),
+  "severityScore": zod.string().nullish(),
+  "businessImpactScore": zod.string().nullish(),
+  "urgencyScore": zod.string().nullish(),
+  "performanceGapScore": zod.string().nullish(),
+  "quickWinBonus": zod.string().nullish(),
+  "dependencyBonus": zod.string().nullish(),
+  "effortPenalty": zod.string().nullish(),
+  "quickWinFlag": zod.boolean(),
+  "effort": zod.string().nullish(),
+  "confidence": zod.string().nullish(),
+  "timeframe": zod.string().nullish(),
+  "suggestedOwner": zod.string().nullish(),
+  "successMetric": zod.string().nullish(),
+  "dependencyNotes": zod.string().nullish(),
+  "scoringExplanation": zod.object({
+
+}).nullish(),
+  "adminNotes": zod.string().nullish(),
+  "status": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "recommendationId": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "timeHorizon": zod.string(),
+  "suggestedOwner": zod.string().nullish(),
+  "expectedOutcome": zod.string().nullish(),
+  "successMetric": zod.string().nullish(),
+  "completionStatus": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})).optional()
+})),
+  "dependencies": zod.array(zod.object({
+  "id": zod.string(),
+  "planId": zod.string(),
+  "recommendationId": zod.string(),
+  "dependsOnRecommendationId": zod.string(),
+  "dependencyType": zod.string(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Update editable fields of a Draft or Reopened plan
+ */
+export const UpdateSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateSolutionRecommendationPlanBody = zod.object({
+  "executiveRecommendation": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish()
+})
+
+export const UpdateSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Submit a Draft or Reopened plan for review
+ */
+export const SubmitSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const SubmitSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Approve a plan awaiting review
+ */
+export const ApproveSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ApproveSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Reopen an approved or awaiting-review plan for editing
+ */
+export const ReopenSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ReopenSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Archive a plan
+ */
+export const ArchiveSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ArchiveSolutionRecommendationPlanResponse = zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+})
+
+
+/**
+ * @summary Regenerate a Draft or Reopened plan
+ */
+export const RegenerateSolutionRecommendationPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RegenerateSolutionRecommendationPlanResponse = zod.object({
+  "plan": zod.object({
+  "id": zod.string(),
+  "growthAssessmentId": zod.string(),
+  "diagnosticId": zod.string(),
+  "diagnosticVersionId": zod.string(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "status": zod.enum(['draft', 'awaiting_review', 'approved', 'reopened', 'superseded', 'archived']),
+  "overallPriorityScore": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemBusinessImpactSummary": zod.string().nullish(),
+  "businessImpactSummary": zod.string().nullish(),
+  "systemDependencySummary": zod.string().nullish(),
+  "dependencySummary": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish(),
+  "recommendationEngineVersion": zod.string(),
+  "reviewedBy": zod.string().nullish(),
+  "reviewedAt": zod.coerce.date().nullish(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "reopenedBy": zod.string().nullish(),
+  "reopenedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "diagnosticName": zod.string().nullish(),
+  "projectName": zod.string().nullish()
+}),
+  "generated": zod.boolean()
+})
+
+
+/**
+ * @summary Get activity log for a Solution Recommendation Plan
+ */
+export const GetSolutionRecommendationPlanActivityParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const getSolutionRecommendationPlanActivityQueryLimitDefault = 50;
+export const getSolutionRecommendationPlanActivityQueryLimitMax = 100;
+
+
+
+export const GetSolutionRecommendationPlanActivityQueryParams = zod.object({
+  "limit": zod.coerce.number().min(1).max(getSolutionRecommendationPlanActivityQueryLimitMax).default(getSolutionRecommendationPlanActivityQueryLimitDefault)
+})
+
+export const GetSolutionRecommendationPlanActivityResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "activityType": zod.string(),
+  "actorName": zod.string().nullish(),
+  "description": zod.string(),
+  "entityType": zod.string().nullish(),
+  "entityId": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Get the active Solution Recommendation Plan for a Growth Assessment
+ */
+export const GetGrowthAssessmentSolutionRecommendationParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetGrowthAssessmentSolutionRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "overallPriorityScore": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "approvedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary Get the latest active Solution Recommendation Plan for a client
+ */
+export const GetClientLatestSolutionRecommendationParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetClientLatestSolutionRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "overallPriorityScore": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "approvedAt": zod.string().nullish()
+})
+
+
+/**
+ * @summary List active Solution Recommendation Plans for a project
+ */
+export const GetProjectSolutionRecommendationsParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetProjectSolutionRecommendationsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "status": zod.string(),
+  "overallPriorityScore": zod.string().nullish(),
+  "executiveRecommendation": zod.string().nullish(),
+  "systemExecutiveRecommendation": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string(),
+  "approvedAt": zod.string().nullish()
+}))
+})
+
+
+/**
  * @summary List growth assessments
  */
 export const ListGrowthAssessmentsQueryParams = zod.object({

@@ -938,6 +938,261 @@ export interface DashboardDiagnosticsMetrics {
   recentActivity: ActivityRecord[];
 }
 
+export type SolutionRecommendationPlanRecordStatus = typeof SolutionRecommendationPlanRecordStatus[keyof typeof SolutionRecommendationPlanRecordStatus];
+
+
+export const SolutionRecommendationPlanRecordStatus = {
+  draft: 'draft',
+  awaiting_review: 'awaiting_review',
+  approved: 'approved',
+  reopened: 'reopened',
+  superseded: 'superseded',
+  archived: 'archived',
+} as const;
+
+export interface SolutionRecommendationPlanRecord {
+  id: string;
+  growthAssessmentId: string;
+  diagnosticId: string;
+  diagnosticVersionId: string;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  status: SolutionRecommendationPlanRecordStatus;
+  /** @nullable */
+  overallPriorityScore?: string | null;
+  /** @nullable */
+  systemExecutiveRecommendation?: string | null;
+  /** @nullable */
+  executiveRecommendation?: string | null;
+  /** @nullable */
+  systemBusinessImpactSummary?: string | null;
+  /** @nullable */
+  businessImpactSummary?: string | null;
+  /** @nullable */
+  systemDependencySummary?: string | null;
+  /** @nullable */
+  dependencySummary?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+  recommendationEngineVersion: string;
+  /** @nullable */
+  reviewedBy?: string | null;
+  /** @nullable */
+  reviewedAt?: string | null;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  reopenedBy?: string | null;
+  /** @nullable */
+  reopenedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  diagnosticName?: string | null;
+  /** @nullable */
+  projectName?: string | null;
+}
+
+/**
+ * @nullable
+ */
+export type SolutionRecommendationRecordScoringExplanation = { [key: string]: unknown } | null;
+
+export interface SolutionRecommendationActionRecord {
+  id: string;
+  recommendationId: string;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  timeHorizon: string;
+  /** @nullable */
+  suggestedOwner?: string | null;
+  /** @nullable */
+  expectedOutcome?: string | null;
+  /** @nullable */
+  successMetric?: string | null;
+  completionStatus: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SolutionRecommendationRecord {
+  id: string;
+  planId: string;
+  /** @nullable */
+  sourceCategoryKey?: string | null;
+  rank: number;
+  title: string;
+  domain: string;
+  /** @nullable */
+  problemStatement?: string | null;
+  /** @nullable */
+  whyItMatters?: string | null;
+  /** @nullable */
+  recommendedOutcome?: string | null;
+  priorityScore: string;
+  priorityClassification: string;
+  /** @nullable */
+  severityScore?: string | null;
+  /** @nullable */
+  businessImpactScore?: string | null;
+  /** @nullable */
+  urgencyScore?: string | null;
+  /** @nullable */
+  performanceGapScore?: string | null;
+  /** @nullable */
+  quickWinBonus?: string | null;
+  /** @nullable */
+  dependencyBonus?: string | null;
+  /** @nullable */
+  effortPenalty?: string | null;
+  quickWinFlag: boolean;
+  /** @nullable */
+  effort?: string | null;
+  /** @nullable */
+  confidence?: string | null;
+  /** @nullable */
+  timeframe?: string | null;
+  /** @nullable */
+  suggestedOwner?: string | null;
+  /** @nullable */
+  successMetric?: string | null;
+  /** @nullable */
+  dependencyNotes?: string | null;
+  /** @nullable */
+  scoringExplanation?: SolutionRecommendationRecordScoringExplanation;
+  /** @nullable */
+  adminNotes?: string | null;
+  status: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  actions?: SolutionRecommendationActionRecord[];
+}
+
+export interface SolutionRecommendationDependencyRecord {
+  id: string;
+  planId: string;
+  recommendationId: string;
+  dependsOnRecommendationId: string;
+  dependencyType: string;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface SolutionRecommendationPlanDetail {
+  id: string;
+  growthAssessmentId: string;
+  diagnosticId: string;
+  diagnosticVersionId: string;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  status: string;
+  /** @nullable */
+  overallPriorityScore?: string | null;
+  /** @nullable */
+  executiveRecommendation?: string | null;
+  /** @nullable */
+  systemExecutiveRecommendation?: string | null;
+  /** @nullable */
+  businessImpactSummary?: string | null;
+  /** @nullable */
+  systemBusinessImpactSummary?: string | null;
+  /** @nullable */
+  dependencySummary?: string | null;
+  /** @nullable */
+  systemDependencySummary?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+  recommendationEngineVersion: string;
+  /** @nullable */
+  reviewedBy?: string | null;
+  /** @nullable */
+  reviewedAt?: string | null;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  diagnosticName?: string | null;
+  /** @nullable */
+  projectName?: string | null;
+  recommendations: SolutionRecommendationRecord[];
+  dependencies: SolutionRecommendationDependencyRecord[];
+}
+
+export interface SolutionRecommendationPlanSummary {
+  id: string;
+  status: string;
+  /** @nullable */
+  overallPriorityScore?: string | null;
+  /** @nullable */
+  executiveRecommendation?: string | null;
+  /** @nullable */
+  systemExecutiveRecommendation?: string | null;
+  growthAssessmentId: string;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  approvedAt?: string | null;
+}
+
+export interface SolutionRecommendationListResponse {
+  data: SolutionRecommendationPlanSummary[];
+}
+
+export interface GenerateSolutionRecommendationBody {
+  growthAssessmentId: string;
+}
+
+export interface GenerateSolutionRecommendationResponse {
+  plan: SolutionRecommendationPlanRecord;
+  generated: boolean;
+}
+
+export interface UpdateSolutionRecommendationPlanBody {
+  /** @nullable */
+  executiveRecommendation?: string | null;
+  /** @nullable */
+  businessImpactSummary?: string | null;
+  /** @nullable */
+  dependencySummary?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+}
+
+export interface SolutionRecommendationActivityResponse {
+  data: ActivityRecord[];
+}
+
+export type GetSolutionRecommendationPlanActivityParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+};
+
 export type ListGrowthAssessmentsParams = {
 diagnosticId?: string;
 clientId?: string;

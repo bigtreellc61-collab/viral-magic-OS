@@ -9,6 +9,7 @@ import projectsRouter from "./projects";
 import tasksRouter from "./tasks";
 import diagnosticsRouter from "./diagnostics";
 import growthAssessmentsRouter from "./growth-assessments";
+import solutionRecommendationsRouter from "./solution-recommendations";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(projectsRouter);
 router.use(tasksRouter);
 router.use(diagnosticsRouter);
 router.use(growthAssessmentsRouter);
+router.use(solutionRecommendationsRouter);
 
 export default router;

@@ -54,8 +54,11 @@ import type {
   FoundationStatus,
   GenerateGrowthAssessmentBody,
   GenerateGrowthAssessmentResponse,
+  GenerateSolutionRecommendationBody,
+  GenerateSolutionRecommendationResponse,
   GetDefaultTemplateCategories200,
   GetDiagnosticVersion200,
+  GetSolutionRecommendationPlanActivityParams,
   GrowthAssessmentActionBody,
   GrowthAssessmentRecord,
   HealthStatus,
@@ -86,6 +89,11 @@ import type {
   SaveDraftScoresBody,
   SetupInput,
   SetupStatus,
+  SolutionRecommendationActivityResponse,
+  SolutionRecommendationListResponse,
+  SolutionRecommendationPlanDetail,
+  SolutionRecommendationPlanRecord,
+  SolutionRecommendationPlanSummary,
   SuccessResponse,
   TaskMetricsSummary,
   TaskRecord,
@@ -98,6 +106,7 @@ import type {
   UpdateProjectBody,
   UpdateRecommendationBody,
   UpdateScoreResolutionBody,
+  UpdateSolutionRecommendationPlanBody,
   UpdateTaskBody
 } from './api.schemas';
 
@@ -127,6 +136,901 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGenerateSolutionRecommendationPlanUrl = () => {
+
+
+
+
+  return `/api/solution-recommendations/generate`
+}
+
+/**
+ * @summary Generate a Solution Recommendation Plan from an approved Growth Assessment
+ */
+export const generateSolutionRecommendationPlan = async (generateSolutionRecommendationBody: GenerateSolutionRecommendationBody, options?: RequestInit): Promise<GenerateSolutionRecommendationResponse> => {
+
+  return customFetch<GenerateSolutionRecommendationResponse>(getGenerateSolutionRecommendationPlanUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(generateSolutionRecommendationBody)
+  }
+);}
+
+
+
+
+
+export const getGenerateSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>, TError,{data: BodyType<GenerateSolutionRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>, TError,{data: BodyType<GenerateSolutionRecommendationBody>}, TContext> => {
+
+const mutationKey = ['generateSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>, {data: BodyType<GenerateSolutionRecommendationBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateSolutionRecommendationPlan(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>>
+    export type GenerateSolutionRecommendationPlanMutationBody = BodyType<GenerateSolutionRecommendationBody>
+    export type GenerateSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Generate a Solution Recommendation Plan from an approved Growth Assessment
+ */
+export const useGenerateSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>, TError,{data: BodyType<GenerateSolutionRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateSolutionRecommendationPlan>>,
+        TError,
+        {data: BodyType<GenerateSolutionRecommendationBody>},
+        TContext
+      > => {
+      return useMutation(getGenerateSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getGetSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}`
+}
+
+/**
+ * @summary Get a Solution Recommendation Plan by ID (includes recommendations, actions, dependencies)
+ */
+export const getSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanDetail> => {
+
+  return customFetch<SolutionRecommendationPlanDetail>(getGetSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSolutionRecommendationPlanQueryKey = (id: string,) => {
+    return [
+    `/api/solution-recommendations/${id}`
+    ] as const;
+    }
+
+
+export const getGetSolutionRecommendationPlanQueryOptions = <TData = Awaited<ReturnType<typeof getSolutionRecommendationPlan>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlan>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSolutionRecommendationPlanQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSolutionRecommendationPlan>>> = ({ signal }) => getSolutionRecommendationPlan(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlan>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSolutionRecommendationPlanQueryResult = NonNullable<Awaited<ReturnType<typeof getSolutionRecommendationPlan>>>
+export type GetSolutionRecommendationPlanQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a Solution Recommendation Plan by ID (includes recommendations, actions, dependencies)
+ */
+
+export function useGetSolutionRecommendationPlan<TData = Awaited<ReturnType<typeof getSolutionRecommendationPlan>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlan>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSolutionRecommendationPlanQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}`
+}
+
+/**
+ * @summary Update editable fields of a Draft or Reopened plan
+ */
+export const updateSolutionRecommendationPlan = async (id: string,
+    updateSolutionRecommendationPlanBody: UpdateSolutionRecommendationPlanBody, options?: RequestInit): Promise<SolutionRecommendationPlanRecord> => {
+
+  return customFetch<SolutionRecommendationPlanRecord>(getUpdateSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateSolutionRecommendationPlanBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>, TError,{id: string;data: BodyType<UpdateSolutionRecommendationPlanBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>, TError,{id: string;data: BodyType<UpdateSolutionRecommendationPlanBody>}, TContext> => {
+
+const mutationKey = ['updateSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>, {id: string;data: BodyType<UpdateSolutionRecommendationPlanBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateSolutionRecommendationPlan(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>>
+    export type UpdateSolutionRecommendationPlanMutationBody = BodyType<UpdateSolutionRecommendationPlanBody>
+    export type UpdateSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update editable fields of a Draft or Reopened plan
+ */
+export const useUpdateSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>, TError,{id: string;data: BodyType<UpdateSolutionRecommendationPlanBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateSolutionRecommendationPlan>>,
+        TError,
+        {id: string;data: BodyType<UpdateSolutionRecommendationPlanBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getSubmitSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/submit`
+}
+
+/**
+ * @summary Submit a Draft or Reopened plan for review
+ */
+export const submitSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanRecord> => {
+
+  return customFetch<SolutionRecommendationPlanRecord>(getSubmitSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSubmitSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['submitSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  submitSolutionRecommendationPlan(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>>
+
+    export type SubmitSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Submit a Draft or Reopened plan for review
+ */
+export const useSubmitSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitSolutionRecommendationPlan>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getSubmitSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getApproveSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/approve`
+}
+
+/**
+ * @summary Approve a plan awaiting review
+ */
+export const approveSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanRecord> => {
+
+  return customFetch<SolutionRecommendationPlanRecord>(getApproveSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getApproveSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['approveSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  approveSolutionRecommendationPlan(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>>
+
+    export type ApproveSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Approve a plan awaiting review
+ */
+export const useApproveSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveSolutionRecommendationPlan>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getApproveSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getReopenSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/reopen`
+}
+
+/**
+ * @summary Reopen an approved or awaiting-review plan for editing
+ */
+export const reopenSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanRecord> => {
+
+  return customFetch<SolutionRecommendationPlanRecord>(getReopenSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getReopenSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['reopenSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  reopenSolutionRecommendationPlan(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReopenSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>>
+
+    export type ReopenSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Reopen an approved or awaiting-review plan for editing
+ */
+export const useReopenSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reopenSolutionRecommendationPlan>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getReopenSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getArchiveSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/archive`
+}
+
+/**
+ * @summary Archive a plan
+ */
+export const archiveSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanRecord> => {
+
+  return customFetch<SolutionRecommendationPlanRecord>(getArchiveSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getArchiveSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['archiveSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  archiveSolutionRecommendationPlan(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>>
+
+    export type ArchiveSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Archive a plan
+ */
+export const useArchiveSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveSolutionRecommendationPlan>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getArchiveSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getRegenerateSolutionRecommendationPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/regenerate`
+}
+
+/**
+ * @summary Regenerate a Draft or Reopened plan
+ */
+export const regenerateSolutionRecommendationPlan = async (id: string, options?: RequestInit): Promise<GenerateSolutionRecommendationResponse> => {
+
+  return customFetch<GenerateSolutionRecommendationResponse>(getRegenerateSolutionRecommendationPlanUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRegenerateSolutionRecommendationPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['regenerateSolutionRecommendationPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  regenerateSolutionRecommendationPlan(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegenerateSolutionRecommendationPlanMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>>
+
+    export type RegenerateSolutionRecommendationPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Regenerate a Draft or Reopened plan
+ */
+export const useRegenerateSolutionRecommendationPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof regenerateSolutionRecommendationPlan>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getRegenerateSolutionRecommendationPlanMutationOptions(options));
+    }
+
+export const getGetSolutionRecommendationPlanActivityUrl = (id: string,
+    params?: GetSolutionRecommendationPlanActivityParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/solution-recommendations/${id}/activity?${stringifiedParams}` : `/api/solution-recommendations/${id}/activity`
+}
+
+/**
+ * @summary Get activity log for a Solution Recommendation Plan
+ */
+export const getSolutionRecommendationPlanActivity = async (id: string,
+    params?: GetSolutionRecommendationPlanActivityParams, options?: RequestInit): Promise<SolutionRecommendationActivityResponse> => {
+
+  return customFetch<SolutionRecommendationActivityResponse>(getGetSolutionRecommendationPlanActivityUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSolutionRecommendationPlanActivityQueryKey = (id: string,
+    params?: GetSolutionRecommendationPlanActivityParams,) => {
+    return [
+    `/api/solution-recommendations/${id}/activity`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetSolutionRecommendationPlanActivityQueryOptions = <TData = Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>, TError = ErrorType<ErrorResponse>>(id: string,
+    params?: GetSolutionRecommendationPlanActivityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSolutionRecommendationPlanActivityQueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>> = ({ signal }) => getSolutionRecommendationPlanActivity(id,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSolutionRecommendationPlanActivityQueryResult = NonNullable<Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>>
+export type GetSolutionRecommendationPlanActivityQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get activity log for a Solution Recommendation Plan
+ */
+
+export function useGetSolutionRecommendationPlanActivity<TData = Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>, TError = ErrorType<ErrorResponse>>(
+ id: string,
+    params?: GetSolutionRecommendationPlanActivityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSolutionRecommendationPlanActivity>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSolutionRecommendationPlanActivityQueryOptions(id,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetGrowthAssessmentSolutionRecommendationUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-assessments/${id}/solution-recommendation`
+}
+
+/**
+ * @summary Get the active Solution Recommendation Plan for a Growth Assessment
+ */
+export const getGrowthAssessmentSolutionRecommendation = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanSummary> => {
+
+  return customFetch<SolutionRecommendationPlanSummary>(getGetGrowthAssessmentSolutionRecommendationUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthAssessmentSolutionRecommendationQueryKey = (id: string,) => {
+    return [
+    `/api/growth-assessments/${id}/solution-recommendation`
+    ] as const;
+    }
+
+
+export const getGetGrowthAssessmentSolutionRecommendationQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthAssessmentSolutionRecommendationQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>> = ({ signal }) => getGrowthAssessmentSolutionRecommendation(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthAssessmentSolutionRecommendationQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>>
+export type GetGrowthAssessmentSolutionRecommendationQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the active Solution Recommendation Plan for a Growth Assessment
+ */
+
+export function useGetGrowthAssessmentSolutionRecommendation<TData = Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthAssessmentSolutionRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthAssessmentSolutionRecommendationQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetClientLatestSolutionRecommendationUrl = (id: string,) => {
+
+
+
+
+  return `/api/clients/${id}/latest-solution-recommendation`
+}
+
+/**
+ * @summary Get the latest active Solution Recommendation Plan for a client
+ */
+export const getClientLatestSolutionRecommendation = async (id: string, options?: RequestInit): Promise<SolutionRecommendationPlanSummary> => {
+
+  return customFetch<SolutionRecommendationPlanSummary>(getGetClientLatestSolutionRecommendationUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetClientLatestSolutionRecommendationQueryKey = (id: string,) => {
+    return [
+    `/api/clients/${id}/latest-solution-recommendation`
+    ] as const;
+    }
+
+
+export const getGetClientLatestSolutionRecommendationQueryOptions = <TData = Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetClientLatestSolutionRecommendationQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>> = ({ signal }) => getClientLatestSolutionRecommendation(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetClientLatestSolutionRecommendationQueryResult = NonNullable<Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>>
+export type GetClientLatestSolutionRecommendationQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the latest active Solution Recommendation Plan for a client
+ */
+
+export function useGetClientLatestSolutionRecommendation<TData = Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getClientLatestSolutionRecommendation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetClientLatestSolutionRecommendationQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetProjectSolutionRecommendationsUrl = (id: string,) => {
+
+
+
+
+  return `/api/projects/${id}/solution-recommendations`
+}
+
+/**
+ * @summary List active Solution Recommendation Plans for a project
+ */
+export const getProjectSolutionRecommendations = async (id: string, options?: RequestInit): Promise<SolutionRecommendationListResponse> => {
+
+  return customFetch<SolutionRecommendationListResponse>(getGetProjectSolutionRecommendationsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProjectSolutionRecommendationsQueryKey = (id: string,) => {
+    return [
+    `/api/projects/${id}/solution-recommendations`
+    ] as const;
+    }
+
+
+export const getGetProjectSolutionRecommendationsQueryOptions = <TData = Awaited<ReturnType<typeof getProjectSolutionRecommendations>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectSolutionRecommendations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProjectSolutionRecommendationsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProjectSolutionRecommendations>>> = ({ signal }) => getProjectSolutionRecommendations(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProjectSolutionRecommendations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProjectSolutionRecommendationsQueryResult = NonNullable<Awaited<ReturnType<typeof getProjectSolutionRecommendations>>>
+export type GetProjectSolutionRecommendationsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List active Solution Recommendation Plans for a project
+ */
+
+export function useGetProjectSolutionRecommendations<TData = Awaited<ReturnType<typeof getProjectSolutionRecommendations>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProjectSolutionRecommendations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProjectSolutionRecommendationsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getListGrowthAssessmentsUrl = (params?: ListGrowthAssessmentsParams,) => {
   const normalizedParams = new URLSearchParams();

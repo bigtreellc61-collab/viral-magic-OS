@@ -28,7 +28,345 @@ tags:
     description: Business Diagnostic Engine
   - name: growth-assessments
     description: Business Growth Assessment Engine
+  - name: solution-recommendations
+    description: Solution Recommendation Engine
 paths:
+  /solution-recommendations/generate:
+    post:
+      operationId: generateSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Generate a Solution Recommendation Plan from an approved Growth Assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateSolutionRecommendationBody"
+      responses:
+        "201":
+          description: Plan generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateSolutionRecommendationResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Assessment not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Active plan already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}:
+    get:
+      operationId: getSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Get a Solution Recommendation Plan by ID (includes recommendations, actions, dependencies)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Solution recommendation plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Update editable fields of a Draft or Reopened plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSolutionRecommendationPlanBody"
+      responses:
+        "200":
+          description: Updated plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Plan cannot be edited in current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/submit:
+    post:
+      operationId: submitSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Submit a Draft or Reopened plan for review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Plan submitted for review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/approve:
+    post:
+      operationId: approveSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Approve a plan awaiting review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Plan approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        "400":
+          description: Approval validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/reopen:
+    post:
+      operationId: reopenSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Reopen an approved or awaiting-review plan for editing
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Plan reopened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/archive:
+    post:
+      operationId: archiveSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Archive a plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Plan archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Already archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/regenerate:
+    post:
+      operationId: regenerateSolutionRecommendationPlan
+      tags: [solution-recommendations]
+      summary: Regenerate a Draft or Reopened plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Plan regenerated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateSolutionRecommendationResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Cannot regenerate in current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /solution-recommendations/{id}/activity:
+    get:
+      operationId: getSolutionRecommendationPlanActivity
+      tags: [solution-recommendations]
+      summary: Get activity log for a Solution Recommendation Plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: Activity records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationActivityResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-assessments/{id}/solution-recommendation:
+    get:
+      operationId: getGrowthAssessmentSolutionRecommendation
+      tags: [solution-recommendations]
+      summary: Get the active Solution Recommendation Plan for a Growth Assessment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Solution recommendation plan summary or null
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanSummary"
+  /clients/{id}/latest-solution-recommendation:
+    get:
+      operationId: getClientLatestSolutionRecommendation
+      tags: [solution-recommendations]
+      summary: Get the latest active Solution Recommendation Plan for a client
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Solution recommendation plan summary or null
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationPlanSummary"
+  /projects/{id}/solution-recommendations:
+    get:
+      operationId: getProjectSolutionRecommendations
+      tags: [solution-recommendations]
+      summary: List active Solution Recommendation Plans for a project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SolutionRecommendationListResponse"
   /growth-assessments:
     get:
       operationId: listGrowthAssessments
@@ -3492,3 +3830,378 @@ components:
         - awaitingReviewList
         - recentDiagnostics
         - recentActivity
+    SolutionRecommendationPlanRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        growthAssessmentId:
+          type: string
+        diagnosticId:
+          type: string
+        diagnosticVersionId:
+          type: string
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [draft, awaiting_review, approved, reopened, superseded, archived]
+        overallPriorityScore:
+          type: ["string", "null"]
+        systemExecutiveRecommendation:
+          type: ["string", "null"]
+        executiveRecommendation:
+          type: ["string", "null"]
+        systemBusinessImpactSummary:
+          type: ["string", "null"]
+        businessImpactSummary:
+          type: ["string", "null"]
+        systemDependencySummary:
+          type: ["string", "null"]
+        dependencySummary:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+        recommendationEngineVersion:
+          type: string
+        reviewedBy:
+          type: ["string", "null"]
+        reviewedAt:
+          type: ["string", "null"]
+          format: date-time
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        reopenedBy:
+          type: ["string", "null"]
+        reopenedAt:
+          type: ["string", "null"]
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        clientName:
+          type: ["string", "null"]
+        diagnosticName:
+          type: ["string", "null"]
+        projectName:
+          type: ["string", "null"]
+      required:
+        - id
+        - growthAssessmentId
+        - diagnosticId
+        - diagnosticVersionId
+        - clientId
+        - status
+        - recommendationEngineVersion
+        - createdAt
+        - updatedAt
+    SolutionRecommendationRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        planId:
+          type: string
+        sourceCategoryKey:
+          type: ["string", "null"]
+        rank:
+          type: integer
+        title:
+          type: string
+        domain:
+          type: string
+        problemStatement:
+          type: ["string", "null"]
+        whyItMatters:
+          type: ["string", "null"]
+        recommendedOutcome:
+          type: ["string", "null"]
+        priorityScore:
+          type: string
+        priorityClassification:
+          type: string
+        severityScore:
+          type: ["string", "null"]
+        businessImpactScore:
+          type: ["string", "null"]
+        urgencyScore:
+          type: ["string", "null"]
+        performanceGapScore:
+          type: ["string", "null"]
+        quickWinBonus:
+          type: ["string", "null"]
+        dependencyBonus:
+          type: ["string", "null"]
+        effortPenalty:
+          type: ["string", "null"]
+        quickWinFlag:
+          type: boolean
+        effort:
+          type: ["string", "null"]
+        confidence:
+          type: ["string", "null"]
+        timeframe:
+          type: ["string", "null"]
+        suggestedOwner:
+          type: ["string", "null"]
+        successMetric:
+          type: ["string", "null"]
+        dependencyNotes:
+          type: ["string", "null"]
+        scoringExplanation:
+          type: ["object", "null"]
+        adminNotes:
+          type: ["string", "null"]
+        status:
+          type: string
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SolutionRecommendationActionRecord"
+      required:
+        - id
+        - planId
+        - rank
+        - title
+        - domain
+        - priorityScore
+        - priorityClassification
+        - quickWinFlag
+        - status
+        - sortOrder
+        - createdAt
+        - updatedAt
+    SolutionRecommendationActionRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        recommendationId:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        timeHorizon:
+          type: string
+        suggestedOwner:
+          type: ["string", "null"]
+        expectedOutcome:
+          type: ["string", "null"]
+        successMetric:
+          type: ["string", "null"]
+        completionStatus:
+          type: string
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - recommendationId
+        - title
+        - timeHorizon
+        - completionStatus
+        - sortOrder
+        - createdAt
+        - updatedAt
+    SolutionRecommendationDependencyRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        planId:
+          type: string
+        recommendationId:
+          type: string
+        dependsOnRecommendationId:
+          type: string
+        dependencyType:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - planId
+        - recommendationId
+        - dependsOnRecommendationId
+        - dependencyType
+        - createdAt
+    SolutionRecommendationPlanDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        growthAssessmentId:
+          type: string
+        diagnosticId:
+          type: string
+        diagnosticVersionId:
+          type: string
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        status:
+          type: string
+        overallPriorityScore:
+          type: ["string", "null"]
+        executiveRecommendation:
+          type: ["string", "null"]
+        systemExecutiveRecommendation:
+          type: ["string", "null"]
+        businessImpactSummary:
+          type: ["string", "null"]
+        systemBusinessImpactSummary:
+          type: ["string", "null"]
+        dependencySummary:
+          type: ["string", "null"]
+        systemDependencySummary:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+        recommendationEngineVersion:
+          type: string
+        reviewedBy:
+          type: ["string", "null"]
+        reviewedAt:
+          type: ["string", "null"]
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+        archivedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        clientName:
+          type: ["string", "null"]
+        diagnosticName:
+          type: ["string", "null"]
+        projectName:
+          type: ["string", "null"]
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/SolutionRecommendationRecord"
+        dependencies:
+          type: array
+          items:
+            $ref: "#/components/schemas/SolutionRecommendationDependencyRecord"
+      required:
+        - id
+        - growthAssessmentId
+        - diagnosticId
+        - diagnosticVersionId
+        - clientId
+        - status
+        - recommendationEngineVersion
+        - createdAt
+        - updatedAt
+        - recommendations
+        - dependencies
+    SolutionRecommendationPlanSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        overallPriorityScore:
+          type: ["string", "null"]
+        executiveRecommendation:
+          type: ["string", "null"]
+        systemExecutiveRecommendation:
+          type: ["string", "null"]
+        growthAssessmentId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        approvedAt:
+          type: ["string", "null"]
+      required:
+        - id
+        - status
+        - growthAssessmentId
+        - createdAt
+        - updatedAt
+    SolutionRecommendationListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SolutionRecommendationPlanSummary"
+      required:
+        - data
+    GenerateSolutionRecommendationBody:
+      type: object
+      properties:
+        growthAssessmentId:
+          type: string
+      required:
+        - growthAssessmentId
+    GenerateSolutionRecommendationResponse:
+      type: object
+      properties:
+        plan:
+          $ref: "#/components/schemas/SolutionRecommendationPlanRecord"
+        generated:
+          type: boolean
+      required:
+        - plan
+        - generated
+    UpdateSolutionRecommendationPlanBody:
+      type: object
+      properties:
+        executiveRecommendation:
+          type: ["string", "null"]
+        businessImpactSummary:
+          type: ["string", "null"]
+        dependencySummary:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+    SolutionRecommendationActivityResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityRecord"
+      required:
+        - data
