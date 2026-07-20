@@ -7,6 +7,7 @@ import {
   useCreateClientNote, useUpdateClientNote, useToggleClientNotePin,
   useArchiveClientNote, useRestoreClientNote, useDeleteClientNote,
   useListClientProjects, useListClientDiagnostics,
+  useGetClientLatestSolutionRecommendation,
   getGetClientQueryKey, getListClientNotesQueryKey, getListClientsQueryKey,
   getListClientActivityQueryKey, getListClientProjectsQueryKey,
   ClientRecord, ClientNoteRecord,
@@ -22,8 +23,12 @@ import {
 import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus, Pin, PinOff,
   Mail, Phone, Globe, Copy, Check, Loader2, MoreHorizontal, ExternalLink, FolderOpen, Stethoscope, ChevronDown,
-  TrendingUp, ShieldAlert, Lightbulb,
+  TrendingUp, ShieldAlert, Lightbulb, Zap, AlertTriangle,
 } from 'lucide-react';
+import {
+  PLAN_STATUS_LABELS, PLAN_STATUS_COLORS,
+  PRIORITY_CLASSIFICATION_LABELS, PRIORITY_CLASSIFICATION_COLORS,
+} from '@/lib/solution-recommendation-constants';
 import { format } from 'date-fns';
 import { ClientStatusBadge } from '@/components/clients/status-badge';
 import { CLIENT_STATUSES } from '@/lib/client-constants';
@@ -64,6 +69,7 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   const { data: clientDiagnostics } = useListClientDiagnostics(clientId);
   const [latestAssessment, setLatestAssessment] = useState<any>(null);
   const [assessmentLoading, setAssessmentLoading] = useState(true);
+  const { data: latestRecommendation, isLoading: recommendationLoading } = useGetClientLatestSolutionRecommendation(clientId);
 
   useEffect(() => {
     setAssessmentLoading(true);
@@ -291,7 +297,7 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
       </div>
 
       {/* Tab Content */}
-      {tab === 'overview' && <OverviewTab client={client} copy={copy} copiedField={copiedField} latestAssessment={latestAssessment} assessmentLoading={assessmentLoading} />}
+      {tab === 'overview' && <OverviewTab client={client} copy={copy} copiedField={copiedField} latestAssessment={latestAssessment} assessmentLoading={assessmentLoading} latestRecommendation={latestRecommendation ?? null} recommendationLoading={recommendationLoading} />}
       {tab === 'notes' && (
         <NotesTab
           notes={notes}
@@ -427,12 +433,14 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
 }
 
 // ─── Overview Tab ─────────────────────────────────────────────
-function OverviewTab({ client, copy, copiedField, latestAssessment, assessmentLoading }: {
+function OverviewTab({ client, copy, copiedField, latestAssessment, assessmentLoading, latestRecommendation, recommendationLoading }: {
   client: ClientRecord;
   copy: (v: string, f: string) => void;
   copiedField: string | null;
   latestAssessment: any;
   assessmentLoading: boolean;
+  latestRecommendation: any;
+  recommendationLoading: boolean;
 }) {
   const CopyBtn = ({ value, field }: { value: string; field: string }) => (
     <button onClick={() => copy(value, field)} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -612,6 +620,61 @@ function OverviewTab({ client, copy, copiedField, latestAssessment, assessmentLo
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Latest Solution Recommendation Panel */}
+      {(recommendationLoading || latestRecommendation) && (
+        <Card className="border-border/50 lg:col-span-2">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Latest Solution Recommendation Plan</CardTitle>
+              </div>
+              {latestRecommendation && (
+                <Link href={`/solution-recommendations/${latestRecommendation.id}`}>
+                  <button className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors">
+                    View Full Plan <ExternalLink className="h-3 w-3" />
+                  </button>
+                </Link>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {recommendationLoading ? (
+              <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+            ) : latestRecommendation ? (
+              <div className="space-y-4">
+                {/* Status + priority */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className={`text-xs font-semibold uppercase px-2 py-1 rounded border ${
+                    PLAN_STATUS_COLORS[latestRecommendation.status] ?? 'text-slate-400 border-slate-600 bg-slate-700/50'
+                  }`}>{PLAN_STATUS_LABELS[latestRecommendation.status] ?? latestRecommendation.status}</span>
+                  {latestRecommendation.overallPriorityScore != null && (
+                    <span className="text-xs text-muted-foreground">
+                      Priority: <span className="font-semibold text-foreground">{Number(latestRecommendation.overallPriorityScore).toFixed(0)}/100</span>
+                    </span>
+                  )}
+                  {latestRecommendation.approvedAt && (
+                    <span className="text-xs text-emerald-400">
+                      Approved {format(new Date(latestRecommendation.approvedAt), 'MMM d, yyyy')}
+                    </span>
+                  )}
+                </div>
+
+                {/* Executive recommendation snippet */}
+                {(latestRecommendation.executiveRecommendation || latestRecommendation.systemExecutiveRecommendation) && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Executive Recommendation</p>
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {latestRecommendation.executiveRecommendation ?? latestRecommendation.systemExecutiveRecommendation}
+                    </p>
                   </div>
                 )}
               </div>

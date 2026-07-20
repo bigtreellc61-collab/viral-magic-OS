@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { HealthScoreGauge } from "@/components/diagnostics/health-score-gauge";
@@ -12,9 +12,14 @@ import {
   SEVERITY_COLORS, SEVERITY_LABELS,
 } from "@/lib/growth-assessment-constants";
 import {
+  PLAN_STATUS_LABELS, PLAN_STATUS_COLORS,
+  PRIORITY_CLASSIFICATION_LABELS, PRIORITY_CLASSIFICATION_COLORS,
+  EFFORT_LABELS, TIMEFRAME_LABELS,
+} from "@/lib/solution-recommendation-constants";
+import {
   ChevronLeft, Edit2, Save, X, CheckCircle2, Send, RotateCcw,
   Archive, Printer, AlertTriangle, TrendingUp, Zap, Target,
-  ShieldAlert, Star, BarChart3, Loader2,
+  ShieldAlert, Star, BarChart3, Loader2, Lightbulb, ExternalLink,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -100,7 +105,8 @@ interface GrowthAssessmentRecord {
 
 type AssessmentTab =
   | "summary" | "strengths" | "risks" | "vulnerabilities"
-  | "quick_wins" | "strategic" | "opportunities" | "notes" | "approval";
+  | "quick_wins" | "strategic" | "opportunities" | "notes" | "approval"
+  | "recommendations";
 
 const TABS: { id: AssessmentTab; label: string; icon: any }[] = [
   { id: "summary", label: "Executive Summary", icon: BarChart3 },
@@ -112,6 +118,7 @@ const TABS: { id: AssessmentTab; label: string; icon: any }[] = [
   { id: "opportunities", label: "Growth Opportunities", icon: TrendingUp },
   { id: "notes", label: "Consultant Notes", icon: Edit2 },
   { id: "approval", label: "Approval", icon: CheckCircle2 },
+  { id: "recommendations", label: "Recommendations", icon: Lightbulb },
 ];
 
 // ─── Editable text area ──────────────────────────────────────
@@ -188,6 +195,53 @@ export function GrowthAssessmentPage({ assessmentId }: GrowthAssessmentPageProps
   const [localStrategic, setLocalStrategic] = useState("");
   const [localNotes, setLocalNotes] = useState("");
 
+  // Solution Recommendation Plan state
+  const [plan, setPlan] = useState<any>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [planFullDetail, setPlanFullDetail] = useState<any>(null);
+  const [planDetailLoading, setPlanDetailLoading] = useState(false);
+
+  const loadPlan = useCallback(() => {
+    setPlanLoading(true);
+    fetch(`/api/growth-assessments/${assessmentId}/solution-recommendation`, { credentials: "include" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        setPlan(data);
+        // Also load full detail if plan exists
+        if (data?.id) {
+          setPlanDetailLoading(true);
+          fetch(`/api/solution-recommendations/${data.id}`, { credentials: "include" })
+            .then((r) => r.ok ? r.json() : null)
+            .then((detail) => setPlanFullDetail(detail))
+            .catch(() => setPlanFullDetail(null))
+            .finally(() => setPlanDetailLoading(false));
+        }
+      })
+      .catch(() => setPlan(null))
+      .finally(() => setPlanLoading(false));
+  }, [assessmentId]);
+
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      const r = await fetch("/api/solution-recommendations/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ growthAssessmentId: assessmentId }),
+      });
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      toast({ title: "Solution Recommendation Plan generated" });
+      loadPlan();
+    } catch (e: any) {
+      toast({ title: "Failed to generate plan", description: e.message, variant: "destructive" });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   // Load assessment on mount
   const [loaded, setLoaded] = useState(false);
   if (!loaded) {
@@ -207,6 +261,8 @@ export function GrowthAssessmentPage({ assessmentId }: GrowthAssessmentPageProps
         setLoading(false);
       })
       .catch(() => { setError("Failed to load assessment."); setLoading(false); });
+    // Load plan in parallel
+    loadPlan();
   }
 
   const handleSave = async () => {
@@ -905,6 +961,169 @@ export function GrowthAssessmentPage({ assessmentId }: GrowthAssessmentPageProps
                 <p className="text-xs text-slate-500">
                   Reopening this assessment will return it to Draft status and create an audit log entry.
                 </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Tab: Solution Recommendations ── */}
+      {tab === "recommendations" && (
+        <div className="space-y-4 print:hidden">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-slate-200 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-indigo-400" />
+              Solution Recommendation Plan
+            </h2>
+          </div>
+
+          {/* Assessment not approved: warning */}
+          {!isApproved && !isArchived && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-5 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-300">Assessment Not Yet Approved</p>
+                <p className="text-sm text-amber-400/80 mt-1">
+                  A Solution Recommendation Plan can only be generated from an <strong>approved</strong> Growth Assessment.
+                  Submit this assessment for review and approve it first.
+                </p>
+                <button
+                  onClick={() => setTab("approval")}
+                  className="mt-3 text-xs text-amber-300 underline hover:text-amber-200 transition-colors"
+                >
+                  Go to Approval tab →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Approved + loading plan */}
+          {isApproved && planLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+              <span className="ml-3 text-slate-400 text-sm">Loading plan…</span>
+            </div>
+          )}
+
+          {/* Approved + no plan: show generate button */}
+          {isApproved && !planLoading && !plan && (
+            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-8 text-center space-y-4">
+              <Lightbulb className="w-10 h-10 text-indigo-400 mx-auto opacity-70" />
+              <div>
+                <p className="text-base font-semibold text-slate-200">No Recommendation Plan Yet</p>
+                <p className="text-sm text-slate-400 mt-1 max-w-md mx-auto">
+                  Generate a Solution Recommendation Plan from this approved assessment. The engine will analyse
+                  diagnostic scores and produce a prioritised set of actionable recommendations.
+                </p>
+              </div>
+              <button
+                onClick={handleGenerate}
+                disabled={generating}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lightbulb className="w-4 h-4" />}
+                {generating ? "Generating…" : "Generate Recommendation Plan"}
+              </button>
+            </div>
+          )}
+
+          {/* Plan exists: show summary */}
+          {isApproved && !planLoading && plan && (
+            <div className="space-y-4">
+              {/* Plan header card */}
+              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className={cn("inline-flex items-center px-2.5 py-0.5 rounded-md border text-xs font-medium", PLAN_STATUS_COLORS[plan.status] ?? "text-slate-300 bg-slate-700/50 border-slate-600/50")}>
+                      {PLAN_STATUS_LABELS[plan.status] ?? plan.status}
+                    </span>
+                    {plan.overallPriorityScore != null && (
+                      <span className="text-xs text-slate-400 font-mono">
+                        Overall Priority: <span className="text-slate-200 font-semibold">{Number(plan.overallPriorityScore).toFixed(0)}/100</span>
+                      </span>
+                    )}
+                    {plan.approvedAt && (
+                      <span className="text-xs text-emerald-400">
+                        Approved {format(new Date(plan.approvedAt), "MMM d, yyyy")}
+                      </span>
+                    )}
+                  </div>
+                  <Link href={`/solution-recommendations/${plan.id}`}>
+                    <button className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                      View Full Plan <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  </Link>
+                </div>
+
+                {/* Executive recommendation snippet */}
+                {(plan.executiveRecommendation || plan.systemExecutiveRecommendation) && (
+                  <div>
+                    <span className="text-xs font-medium text-slate-500 uppercase tracking-wide block mb-1">Executive Recommendation</span>
+                    <p className="text-sm text-slate-300 leading-relaxed line-clamp-4">
+                      {plan.executiveRecommendation ?? plan.systemExecutiveRecommendation}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Top recommendations */}
+              {planDetailLoading && (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+                </div>
+              )}
+              {!planDetailLoading && planFullDetail?.recommendations?.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">Top Recommendations</h3>
+                  {planFullDetail.recommendations.slice(0, 3).map((rec: any) => (
+                    <div key={rec.id} className="bg-slate-800/50 border border-slate-700/40 rounded-xl p-4 flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+                        <span className="text-indigo-300 text-xs font-bold">#{rec.rank}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className="text-sm font-medium text-slate-200 truncate">{rec.title}</span>
+                          {rec.quickWinFlag && (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded border text-emerald-300 bg-emerald-500/20 border-emerald-500/30">⚡ Quick Win</span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={cn("text-[10px] font-semibold px-1.5 py-0.5 rounded border", PRIORITY_CLASSIFICATION_COLORS[rec.priorityClassification] ?? "text-slate-300 bg-slate-700/50 border-slate-600/50")}>
+                            {PRIORITY_CLASSIFICATION_LABELS[rec.priorityClassification] ?? rec.priorityClassification}
+                          </span>
+                          {rec.effort && (
+                            <span className="text-xs text-slate-500">{EFFORT_LABELS[rec.effort] ?? rec.effort} effort</span>
+                          )}
+                          {rec.timeframe && (
+                            <span className="text-xs text-slate-500">{TIMEFRAME_LABELS[rec.timeframe] ?? rec.timeframe}</span>
+                          )}
+                        </div>
+                        {rec.problemStatement && (
+                          <p className="text-xs text-slate-400 mt-1.5 line-clamp-2">{rec.problemStatement}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Quick win count */}
+                  {(() => {
+                    const quickWins = planFullDetail.recommendations.filter((r: any) => r.quickWinFlag);
+                    return quickWins.length > 0 ? (
+                      <div className="flex items-center gap-2 text-sm text-emerald-400 pt-1">
+                        <Zap className="w-4 h-4" />
+                        <span>{quickWins.length} quick win{quickWins.length !== 1 ? "s" : ""} identified</span>
+                      </div>
+                    ) : null;
+                  })()}
+
+                  <div className="pt-1">
+                    <Link href={`/solution-recommendations/${plan.id}`}>
+                      <button className="flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+                        View Full Plan ({planFullDetail.recommendations.length} recommendations) <ExternalLink className="w-4 h-4" />
+                      </button>
+                    </Link>
+                  </div>
+                </div>
               )}
             </div>
           )}

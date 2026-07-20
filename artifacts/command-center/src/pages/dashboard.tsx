@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { useGetFoundationStatus, useGetClientMetrics, useGetDashboardProjects, useGetDashboardDiagnostics, useGetDashboardGrowthAssessments } from '@workspace/api-client-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Activity, Database, Key, ShieldCheck, Settings2, Code2, Loader2,
   Users, FolderOpen, CheckSquare, AlertTriangle,
   ArrowRight, TrendingUp, Clock, CheckCircle2, Stethoscope, Star, ShieldAlert,
+  Lightbulb,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +17,7 @@ import { PriorityBadge } from '@/components/projects/priority-badge';
 import { DueDateBadge } from '@/components/ui/due-date-badge';
 import { getClientDisplayName } from '@/lib/client-constants';
 import { PROJECT_STATUS_COLORS } from '@/lib/project-constants';
+import { PLAN_STATUS_LABELS, PLAN_STATUS_COLORS } from '@/lib/solution-recommendation-constants';
 
 export function DashboardPage() {
   const { data: status, isLoading: loadingStatus, error: statusError } = useGetFoundationStatus();
@@ -23,6 +26,17 @@ export function DashboardPage() {
   const { data: diagData, isLoading: loadingDiagnostics } = useGetDashboardDiagnostics();
   const { data: assessmentData, isLoading: loadingAssessments } = useGetDashboardGrowthAssessments();
   const [, setLocation] = useLocation();
+
+  // Solution Recommendations dashboard data
+  const [recData, setRecData] = useState<any>(null);
+  const [loadingRecs, setLoadingRecs] = useState(true);
+  useEffect(() => {
+    fetch('/api/solution-recommendations/dashboard', { credentials: 'include' })
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => setRecData(d))
+      .catch(() => setRecData(null))
+      .finally(() => setLoadingRecs(false));
+  }, []);
 
   if (loadingStatus) {
     return (
@@ -664,6 +678,91 @@ export function DashboardPage() {
                         </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Solution Recommendations Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-semibold tracking-widest uppercase text-muted-foreground flex items-center gap-2">
+            <Lightbulb className="h-3.5 w-3.5 text-indigo-400" />
+            Solution Recommendations
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Counts */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Draft', value: recData?.draft, color: 'text-slate-300', bg: 'bg-slate-700/40' },
+              { label: 'Awaiting Review', value: recData?.awaitingReview, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+              { label: 'Approved', value: recData?.approved, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => setLocation('/clients')}
+                className="rounded-xl border border-border/50 bg-card/80 p-4 text-left hover:border-primary/30 hover:bg-card transition-all duration-200"
+              >
+                <div className={`inline-flex p-2 rounded-lg ${item.bg} mb-3`}>
+                  <Lightbulb className={`h-4 w-4 ${item.color}`} />
+                </div>
+                <p className={`text-2xl font-bold tabular-nums ${item.color}`}>
+                  {loadingRecs
+                    ? <span className="inline-block h-6 w-8 bg-muted/50 rounded animate-pulse" />
+                    : (item.value ?? '—')}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 leading-tight">{item.label}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Critical + Recent Plans */}
+          <Card className="border-border/50 shadow-md bg-card/80 lg:col-span-2">
+            <CardHeader className="border-b border-border/50 bg-muted/20 pb-3 pt-4 px-4">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-indigo-400" />
+                <CardTitle className="text-sm font-semibold text-indigo-400">Recent Recommendation Plans</CardTitle>
+              </div>
+              <CardDescription className="text-xs mt-1">Latest solution recommendation plans across all clients.</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              {loadingRecs ? (
+                <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+              ) : !recData?.recentPlans?.length ? (
+                <div className="py-10 text-center text-muted-foreground text-sm flex flex-col items-center gap-2">
+                  <Lightbulb className="h-6 w-6 opacity-30" />
+                  <span>No recommendation plans yet. Generate one from an approved Growth Assessment.</span>
+                </div>
+              ) : (
+                <div className="divide-y divide-border/50">
+                  {recData.recentPlans.map((plan: any) => (
+                    <Link key={plan.id} href={`/solution-recommendations/${plan.id}`}>
+                      <div className="px-4 py-3 hover:bg-muted/20 transition-colors cursor-pointer">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{plan.diagnosticName ?? 'Recommendation Plan'}</p>
+                            <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                              <span className="truncate">{plan.clientName ?? '—'}</span>
+                            </div>
+                          </div>
+                          <div className="shrink-0 flex items-center gap-2">
+                            {plan.overallPriorityScore != null && (
+                              <span className={`text-sm font-bold tabular-nums ${
+                                Number(plan.overallPriorityScore) >= 80 ? 'text-red-400' :
+                                Number(plan.overallPriorityScore) >= 65 ? 'text-orange-400' : 'text-slate-400'
+                              }`}>{Number(plan.overallPriorityScore).toFixed(0)}</span>
+                            )}
+                            <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border ${
+                              PLAN_STATUS_COLORS[plan.status] ?? 'text-slate-400 border-slate-600 bg-slate-700/50'
+                            }`}>{PLAN_STATUS_LABELS[plan.status] ?? plan.status}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               )}

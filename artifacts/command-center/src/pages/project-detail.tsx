@@ -5,7 +5,7 @@ import {
   useGetProject, useGetProjectProgress, useGetProjectActivity,
   useListProjectTasks, useArchiveProject, useRestoreProject, useDeleteProject,
   useUpdateProject, useCreateTask, useUpdateTask, useArchiveTask, useRestoreTask, useDeleteTask,
-  useListProjectDiagnostics,
+  useListProjectDiagnostics, useGetProjectSolutionRecommendations,
   getGetProjectQueryKey, getGetProjectProgressQueryKey, getGetProjectActivityQueryKey,
   getListProjectTasksQueryKey, getListProjectsQueryKey, TaskRecord,
 } from '@workspace/api-client-react';
@@ -28,7 +28,11 @@ import {
   ArrowLeft, Pencil, Archive, RotateCcw, Trash2, Plus,
   MoreHorizontal, Loader2, Calendar, DollarSign, User,
   CheckCircle2, LayoutGrid, List, Stethoscope, TrendingUp, ShieldAlert,
+  Lightbulb, ExternalLink, Zap,
 } from 'lucide-react';
+import {
+  PLAN_STATUS_LABELS, PLAN_STATUS_COLORS,
+} from '@/lib/solution-recommendation-constants';
 import { format } from 'date-fns';
 import { ProjectStatusBadge } from '@/components/projects/status-badge';
 import { PriorityBadge } from '@/components/projects/priority-badge';
@@ -93,6 +97,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     query: { enabled: tab === 'tasks', queryKey: getListProjectTasksQueryKey(projectId, taskParams) },
   });
   const { data: projectDiagnostics } = useListProjectDiagnostics(projectId);
+  const { data: projectRecommendationPlans } = useGetProjectSolutionRecommendations(projectId);
   const [diagnosticAssessments, setDiagnosticAssessments] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -492,7 +497,57 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
 
       {/* ── Diagnostics Tab ── */}
       {tab === 'diagnostics' && (
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Recommendation Plans linked to this project */}
+          {(() => {
+            const plans = (projectRecommendationPlans as any)?.data ?? [];
+            if (!plans.length) return null;
+            return (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                    <Lightbulb className="h-3.5 w-3.5 text-indigo-400" />
+                    Solution Recommendation Plans ({plans.length})
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {plans.map((plan: any) => (
+                    <Link key={plan.id} href={`/solution-recommendations/${plan.id}`}>
+                      <Card className="border-border/50 hover:border-primary/30 transition-colors cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border ${
+                                PLAN_STATUS_COLORS[plan.status] ?? 'text-slate-400 border-slate-600 bg-slate-700/50'
+                              }`}>{PLAN_STATUS_LABELS[plan.status] ?? plan.status}</span>
+                              {plan.overallPriorityScore != null && (
+                                <span className="text-xs text-muted-foreground">
+                                  Priority: <span className="font-semibold text-foreground">{Number(plan.overallPriorityScore).toFixed(0)}/100</span>
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {plan.approvedAt && (
+                                <span className="text-xs text-emerald-400">Approved {format(new Date(plan.approvedAt), 'MMM d, yyyy')}</span>
+                              )}
+                              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                            </div>
+                          </div>
+                          {(plan.executiveRecommendation || plan.systemExecutiveRecommendation) && (
+                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                              {plan.executiveRecommendation ?? plan.systemExecutiveRecommendation}
+                            </p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Business diagnostics linked to this project.</p>
             <Link href={`/diagnostics/new`}>
@@ -589,6 +644,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
               })}
             </div>
           )}
+        </div>
         </div>
       )}
 

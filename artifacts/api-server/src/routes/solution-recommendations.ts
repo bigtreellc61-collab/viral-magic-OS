@@ -55,6 +55,50 @@ function validateForApproval(plan: any, recs: any[]): string | null {
   return null;
 }
 
+// ─── GET /api/solution-recommendations/dashboard ─────────────────
+//
+// Returns aggregated summary for the dashboard section.
+
+router.get("/solution-recommendations/dashboard", requireAuth, async (req, res) => {
+  try {
+    // Status counts (exclude archived/superseded)
+    const allActivePlans = await db
+      .select({
+        id: solutionRecommendationPlansTable.id,
+        status: solutionRecommendationPlansTable.status,
+        overallPriorityScore: solutionRecommendationPlansTable.overallPriorityScore,
+        clientId: solutionRecommendationPlansTable.clientId,
+        clientName: clientsTable.companyName,
+        diagnosticName: diagnosticsTable.diagnosticName,
+        createdAt: solutionRecommendationPlansTable.createdAt,
+        updatedAt: solutionRecommendationPlansTable.updatedAt,
+        approvedAt: solutionRecommendationPlansTable.approvedAt,
+      })
+      .from(solutionRecommendationPlansTable)
+      .leftJoin(clientsTable, eq(solutionRecommendationPlansTable.clientId, clientsTable.id))
+      .leftJoin(diagnosticsTable, eq(solutionRecommendationPlansTable.diagnosticId, diagnosticsTable.id))
+      .where(isNull(solutionRecommendationPlansTable.archivedAt))
+      .orderBy(desc(solutionRecommendationPlansTable.updatedAt));
+
+    const draft = allActivePlans.filter((p) => p.status === "draft").length;
+    const awaitingReview = allActivePlans.filter((p) => p.status === "awaiting_review").length;
+    const approved = allActivePlans.filter((p) => p.status === "approved").length;
+
+    // Critical-priority plans: overall score >= 80
+    const criticalPlans = allActivePlans
+      .filter((p) => Number(p.overallPriorityScore ?? 0) >= 80)
+      .slice(0, 5);
+
+    // Recent plans: 5 most recently updated
+    const recentPlans = allActivePlans.slice(0, 5);
+
+    res.json({ draft, awaitingReview, approved, criticalPlans, recentPlans });
+  } catch (err) {
+    logger.error({ err }, "Get solution recommendation dashboard failed");
+    res.status(500).json({ error: "Failed to get solution recommendation dashboard." });
+  }
+});
+
 // ─── POST /api/solution-recommendations/generate ─────────────────
 
 router.post("/solution-recommendations/generate", requireAuth, async (req, res) => {
