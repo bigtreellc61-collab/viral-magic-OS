@@ -1,0 +1,143 @@
+
+Phase 1F-B Status & Gap Report
+1. What Phase 1F-B Features Were Completed
+Backend (Task #9)
+
+Deterministic Solution Recommendation Engine: 20 rules across 8 business domains, priority scoring with 7 named weight constants, 0–100 normalization, 5 classification bands
+5 new DB tables: solution_recommendation_plans, solution_recommendations, solution_recommendation_actions, solution_recommendation_dependencies, solution_recommendation_rules
+Full plan lifecycle: draft → awaiting_review → approved → reopened / superseded / archived
+Atomic regenerate: supersedes old plan, creates new in one transaction, rolls back on failure
+Activity logging for all lifecycle events
+Dashboard aggregation endpoint
+Frontend Detail Page (Task #10)
+
+solution-recommendation-detail.tsx — 1,511 lines, 7-tab layout (Executive Recommendation, Priority Recommendations, Action Plan, Business Impact, Dependencies, Consultant Notes, Approval)
+Editable plan-level fields (exec rec, business impact, dependency summary, consultant notes)
+Per-recommendation admin notes with inline save
+Workflow action buttons: submit, approve, reopen, archive, regenerate (with confirm dialogs)
+solution-recommendation-constants.ts — 12 label/color maps
+Page Integrations (Task #11)
+
+client-detail.tsx — "Latest Solution Recommendation" panel in Overview tab
+project-detail.tsx — Recommendation Plans sub-section in Diagnostics tab
+dashboard.tsx — three metric cards (Draft / Awaiting Review / Approved) + Recent Plans list
+growth-assessment.tsx — "Generate Recommendations" button and Recommendations tab with current-plan display
+Route /solution-recommendations/:id registered in App.tsx
+2. Files Created or Changed
+File	Change
+artifacts/api-server/src/lib/solution-recommendation-engine.ts	New — 1,288 lines
+artifacts/api-server/src/routes/solution-recommendations.ts	New — 993 lines
+artifacts/api-server/src/routes/index.ts	Changed — router mounted
+lib/db/src/schema/solutionRecommendations.ts	New — 5 tables, 207 lines
+lib/db/src/schema/index.ts	Changed — new schema exported
+lib/api-spec/openapi.yaml	Changed — 12 paths + 14 component schemas added
+lib/api-zod/src/generated/api.ts	Changed — regenerated + looseObject patch
+lib/api-zod/src/generated/types/*	New — 14 type files
+lib/api-client-react/src/generated/api.ts	Changed — Orval codegen output
+lib/api-client-react/src/generated/api.schemas.ts	Changed — schema codegen
+artifacts/command-center/src/lib/solution-recommendation-constants.ts	New
+artifacts/command-center/src/pages/solution-recommendation-detail.tsx	New — 1,511 lines
+artifacts/command-center/src/pages/client-detail.tsx	Changed — recommendation panel
+artifacts/command-center/src/pages/project-detail.tsx	Changed — plans sub-section
+artifacts/command-center/src/pages/dashboard.tsx	Changed — 3 tiles + recent plans
+artifacts/command-center/src/pages/growth-assessment.tsx	Changed — Recommendations tab
+artifacts/command-center/src/App.tsx	Changed — new route
+3. Routes and Components That Now Exist
+Backend endpoints (14 total):
+
+GET /api/solution-recommendations/dashboard
+POST /api/solution-recommendations/generate
+GET /api/solution-recommendations/:id
+PATCH /api/solution-recommendations/:id
+PATCH /api/solution-recommendations/:id/recommendations/:recId
+GET /api/growth-assessments/:id/solution-recommendation
+GET /api/clients/:id/latest-solution-recommendation
+GET /api/projects/:id/solution-recommendations
+POST /api/solution-recommendations/:id/submit
+POST /api/solution-recommendations/:id/approve
+POST /api/solution-recommendations/:id/reopen
+POST /api/solution-recommendations/:id/archive
+POST /api/solution-recommendations/:id/regenerate
+GET /api/solution-recommendations/:id/activity
+Frontend route: /solution-recommendations/:id → SolutionRecommendationDetailPage
+
+4. Integration Status by Page
+Page	Integration	Status
+growth-assessment.tsx	Recommendations tab + Generate button	✅ Present (uses plain fetch)
+client-detail.tsx	Latest Recommendation panel in Overview	✅ Present (React Query hook)
+project-detail.tsx	Plans sub-section in Diagnostics tab	✅ Present (React Query hook)
+dashboard.tsx	3 KPI tiles + Recent Plans list	✅ Present (plain fetch in useEffect)
+5. Status Actions and Editing Workflows
+Action	Implemented	Notes
+Submit plan	✅	Confirm dialog, toast
+Approve plan	✅	Validation enforced (exec rec, success metrics, score)
+Reopen plan	✅	Confirm dialog
+Archive plan	✅	Confirm dialog
+Regenerate plan	✅	Warning dialog, atomic supersede
+Edit plan-level fields	✅	Editable in draft/reopened status only
+Edit per-rec admin notes	✅	Inline save per card
+Read-only mode	✅	Enforced for approved/archived
+6. Tests Reported and Results
+The task agent reported 44 checks all passing. The tests were primarily manual-verification checks documented in the commit message, not an automated Playwright suite. They covered:
+
+Login and page load (tests 1–9, 43)
+Generate button / unapproved warning in growth-assessment tab (10–11)
+Backend engine logic (12–19, noted as pre-existing)
+Solution recommendation detail page tabs (20–34)
+Client / Project / Dashboard integrations (35–37)
+React Query reload on remount (38)
+Mobile responsive layout (39)
+Print view (40)
+Hook order compliance (41)
+TypeScript zero errors — claimed passing but is actually failing (42, see §8)
+Phase 1G not started (44)
+7. ⚠️ Phase 1F-B Items That Remain Incomplete
+Critical — app will not typecheck:
+
+The api-client-react dist/ .d.ts files were not rebuilt after the last Orval codegen run. The source lib/api-client-react/src/generated/api.ts contains the generated hooks, but the compiled declarations the frontend imports from @workspace/api-client-react are stale. This produces 29 TypeScript errors across 3 files, all hook and type imports resolving to "no exported member":
+
+useGetSolutionRecommendationPlan — not found in dist
+useUpdateSolutionRecommendationPlan — not found in dist
+useUpdateSolutionRecommendation — name mismatch (generated as useUpdateRecommendation)
+useSubmitSolutionRecommendationPlan — not found in dist
+useApproveSolutionRecommendationPlan — name mismatch (generated as useApproveRecommendation)
+useReopenSolutionRecommendationPlan — not found in dist
+useArchiveSolutionRecommendationPlan — not found in dist
+useRegenerateSolutionRecommendationPlan — not found in dist
+useGetSolutionRecommendationPlanActivity — not found in dist
+useGetClientLatestSolutionRecommendation — not found in dist
+useGetProjectSolutionRecommendations — not found in dist
+SolutionRecommendationPlanDetail, SolutionRecommendationRecord, SolutionRecommendationActionRecord — not found in dist
+11 implicit any parameters in solution-recommendation-detail.tsx (map/filter callbacks)
+Two hooks have name mismatches — the page imports names that don't exist in the generated client at all; the generated names are different.
+
+8. Frontend Compilation Status
+❌ Does not compile. npx tsc --noEmit in artifacts/command-center produces 29 errors. Root cause: lib/api-client-react dist was not rebuilt after Task #9/#10 codegen. The task agent's "zero TypeScript errors" claim was made using a command (pnpm --filter ... exec tsc) that failed silently (exit 254, filesystem restriction) and was not caught.
+
+9. React Hook / Console Errors at Runtime
+Browser console: Clean — only Vite HMR reconnect messages, no React errors, no JavaScript exceptions logged. At runtime, Vite transpiles TypeScript without strict type-checking, so the type errors above do not prevent the app from loading. The hooks resolve at runtime through the actual JS bundle (which was built by the task agent during its session), so pages may render — but this depends on whether the task agent's built bundle is still cached in dist/.
+
+Hook order: All hooks in solution-recommendation-detail.tsx are called unconditionally before early returns. No Rules of Hooks violations detected.
+
+10. Phase 1A–1F-A Regression Status
+Login / auth: ✅ API server starts cleanly, /api/auth/me responds (401 because no active session in log, which is expected on cold start)
+Existing pages (clients, projects, diagnostics, growth assessments): ✅ No import changes to those pages' own logic; no regressions introduced in routes
+Settings Account tab crash (FormLabel bug): ✅ Fixed in this session prior to the merges
+Password change → session invalidation: ✅ Unchanged from Task #5
+zod.looseObject patch: ✅ Applied in both Task #9 and Task #10 codegen runs
+Summary
+Area	Status
+Backend engine + DB schema	✅ Complete
+Backend API endpoints (14)	✅ Complete
+OpenAPI spec	✅ Complete
+Orval codegen (source files)	✅ Generated
+api-client-react dist rebuild	❌ Not done — 29 TS errors
+Hook name mismatches (2)	❌ Need correction
+Implicit any params (11)	❌ Need annotation
+Detail page (7 tabs, all actions)	✅ Complete structurally
+Page integrations (4 pages)	✅ Complete
+Route registration	✅ Complete
+Constants file	✅ Complete
+Runtime behavior	✅ No console errors
+TypeScript strict compliance	❌ Failing
+The single blocker to a clean build is: run pnpm tsc --build in lib/api-client-react, fix the two hook name mismatches, and annotate the 11 implicit-any callbacks.
