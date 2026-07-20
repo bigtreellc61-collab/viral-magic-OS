@@ -6,3 +6,4 @@
 - [Sonner toast conflicts with existing Radix toast setup](sonner-radix-conflict.md) — do not add a second SonnerToaster; use existing useToast radix hook throughout.
 - [Dashboard diagnostics API shape](dashboard-diag-api-shape.md) — diagData fields are top-level (total, criticalBottlenecks, awaitingReview…), NOT nested under .metrics; historical code used .metrics which was wrong.
 - [Orval 8.x zod.looseObject Zod v3 incompatibility](orval-zod-looseobject.md) — orval 8.21+ emits zod.looseObject() for bare type:object; Zod v3 crashes. Run sed patch after every orval codegen.
+- [Phase completion milestones](phase-completion.md) — phases 1A–1F-B complete and verified; 1F-B fix was a dist rebuild, not source edits.
