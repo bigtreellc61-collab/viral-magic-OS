@@ -1,0 +1,827 @@
+PHASE 1F-B BUILD PROMPT
+Viral Magic OS — Solution Recommendation Engine™
+Frontend, Workflow, and Integration
+
+You are continuing the existing Viral Magic OS application.
+
+Completed and stable:
+
+- Phase 1A — Foundation
+- Phase 1B — Client Management
+- Phase 1C — Projects and Tasks
+- Phase 1D — Business Diagnostic Engine
+- Phase 1D.1 — Stability and Polish
+- Phase 1E — Business Growth Assessment Engine
+- Phase 1F-A — Solution Recommendation Engine Backend
+
+Phase 1F-A completion status:
+
+- 5 new database tables created
+- 19-rule deterministic recommendation library
+- 8 business recommendation domains
+- Priority scoring engine with 0–100 normalization
+- 12 API endpoints
+- Full recommendation-plan status workflow
+- Atomic regeneration
+- Approval validation
+- Activity logging
+- OpenAPI updated
+- Orval codegen completed
+- Generated React client rebuilt
+- All 35 Phase 1F-A specification tests passed
+- Phase 1A–1E regression confirmed
+
+Build only Phase 1F-B.
+
+Do not rebuild the Phase 1F-A backend unless a verified frontend integration defect requires a narrow correction.
+
+Do not begin Phase 1F-C.
+Do not begin Phase 1G.
+Do not modify authentication.
+Do not add external AI APIs.
+Do not add billing, proposals, client portals, software blueprints, or platform-matching features.
+Do not perform broad refactors.
+
+==================================================
+1. OBJECTIVE
+==================================================
+
+Build the user-facing interface and workflow for the Solution Recommendation Engine™.
+
+The UI must allow an authorized consultant or administrator to:
+
+- Generate a Solution Recommendation Plan from an approved Growth Assessment
+- Review the system-generated executive recommendation
+- Review ranked recommendations
+- Understand scoring and prioritization
+- Review actions and dependencies
+- Edit permitted Draft content
+- Submit a plan for review
+- Approve a plan
+- Reopen an approved plan
+- Regenerate a Draft or Reopened plan
+- Archive a plan
+- View recommendation activity
+- Access plans from assessments, clients, projects, and dashboard locations
+
+The experience must be clear, executive-friendly, practical, and consistent with the existing Viral Magic OS design.
+
+==================================================
+2. PHASE 1F-B SCOPE
+==================================================
+
+Build only:
+
+1. Solution Recommendation Plan page
+2. Recommendation plan generation workflow
+3. Executive summary interface
+4. Ranked recommendation cards
+5. Recommendation detail sections
+6. Action-step timeline
+7. Business impact summary
+8. Dependency display
+9. Draft editing
+10. Status controls
+11. Approval workflow interface
+12. Regeneration confirmation
+13. Activity history
+14. Client integration
+15. Project integration
+16. Growth Assessment integration
+17. Dashboard integration
+18. Loading, empty, and error states
+19. Frontend tests
+20. Regression testing
+
+Do not build:
+
+- Print/PDF view
+- Export
+- Public sharing
+- Client portal
+- Email delivery
+- Phase 1G implementation roadmap
+- External AI-generated recommendations
+
+Those belong to later work.
+
+==================================================
+3. INSPECTION BEFORE CODING
+==================================================
+
+Before changing code, inspect:
+
+- Existing Phase 1E Growth Assessment pages
+- Current client-detail layout
+- Current project-detail layout
+- Dashboard widgets and card styles
+- Existing status badges
+- Existing confirmation dialogs
+- Existing tabs
+- Existing activity timeline components
+- Generated Phase 1F React hooks
+- Existing permissions and authorization patterns
+- Existing toast and error-handling patterns
+- Existing form components and design tokens
+
+Then briefly report:
+
+- Planned files
+- Planned routes
+- Planned page hierarchy
+- Components that will be reused
+- Any conflicts discovered
+- Any narrow backend changes that may be required
+
+Do not start a broad redesign.
+
+==================================================
+4. ROUTES AND NAVIGATION
+==================================================
+
+Add or use routes equivalent to:
+
+- /solution-recommendations/:id
+- /growth-assessments/:id/solution-recommendation
+
+Use the project’s existing route conventions.
+
+Add access points from:
+
+A. Growth Assessment
+
+On an approved Growth Assessment:
+
+- Show “Generate Solution Plan” when no plan exists
+- Show “View Solution Plan” when one exists
+- Show the plan status
+- Do not allow generation from an unapproved assessment
+- Explain clearly that approval is required first
+
+B. Client Detail
+
+Add a Solution Recommendations section or tab showing:
+
+- Latest plan
+- Status
+- Overall priority score
+- Top recommendation
+- Approval date, when approved
+- Link to open the plan
+
+Do not overload the client page.
+
+C. Project Detail
+
+Add a Solution Recommendations section or tab showing:
+
+- Plans associated with the project
+- Status
+- Assessment source
+- Created date
+- Approved date
+- Link to open each plan
+
+D. Dashboard
+
+Add a compact widget showing:
+
+- Draft plans needing attention
+- Plans awaiting review
+- Recently approved plans
+- High-priority plans, where appropriate
+
+Keep the widget concise.
+
+==================================================
+5. SOLUTION RECOMMENDATION PLAN PAGE
+==================================================
+
+Create a professional page with this structure:
+
+A. Header
+
+Display:
+
+- Solution Recommendation Plan
+- Client name
+- Project name, if applicable
+- Source Growth Assessment
+- Plan status badge
+- Overall priority score
+- Created date
+- Last updated date
+- Approved date, when applicable
+
+Primary actions must change by status.
+
+B. Executive Recommendation
+
+Display:
+
+- Overall business condition
+- Highest-priority risk
+- Strongest growth opportunity
+- Recommended 90-day focus
+- Why the order matters
+
+Use the consultant-edited executive recommendation when present.
+
+Preserve the system-generated version separately.
+
+Provide a clear “System Generated” reference or comparison mechanism in Draft/Reopened status.
+
+Do not overwrite the system-generated content.
+
+C. Top Recommendations
+
+Display the top 3–5 recommendations as ranked cards.
+
+Each card must show:
+
+- Rank
+- Title
+- Domain
+- Priority score
+- Priority classification
+- Problem statement
+- Why it matters
+- Recommended outcome
+- Effort
+- Confidence
+- Timeframe
+- Suggested owner
+- Success metric
+- Quick-win indicator, if applicable
+- Dependency indicator, if applicable
+
+Cards should be easy to scan and expand.
+
+D. Scoring Explanation
+
+Provide a collapsible scoring section showing:
+
+- Severity
+- Business impact
+- Urgency
+- Performance gap
+- Quick-win bonus
+- Dependency bonus
+- Effort penalty
+- Final score
+
+Use plain-language labels.
+
+Do not expose unnecessary technical JSON.
+
+E. Action Timeline
+
+For each recommendation, group actions into:
+
+- Immediate
+- Within 7 Days
+- Within 30 Days
+- Within 60–90 Days
+
+Each action should show:
+
+- Title
+- Description
+- Suggested owner
+- Expected outcome
+- Success metric
+- Completion status
+
+F. Business Impact Summary
+
+Display expected impact from 1–5 for:
+
+- Revenue growth
+- Lead generation
+- Sales conversion
+- Customer retention
+- Customer experience
+- Operational efficiency
+- Technology and automation
+- Reporting and visibility
+- Scalability
+
+Use a clean executive summary component.
+
+Do not require a complex chart if a clear score grid or bar display is more reliable.
+
+G. Dependency Summary
+
+Show:
+
+- Recommendation dependencies
+- Dependency type
+- Sequencing explanation
+- Why one recommendation should precede another
+
+Use clear language such as:
+
+- Complete first
+- Can run in parallel
+- Depends on
+- Foundational requirement
+
+H. Consultant Notes
+
+Allow notes in Draft and Reopened status.
+
+Read-only in Awaiting Review, Approved, Superseded, and Archived statuses unless current backend rules explicitly allow otherwise.
+
+I. Activity
+
+Show chronological activity:
+
+- Generated
+- Regenerated
+- Saved
+- Submitted
+- Approved
+- Reopened
+- Archived
+- Edited
+- Reordered
+- Actions changed
+- Dependencies changed
+
+Reuse the existing activity timeline pattern.
+
+==================================================
+6. STATUS-BASED ACTIONS
+==================================================
+
+Use the Phase 1F-A backend workflow exactly.
+
+Draft:
+
+- Edit
+- Save Draft
+- Regenerate
+- Submit for Review
+- Archive
+
+Awaiting Review:
+
+- Approve
+- Reopen
+- Archive, only if backend permits
+
+Approved:
+
+- Reopen
+- Archive
+- Read-only
+
+Reopened:
+
+- Edit
+- Save
+- Regenerate
+- Submit for Review
+- Archive
+
+Superseded:
+
+- Read-only
+- Show link to current active plan where available
+
+Archived:
+
+- Read-only
+
+Never show an action that the API will reject.
+
+Disable actions during requests.
+
+Prevent duplicate submissions.
+
+==================================================
+7. GENERATION WORKFLOW
+==================================================
+
+From an approved Growth Assessment:
+
+1. User clicks Generate Solution Plan
+2. Show confirmation dialog explaining:
+   - The plan will be generated from the approved assessment
+   - Recommendations are deterministic and based on assessment findings
+   - The plan will initially be Draft
+3. Call the existing generate endpoint
+4. Show progress state
+5. On success, navigate to the new plan
+6. On failure, show a clear user-safe error
+7. If an active plan already exists, show View Existing Plan instead of creating a duplicate
+
+Do not allow repeated clicking to create multiple plans.
+
+==================================================
+8. EDITING RULES
+==================================================
+
+Allow editing only in Draft and Reopened status.
+
+Editable fields may include:
+
+Plan-level:
+
+- Executive recommendation
+- Business impact summary, if supported by current API
+- Dependency summary, if supported
+- Consultant notes
+
+Recommendation-level:
+
+- Title
+- Problem statement
+- Why it matters
+- Recommended outcome
+- Effort
+- Confidence
+- Timeframe
+- Suggested owner
+- Success metric
+- Admin notes
+- Sort order or ranking, only if backend safely supports it
+
+Action-level:
+
+- Title
+- Description
+- Suggested owner
+- Expected outcome
+- Success metric
+- Completion status
+- Sort order
+
+Dependency-level:
+
+- Add valid dependency
+- Remove dependency
+- Edit notes
+- Prevent self-dependency
+- Prevent circular dependency
+- Prevent duplicate dependency
+
+If a field is not supported by the current Phase 1F-A API, do not invent a client-only save mechanism.
+
+Either:
+
+- Add the smallest necessary validated API enhancement, or
+- Leave the field read-only and document it in the completion report
+
+Do not store unsaved business data only in local browser state.
+
+==================================================
+9. SYSTEM VS CONSULTANT CONTENT
+==================================================
+
+Preserve both:
+
+- System-generated content
+- Consultant-edited content
+
+Requirements:
+
+- Never destroy the system-generated version
+- Clearly identify edited consultant content
+- Allow consultant to restore system-generated content in Draft/Reopened status where practical
+- Do not silently replace consultant edits during refresh
+- Regeneration must use the existing backend behavior and confirmation process
+
+==================================================
+10. REGENERATION WORKFLOW
+==================================================
+
+Regeneration is allowed only when backend status rules permit.
+
+Before regeneration, show a strong confirmation dialog:
+
+- Explain that the current active plan will be superseded
+- Explain that a new plan version will be created
+- Explain that the previous plan remains in history
+- Require explicit confirmation
+- Disable the button after submission
+
+After success:
+
+- Navigate to the new plan
+- Show confirmation message
+- Verify old plan displays Superseded
+- Verify new plan displays Draft
+- Provide history access where practical
+
+Do not implement regeneration as an in-place overwrite.
+
+==================================================
+11. APPROVAL WORKFLOW
+==================================================
+
+Before Submit for Review:
+
+Validate client-side for usability, while treating backend validation as authoritative.
+
+Check:
+
+- At least one recommendation exists
+- Executive recommendation exists
+- Every recommendation has a success metric
+- No obvious invalid score display
+- No missing required values
+
+Before Approve:
+
+Show a review confirmation.
+
+If approval fails, display the backend validation message clearly.
+
+Approved plans must immediately become read-only.
+
+Display:
+
+- Approved by
+- Approved date
+- Status
+
+Do not create a fake electronic-signature feature.
+
+==================================================
+12. ERROR AND EMPTY STATES
+==================================================
+
+Handle:
+
+- Growth Assessment not approved
+- No recommendation plan exists
+- Plan loading
+- Plan not found
+- Access denied
+- Duplicate active plan
+- Invalid status transition
+- Approval validation failure
+- Regeneration failure
+- Dependency validation failure
+- Network error
+- Stale data
+- Archived plan
+- Superseded plan
+- Empty activity history
+- No project associated
+
+Errors must be:
+
+- User-safe
+- Specific enough to act on
+- Free of stack traces
+- Free of raw database or server details
+
+==================================================
+13. RESPONSIVE DESIGN
+==================================================
+
+The interface must work on:
+
+- Desktop
+- Tablet
+- Mobile
+
+On smaller screens:
+
+- Stack recommendation sections
+- Keep scores readable
+- Avoid wide tables
+- Use accordions or cards
+- Keep status actions accessible
+- Prevent horizontal overflow
+
+==================================================
+14. ACCESSIBILITY
+==================================================
+
+Include:
+
+- Semantic headings
+- Keyboard-accessible controls
+- Dialog focus management
+- Form labels
+- Accessible status text
+- Expand/collapse states
+- Meaningful button labels
+- Error messages linked to fields where relevant
+- Sufficient contrast using existing design tokens
+
+Do not rely only on color to communicate priority or status.
+
+==================================================
+15. REACT STABILITY RULES
+==================================================
+
+Critical:
+
+- All React hooks must be called unconditionally
+- Hooks must appear before early returns
+- Do not place hooks inside conditions, loops, dialogs, or callbacks
+- Do not conditionally call generated API hooks
+- Do not cause render loops from unstable dependencies
+- Memoize only where helpful
+- Do not suppress Rules of Hooks warnings
+- Avoid broad state duplication
+- Use existing query invalidation patterns
+
+The previous application had a Rules of Hooks regression. Do not repeat it.
+
+==================================================
+16. GENERATED CLIENTS
+==================================================
+
+Use the generated Phase 1F-A API hooks where available.
+
+Do not duplicate API request logic manually unless a required endpoint is genuinely missing.
+
+If OpenAPI changes are required:
+
+1. Update the specification
+2. Regenerate clients
+3. Apply the existing zod.looseObject workaround only if still required
+4. Rebuild api-client-react
+5. Verify TypeScript
+
+Do not leave generated clients out of sync.
+
+==================================================
+17. FRONTEND COMPONENTS
+==================================================
+
+Prefer reusable components such as:
+
+- RecommendationPlanHeader
+- RecommendationStatusBadge
+- ExecutiveRecommendationCard
+- RecommendationCard
+- RecommendationScoreBreakdown
+- RecommendationActionTimeline
+- BusinessImpactSummary
+- DependencySummary
+- RecommendationActivityTimeline
+- PlanStatusActions
+- GeneratePlanDialog
+- RegeneratePlanDialog
+- ApprovalDialog
+- ReopenDialog
+- ArchiveDialog
+- EmptyRecommendationState
+- RecommendationPlanSkeleton
+
+Use the existing component library and naming conventions.
+
+Do not create a new design system.
+
+==================================================
+18. TESTING
+==================================================
+
+Run and report these tests:
+
+Core workflow:
+
+1. Open approved Growth Assessment
+2. Generate Solution Plan
+3. Prevent generation from unapproved assessment
+4. Prevent duplicate active plan
+5. Navigate to generated plan
+6. Header displays correct client, project, status, and score
+7. Executive recommendation displays correctly
+8. Top 3–5 recommendations display in rank order
+9. Scoring explanation displays correctly
+10. Actions group by timeframe
+11. Business impact summary displays correctly
+12. Dependencies display correctly
+13. Activity history loads
+
+Editing:
+
+14. Draft plan is editable
+15. Approved plan is read-only
+16. Reopened plan is editable
+17. Save Draft works
+18. Consultant notes save
+19. Recommendation edits save
+20. Action edits save, if supported
+21. Dependency add/remove works, if supported
+22. Invalid self-dependency is blocked
+23. Circular dependency error is displayed
+24. Unsaved-state protection works where implemented
+
+Status:
+
+25. Submit for Review works
+26. Approval works
+27. Approval validation error displays clearly
+28. Reopen works
+29. Regenerate confirmation works
+30. Regeneration creates a new plan
+31. Old plan becomes Superseded
+32. New plan becomes Draft
+33. Archive works
+34. Invalid status actions are hidden or disabled
+
+Integration:
+
+35. Growth Assessment links to plan
+36. Client detail shows latest plan
+37. Project detail shows associated plans
+38. Dashboard widget loads
+39. Dashboard links open the correct plan
+40. Superseded plan identifies the current plan where possible
+
+Regression:
+
+41. Login works
+42. Logout works
+43. Password change works
+44. Clients work
+45. Projects work
+46. Tasks work
+47. Diagnostics work
+48. Growth Assessments work
+49. Existing dashboard works
+50. No React hook warnings
+51. No console errors during main workflow
+52. Frontend TypeScript passes
+53. Generated API client compiles
+54. Phase 1F-A backend tests remain passing
+55. Phase 1A–1E regression remains passing
+56. Phase 1F-C was not started
+57. Phase 1G was not started
+
+Use safe test data.
+
+Do not alter production-like client records unnecessarily.
+
+==================================================
+19. IMPLEMENTATION ORDER
+==================================================
+
+Use this order:
+
+1. Inspect existing UI patterns
+2. Inspect generated Phase 1F-A hooks
+3. Define page structure
+4. Build route and loading state
+5. Build plan header
+6. Build executive recommendation section
+7. Build recommendation cards
+8. Build scoring explanation
+9. Build action timeline
+10. Build impact summary
+11. Build dependency summary
+12. Build activity timeline
+13. Add status actions
+14. Add generation workflow
+15. Add editing
+16. Add regeneration workflow
+17. Add approval workflow
+18. Integrate Growth Assessment
+19. Integrate Client Detail
+20. Integrate Project Detail
+21. Add dashboard widget
+22. Add empty/error states
+23. Run frontend tests
+24. Run regression tests
+25. Fix all defects
+26. Produce final completion report
+
+==================================================
+20. COMPLETION REPORT
+==================================================
+
+When finished, report:
+
+1. What was implemented
+2. Files changed
+3. Routes added
+4. Components created
+5. Growth Assessment integration
+6. Client integration
+7. Project integration
+8. Dashboard integration
+9. Status-based actions
+10. Editing capabilities
+11. Regeneration behavior
+12. Approval workflow
+13. Activity history
+14. Responsive and accessibility work
+15. OpenAPI/client changes, if any
+16. Tests completed
+17. Failures found and fixes applied
+18. Known limitations
+19. Any Phase 1F-A backend corrections made
+20. Confirmation password change still works
+21. Confirmation no React hook violations exist
+22. Confirmation Phase 1A–1E still work
+23. Confirmation Phase 1F-A tests still pass
+24. Confirmation Phase 1F-C was not started
+25. Confirmation Phase 1G was not started
