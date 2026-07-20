@@ -111,5 +111,6 @@ export * from './updateGrowthAssessmentBody';
 export * from './updateProjectBody';
 export * from './updateRecommendationBody';
 export * from './updateScoreResolutionBody';
+export * from './updateSolutionRecommendationBody';
 export * from './updateSolutionRecommendationPlanBody';
 export * from './updateTaskBody';

@@ -1170,6 +1170,11 @@ export interface GenerateSolutionRecommendationResponse {
   generated: boolean;
 }
 
+export interface UpdateSolutionRecommendationBody {
+  /** @nullable */
+  adminNotes?: string | null;
+}
+
 export interface UpdateSolutionRecommendationPlanBody {
   /** @nullable */
   executiveRecommendation?: string | null;

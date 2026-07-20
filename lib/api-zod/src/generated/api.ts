@@ -433,6 +433,69 @@ export const GetSolutionRecommendationPlanActivityResponse = zod.object({
 
 
 /**
+ * @summary Update administrator-editable fields on a recommendation (adminNotes)
+ */
+export const UpdateSolutionRecommendationParams = zod.object({
+  "id": zod.coerce.string(),
+  "recId": zod.coerce.string()
+})
+
+export const UpdateSolutionRecommendationBody = zod.object({
+  "adminNotes": zod.string().nullish()
+})
+
+export const UpdateSolutionRecommendationResponse = zod.object({
+  "id": zod.string(),
+  "planId": zod.string(),
+  "sourceCategoryKey": zod.string().nullish(),
+  "rank": zod.number(),
+  "title": zod.string(),
+  "domain": zod.string(),
+  "problemStatement": zod.string().nullish(),
+  "whyItMatters": zod.string().nullish(),
+  "recommendedOutcome": zod.string().nullish(),
+  "priorityScore": zod.string(),
+  "priorityClassification": zod.string(),
+  "severityScore": zod.string().nullish(),
+  "businessImpactScore": zod.string().nullish(),
+  "urgencyScore": zod.string().nullish(),
+  "performanceGapScore": zod.string().nullish(),
+  "quickWinBonus": zod.string().nullish(),
+  "dependencyBonus": zod.string().nullish(),
+  "effortPenalty": zod.string().nullish(),
+  "quickWinFlag": zod.boolean(),
+  "effort": zod.string().nullish(),
+  "confidence": zod.string().nullish(),
+  "timeframe": zod.string().nullish(),
+  "suggestedOwner": zod.string().nullish(),
+  "successMetric": zod.string().nullish(),
+  "dependencyNotes": zod.string().nullish(),
+  "scoringExplanation": zod.object({
+
+}).nullish(),
+  "adminNotes": zod.string().nullish(),
+  "status": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "actions": zod.array(zod.object({
+  "id": zod.string(),
+  "recommendationId": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "timeHorizon": zod.string(),
+  "suggestedOwner": zod.string().nullish(),
+  "expectedOutcome": zod.string().nullish(),
+  "successMetric": zod.string().nullish(),
+  "completionStatus": zod.string(),
+  "sortOrder": zod.number(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})).optional()
+})
+
+
+/**
  * @summary Get the active Solution Recommendation Plan for a Growth Assessment
  */
 export const GetGrowthAssessmentSolutionRecommendationParams = zod.object({

@@ -407,6 +407,73 @@ router.patch("/solution-recommendations/:id", requireAuth, async (req, res) => {
   }
 });
 
+// ─── PATCH /api/solution-recommendations/:id/recommendations/:recId ──
+//
+// Updates administrator-editable fields on a single recommendation.
+// Only permitted when the parent plan is Draft or Reopened.
+
+router.patch("/solution-recommendations/:id/recommendations/:recId", requireAuth, async (req, res) => {
+  try {
+    const userId = (req as any).user?.id;
+    const { id, recId } = req.params;
+    const { adminNotes } = req.body;
+
+    // Verify the parent plan exists and is editable
+    const [plan] = await db
+      .select()
+      .from(solutionRecommendationPlansTable)
+      .where(eq(solutionRecommendationPlansTable.id, id))
+      .limit(1);
+
+    if (!plan) return void res.status(404).json({ error: "Plan not found." });
+    if (!["draft", "reopened"].includes(plan.status)) {
+      return void res.status(409).json({
+        error: `Cannot edit recommendations on a plan with status "${plan.status}". Only Draft or Reopened plans are editable.`,
+      });
+    }
+    if (plan.archivedAt) {
+      return void res.status(409).json({ error: "Cannot edit an archived plan." });
+    }
+
+    // Verify the recommendation belongs to this plan
+    const [rec] = await db
+      .select()
+      .from(solutionRecommendationsTable)
+      .where(
+        and(
+          eq(solutionRecommendationsTable.id, recId),
+          eq(solutionRecommendationsTable.planId, id),
+        ),
+      )
+      .limit(1);
+
+    if (!rec) return void res.status(404).json({ error: "Recommendation not found in this plan." });
+
+    const [updated] = await db
+      .update(solutionRecommendationsTable)
+      .set({
+        adminNotes: adminNotes !== undefined ? adminNotes : rec.adminNotes,
+        updatedAt: new Date(),
+      })
+      .where(eq(solutionRecommendationsTable.id, recId))
+      .returning();
+
+    await logActivity({
+      activityType: "SOLUTION_RECOMMENDATION_PLAN.RECOMMENDATION_EDITED",
+      description: `Administrator notes updated on recommendation "${rec.title}"`,
+      actorUserId: userId,
+      entityType: "solution_recommendation_plan",
+      entityId: id,
+      metadata: { recommendationId: recId, recommendationTitle: rec.title },
+    }).catch(() => {});
+
+    res.json(updated);
+  } catch (err) {
+    logger.error({ err }, "Update solution recommendation failed");
+    res.status(500).json({ error: "Failed to update recommendation." });
+  }
+});
+
 // ─── GET /api/growth-assessments/:id/solution-recommendation ─────
 
 router.get("/growth-assessments/:id/solution-recommendation", requireAuth, async (req, res) => {

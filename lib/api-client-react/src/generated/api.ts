@@ -94,6 +94,7 @@ import type {
   SolutionRecommendationPlanDetail,
   SolutionRecommendationPlanRecord,
   SolutionRecommendationPlanSummary,
+  SolutionRecommendationRecord,
   SuccessResponse,
   TaskMetricsSummary,
   TaskRecord,
@@ -106,6 +107,7 @@ import type {
   UpdateProjectBody,
   UpdateRecommendationBody,
   UpdateScoreResolutionBody,
+  UpdateSolutionRecommendationBody,
   UpdateSolutionRecommendationPlanBody,
   UpdateTaskBody
 } from './api.schemas';
@@ -800,6 +802,80 @@ export function useGetSolutionRecommendationPlanActivity<TData = Awaited<ReturnT
 
 
 
+
+export const getUpdateSolutionRecommendationUrl = (id: string,
+    recId: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/recommendations/${recId}`
+}
+
+/**
+ * @summary Update administrator-editable fields on a recommendation (adminNotes)
+ */
+export const updateSolutionRecommendation = async (id: string,
+    recId: string,
+    updateSolutionRecommendationBody: UpdateSolutionRecommendationBody, options?: RequestInit): Promise<SolutionRecommendationRecord> => {
+
+  return customFetch<SolutionRecommendationRecord>(getUpdateSolutionRecommendationUrl(id,recId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateSolutionRecommendationBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateSolutionRecommendationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendation>>, TError,{id: string;recId: string;data: BodyType<UpdateSolutionRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendation>>, TError,{id: string;recId: string;data: BodyType<UpdateSolutionRecommendationBody>}, TContext> => {
+
+const mutationKey = ['updateSolutionRecommendation'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSolutionRecommendation>>, {id: string;recId: string;data: BodyType<UpdateSolutionRecommendationBody>}> = (props) => {
+          const {id,recId,data} = props ?? {};
+
+          return  updateSolutionRecommendation(id,recId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSolutionRecommendationMutationResult = NonNullable<Awaited<ReturnType<typeof updateSolutionRecommendation>>>
+    export type UpdateSolutionRecommendationMutationBody = BodyType<UpdateSolutionRecommendationBody>
+    export type UpdateSolutionRecommendationMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update administrator-editable fields on a recommendation (adminNotes)
+ */
+export const useUpdateSolutionRecommendation = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSolutionRecommendation>>, TError,{id: string;recId: string;data: BodyType<UpdateSolutionRecommendationBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateSolutionRecommendation>>,
+        TError,
+        {id: string;recId: string;data: BodyType<UpdateSolutionRecommendationBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateSolutionRecommendationMutationOptions(options));
+    }
 
 export const getGetGrowthAssessmentSolutionRecommendationUrl = (id: string,) => {
 

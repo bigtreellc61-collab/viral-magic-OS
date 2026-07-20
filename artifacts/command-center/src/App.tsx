@@ -21,6 +21,7 @@ import DiagnosticCreatePage from '@/pages/diagnostic-create';
 import DiagnosticDetailPage from '@/pages/diagnostic-detail';
 import DiagnosticComparePage from '@/pages/diagnostic-compare';
 import { GrowthAssessmentPage } from '@/pages/growth-assessment';
+import SolutionRecommendationDetailPage from '@/pages/solution-recommendation-detail';
 import NotFound from '@/pages/not-found';
 import { useGetSetupStatus, useGetCurrentUser, getGetCurrentUserQueryKey } from '@workspace/api-client-react';
 import { Loader2 } from 'lucide-react';
@@ -126,6 +127,9 @@ function AuthWall() {
         </Route>
         <Route path="/growth-assessments/:id">
           {(params) => <GrowthAssessmentPage assessmentId={params.id} />}
+        </Route>
+        <Route path="/solution-recommendations/:id">
+          {() => <SolutionRecommendationDetailPage />}
         </Route>
         <Route path="/settings">
           {() => <SettingsPage user={user} />}
