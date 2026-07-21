@@ -162,15 +162,14 @@
   }
 }
 
-/* ── Print styles for Solution Recommendation Plan ───────── */
+/* ── Print styles (shared) ───────────────────────────────── */
 @media print {
-  /* Reset dark theme for printing */
+  /* Reset dark theme for all pages */
   body {
     background: white !important;
     color: #1a1a1a !important;
   }
 
-  /* Hide navigation, buttons, sidebar, edit controls */
   nav,
   aside,
   header,
@@ -178,28 +177,20 @@
     display: none !important;
   }
 
-  /* Show print-only content */
-  .hidden.print\:block {
-    display: block !important;
-  }
-
-  /* Show all tab panes */
   .hidden.print\:block,
   [class*="print:block"] {
     display: block !important;
   }
 
-  /* Reset background colors for readability */
   [class*="bg-slate"],
   [class*="bg-indigo"],
   [class*="bg-emerald"],
   [class*="bg-red"],
   [class*="bg-amber"] {
     background: transparent !important;
-    border-color: #d1d5db !important;
+    border-color: #e5e7eb !important;
   }
 
-  /* Reset text colors */
   [class*="text-slate-1"],
   [class*="text-slate-2"],
   [class*="text-slate-3"] {
@@ -211,14 +202,73 @@
     color: #6b7280 !important;
   }
 
-  /* Page breaks */
   .bg-slate-800\/50 {
     page-break-inside: avoid;
     margin-bottom: 16px;
   }
 
-  /* Ensure badges/chips print with borders */
   [class*="border"] {
-    border: 1px solid #d1d5db !important;
+    border-color: #e5e7eb !important;
+  }
+}
+
+/* ── Growth Blueprint print styles ───────────────────────── */
+@media print {
+  /* Hide chrome elements specific to the blueprint page */
+  .bp-jump-nav,
+  .bp-sidebar,
+  .bp-actions,
+  .bp-edit-controls {
+    display: none !important;
+  }
+
+  /* Collapse to single-column document */
+  .bp-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 40px;
+  }
+
+  /* Reset dark backgrounds to white */
+  .bp-print-header,
+  .bp-section-block {
+    background: transparent !important;
+    border-color: #e5e7eb !important;
+  }
+
+  /* Section headings */
+  .bp-section h2 {
+    color: #111827 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding-bottom: 8px !important;
+    margin-bottom: 16px !important;
+    font-size: 16pt !important;
+  }
+
+  /* Body text */
+  .bp-section p,
+  .bp-section-block p {
+    color: #374151 !important;
+    font-size: 10pt !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Page setup */
+  @page {
+    margin: 20mm 18mm 20mm 18mm;
+    size: A4 portrait;
+  }
+
+  /* Print header (blueprint title strip) */
+  .bp-print-header {
+    border: none !important;
+    border-bottom: 2px solid #111827 !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Force section headings black */
+  [id^="s-"] {
+    color: #111827 !important;
   }
 }
