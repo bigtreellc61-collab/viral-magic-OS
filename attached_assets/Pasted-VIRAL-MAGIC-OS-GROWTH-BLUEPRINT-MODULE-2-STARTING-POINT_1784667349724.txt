@@ -1,0 +1,304 @@
+VIRAL MAGIC OS
+GROWTH BLUEPRINT MODULE 2 — STARTING-POINT AUDIT
+
+OBJECTIVE
+
+Continue Viral Magic OS from the last completed phase.
+
+Phase 1F is complete and fully stabilized:
+
+- Phase 1F-A: Solution Recommendation Engine backend
+- Phase 1F-B: Recommendation UI and integrations
+- Phase 1F-C: testing, polish, and stabilization
+
+The project is backed up to GitHub, and the Phase 1F milestone is complete.
+
+The next planned development area is:
+
+GROWTH BLUEPRINT — MODULE 2
+
+The Growth Blueprint will serve as the strategy and client-delivery layer using the existing:
+
+- Business Growth Assessment
+- diagnostic findings
+- scores and health ratings
+- Solution Recommendation Engine
+- recommendation plans
+- action plans
+- dependencies
+- business-impact information
+- consultant notes
+- approval workflow
+
+IMPORTANT ARCHITECTURE BOUNDARY
+
+Signal Hunter OS is a separate platform.
+
+Signal Hunter workflow:
+
+Signal Hunter v1.0
+→ research and evidence collection
+→ export
+→ Viral Magic OS
+→ Growth Blueprint
+→ client recommendations
+
+Do not rebuild Signal Hunter functionality inside Viral Magic OS.
+
+Do not add:
+
+- YouTube search
+- viral signal discovery
+- tracked creator accounts
+- competitor intelligence
+- social-content research
+- Signal Library functionality
+- Signal Hunter scoring
+- Signal Hunter APIs
+
+This task is AUDIT ONLY.
+
+Do not modify source code.
+Do not create database migrations.
+Do not add routes.
+Do not add UI components.
+Do not run code generation that changes files.
+Do not begin implementation until the audit is reviewed and approved.
+
+AUDIT THE CURRENT CODEBASE
+
+Inspect the complete Viral Magic OS repository and determine the exact starting point for Growth Blueprint Module 2.
+
+Review at minimum:
+
+1. Existing Growth Blueprint code
+
+Search for all files, routes, database tables, schemas, navigation items, placeholders, stubs, feature flags, components, comments, and documentation related to:
+
+- Growth Blueprint
+- Blueprint
+- Growth Plan
+- Strategy Plan
+- Client Strategy
+- Strategic Plan
+- Roadmap
+- Implementation Plan
+- Growth Opportunities
+- Recommendations
+- Business Impact
+- Action Plan
+
+Identify whether Growth Blueprint currently exists as:
+
+- a functioning module
+- a partial implementation
+- a placeholder page
+- a navigation stub
+- a database stub
+- an unfinished feature
+- documentation only
+- or no implementation
+
+2. Business Growth Assessment
+
+Document:
+
+- relevant database tables
+- API endpoints
+- frontend routes
+- frontend pages and components
+- assessment lifecycle
+- scoring structure
+- health ratings
+- diagnostic domains
+- strengths
+- vulnerabilities
+- risks
+- quick wins
+- strategic priorities
+- growth opportunities
+- relationships to clients and projects
+
+Explain exactly what Growth Blueprint Module 2 can reuse.
+
+3. Solution Recommendation Engine
+
+Document:
+
+- recommendation-plan tables
+- recommendation records
+- action records
+- dependency records
+- rule records
+- lifecycle statuses
+- API endpoints
+- generated API hooks
+- detail-page components
+- approval requirements
+- business-impact fields
+- success metrics
+- consultant notes
+- activity history
+- client/project/assessment relationships
+
+Explain exactly what Growth Blueprint Module 2 can consume without duplicating logic.
+
+4. Client and project architecture
+
+Document:
+
+- how clients relate to projects
+- how projects relate to assessments
+- how assessments relate to recommendation plans
+- existing client-delivery surfaces
+- project diagnostic surfaces
+- dashboard integrations
+- suitable location for Growth Blueprints
+
+5. Existing database capacity
+
+Determine whether existing tables can support Growth Blueprint Module 2 or whether new tables will eventually be required.
+
+Do not create tables yet.
+
+Evaluate likely data requirements such as:
+
+- blueprint record
+- blueprint version
+- executive growth strategy
+- prioritized initiatives
+- implementation stages
+- 30-day actions
+- 60-day actions
+- 90-day actions
+- longer-term roadmap
+- owner or responsible party
+- target date
+- success metric
+- projected impact
+- effort
+- dependency
+- risk
+- consultant guidance
+- client-facing summary
+- approval status
+- activity history
+
+Clearly separate:
+
+A. Data already available
+B. Data that can be referenced
+C. Data that is missing
+D. Data that should not be duplicated
+
+6. Current UI and navigation
+
+Inspect:
+
+- App routes
+- sidebar navigation
+- dashboard
+- client detail
+- project detail
+- Growth Assessment detail
+- Solution Recommendation detail
+- any Growth Blueprint placeholder or stub
+
+Recommend where Growth Blueprint should appear in the application.
+
+Do not implement the recommendation.
+
+7. Existing tests and build status
+
+Report the current status of:
+
+- TypeScript checks
+- frontend production build
+- backend tests
+- existing Growth Assessment tests
+- Solution Recommendation tests
+- route regression tests
+
+You may run read-only validation commands, but do not change files.
+
+Capture actual commands and exit codes.
+
+8. Documentation and roadmap
+
+Review relevant documentation, including:
+
+- phase-completion records
+- architecture documentation
+- roadmap files
+- agent memory
+- Phase 1F completion report
+- Growth Blueprint references
+- comments describing future modules
+
+Identify any conflicts between documentation and the actual codebase.
+
+QUESTIONS THE AUDIT MUST ANSWER
+
+1. What exactly is Growth Blueprint Module 2 intended to do based on the current repository?
+
+2. Does any Growth Blueprint implementation already exist?
+
+3. What parts are functional, partial, placeholders, or absent?
+
+4. What existing Phase 1E and Phase 1F data can be reused directly?
+
+5. What new data structures will likely be needed?
+
+6. Where should the module live in the current navigation and client/project workflow?
+
+7. Should one blueprint belong to:
+
+- a client,
+- a project,
+- a Growth Assessment,
+- a Solution Recommendation Plan,
+- or a combination of these?
+
+8. How should blueprint versioning work when a recommendation plan is reopened or regenerated?
+
+9. What is the smallest useful Module 2 launch scope?
+
+10. What should explicitly be deferred to later versions?
+
+11. Are there any codebase risks, technical debt, or architectural conflicts that should be resolved before implementation?
+
+12. What is the recommended implementation sequence using small isolated tasks?
+
+REQUIRED FINAL REPORT
+
+Produce a structured report with:
+
+1. Executive summary
+2. Current project baseline
+3. Exact Phase 1F completion state
+4. Existing Growth Blueprint implementation inventory
+5. Relevant files and paths
+6. Current database and relationship map
+7. Reusable Business Growth Assessment capabilities
+8. Reusable Solution Recommendation capabilities
+9. Missing capabilities
+10. Recommended Growth Blueprint ownership model
+11. Recommended lifecycle
+12. Recommended navigation and UI placement
+13. Proposed minimum viable Module 2 scope
+14. Items to defer
+15. Risks and dependencies
+16. Recommended task breakdown
+17. Test/build baseline with commands and exit codes
+18. Confirmation that no code was changed
+19. Confirmation that Signal Hunter functionality was not added
+20. Final recommendation:
+
+“Ready to begin Growth Blueprint Module 2 implementation”
+or
+“Not ready — complete the listed prerequisites first”
+
+STOP AFTER THE AUDIT REPORT.
+
+Do not begin building Growth Blueprint Module 2.
+Wait for approval.
