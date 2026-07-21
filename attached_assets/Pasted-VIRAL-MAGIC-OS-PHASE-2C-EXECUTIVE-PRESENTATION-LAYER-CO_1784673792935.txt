@@ -1,0 +1,623 @@
+VIRAL MAGIC OS
+
+PHASE 2C — EXECUTIVE PRESENTATION LAYER
+
+CONTEXT
+
+Phase 2A (Growth Blueprint Foundation) and Phase 2B (Growth Blueprint Assembly Engine) are complete.
+
+Current capabilities include:
+
+• Business Growth Assessment Engine
+• Solution Recommendation Engine
+• Growth Blueprint Foundation
+• Blueprint Assembly Engine
+• Versioning
+• Lifecycle
+• Consultant Overrides
+• Roadmap Assignment Engine
+• Activity Logging
+• 108/108 tests passing
+
+OBJECTIVE
+
+Build the Executive Presentation Layer.
+
+This phase transforms the assembled Growth Blueprint into a polished executive experience.
+
+This is a PRESENTATION layer.
+
+Do NOT modify the assessment engine.
+
+Do NOT modify recommendation generation.
+
+Do NOT rebuild assembly logic.
+
+Do NOT add AI.
+
+Do NOT add PDF, Word, PowerPoint, public sharing, portals, authentication changes, or exports.
+
+Do NOT begin Phase 2D.
+
+--------------------------------------------------
+
+FIRST
+
+Audit the existing Growth Blueprint page before making changes.
+
+Review:
+
+• existing tabs
+• routing
+• hooks
+• lifecycle UI
+• version history
+• initiative components
+• styling patterns
+• dashboard components
+
+Reuse existing components whenever practical.
+
+--------------------------------------------------
+
+DESIGN GOAL
+
+The page should feel like software used by:
+
+McKinsey
+
+BCG
+
+Bain
+
+Deloitte
+
+PwC
+
+Accenture
+
+Professional.
+
+Minimal.
+
+Executive.
+
+Readable.
+
+No flashy animations.
+
+No unnecessary graphics.
+
+Prioritize information hierarchy.
+
+--------------------------------------------------
+
+PAGE STRUCTURE
+
+Top Summary Header
+
+Display:
+
+Blueprint Title
+
+Client
+
+Project
+
+Version
+
+Lifecycle Status
+
+Overall Health Score
+
+Overall Business Rating
+
+Assessment Date
+
+Generated Date
+
+Approved Date
+
+Current Version badge
+
+Executive Actions
+
+Generate
+
+Regenerate
+
+Create Revision
+
+Approve
+
+Archive
+
+Print View
+
+(placeholder only)
+
+--------------------------------------------------
+
+SECTION 1
+
+Executive Summary
+
+Professional executive briefing.
+
+Large typography.
+
+Show:
+
+Current Business Health
+
+Strategic Direction
+
+Top Opportunities
+
+Critical Risks
+
+Overall Recommendation
+
+Business Readiness
+
+Use existing deterministic content.
+
+No AI.
+
+--------------------------------------------------
+
+SECTION 2
+
+Business Health Snapshot
+
+Visual score cards.
+
+Examples:
+
+Overall Health
+
+Sales
+
+Marketing
+
+Operations
+
+Technology
+
+Customer Experience
+
+Financial
+
+Leadership
+
+Use existing assessment scores.
+
+Include:
+
+color indicators
+
+progress bars
+
+icons if existing design system supports them
+
+--------------------------------------------------
+
+SECTION 3
+
+Strategic Priorities
+
+Card layout.
+
+Each priority displays:
+
+Priority Name
+
+Business Domain
+
+Business Impact
+
+Urgency
+
+Effort
+
+Dependencies
+
+Status
+
+Recommended Timeline
+
+Link back to Recommendation.
+
+--------------------------------------------------
+
+SECTION 4
+
+30 / 60 / 90 Day Roadmap
+
+This is the centerpiece.
+
+Display as a professional roadmap.
+
+Columns:
+
+30 Days
+
+60 Days
+
+90 Days
+
+Long Term
+
+Each initiative card should include:
+
+Title
+
+Priority
+
+Expected Impact
+
+Owner (placeholder)
+
+Dependencies
+
+Status
+
+Quick Win badge
+
+Risk badge where applicable
+
+Expandable details.
+
+Allow drag-and-drop only if already supported by existing architecture.
+
+Otherwise maintain ordering controls from Phase 2B.
+
+--------------------------------------------------
+
+SECTION 5
+
+Business Impact
+
+Present existing Business Impact data.
+
+Group by:
+
+Revenue
+
+Lead Generation
+
+Operations
+
+Customer Experience
+
+Technology
+
+Efficiency
+
+Risk Reduction
+
+Do NOT invent financial projections.
+
+Clearly distinguish:
+
+Qualitative
+
+Quantified
+
+--------------------------------------------------
+
+SECTION 6
+
+KPIs
+
+Display Success Metrics.
+
+Use existing metrics.
+
+Include:
+
+Target
+
+Measurement
+
+Status
+
+Related Initiative
+
+Simple progress visualization.
+
+--------------------------------------------------
+
+SECTION 7
+
+Dependencies
+
+Professional dependency matrix.
+
+Group by:
+
+Critical
+
+Medium
+
+Low
+
+Show:
+
+Blocking initiatives
+
+Blocked initiatives
+
+Dependency chain
+
+No new logic.
+
+--------------------------------------------------
+
+SECTION 8
+
+Consultant Guidance
+
+Professional consultant section.
+
+Editable.
+
+Support:
+
+Recommendations
+
+Notes
+
+Warnings
+
+Client preparation
+
+Meeting notes
+
+Implementation guidance
+
+Maintain override behavior.
+
+--------------------------------------------------
+
+SECTION 9
+
+Executive Decisions Required
+
+Display decisions leadership must make.
+
+Examples:
+
+Approve Budget
+
+Assign Owner
+
+Prioritize Initiative
+
+Approve Timeline
+
+Approve Technology
+
+Use existing deterministic data only.
+
+--------------------------------------------------
+
+SECTION 10
+
+Version History
+
+Professional version timeline.
+
+Display:
+
+Version
+
+Created
+
+Approved
+
+Current
+
+Superseded
+
+Revision notes
+
+Open version
+
+Create Revision
+
+Compare (placeholder)
+
+--------------------------------------------------
+
+RIGHT SIDEBAR
+
+Sticky summary panel.
+
+Include:
+
+Overall Score
+
+Blueprint Status
+
+Recommendations Count
+
+Open Initiatives
+
+Completed Initiatives
+
+Current Version
+
+Client
+
+Project
+
+Last Updated
+
+--------------------------------------------------
+
+NAVIGATION
+
+Improve navigation using existing patterns.
+
+Jump menu.
+
+Sticky navigation.
+
+Smooth scrolling.
+
+Active section highlighting.
+
+No routing redesign.
+
+--------------------------------------------------
+
+PRINT VIEW
+
+Create browser print stylesheet.
+
+Optimize for:
+
+Letter
+
+A4
+
+Black & White
+
+Minimal colors
+
+Professional spacing
+
+Hide unnecessary controls.
+
+NO PDF generation.
+
+--------------------------------------------------
+
+RESPONSIVE
+
+Desktop
+
+Tablet
+
+Mobile
+
+Maintain readability.
+
+--------------------------------------------------
+
+ACCESSIBILITY
+
+Proper heading hierarchy
+
+Keyboard navigation
+
+ARIA labels where appropriate
+
+High contrast
+
+Readable spacing
+
+--------------------------------------------------
+
+PERFORMANCE
+
+Lazy load heavy sections.
+
+Avoid unnecessary rerenders.
+
+Reuse existing query hooks.
+
+No duplicate requests.
+
+--------------------------------------------------
+
+TESTING
+
+Add tests for:
+
+Executive page rendering
+
+Roadmap rendering
+
+Sticky sidebar
+
+Navigation
+
+Print layout
+
+Responsive rendering
+
+Lifecycle buttons
+
+Version timeline
+
+No regression
+
+Run:
+
+Backend tests
+
+Frontend tests
+
+TypeScript
+
+Production build
+
+OpenAPI validation
+
+--------------------------------------------------
+
+IMPLEMENTATION DISCIPLINE
+
+Before coding:
+
+Audit existing implementation.
+
+Identify reusable components.
+
+Avoid duplication.
+
+Maintain current architecture.
+
+Do not rewrite working code.
+
+Do not introduce unrelated cleanup.
+
+--------------------------------------------------
+
+COMPLETION REPORT
+
+Return:
+
+1. Executive Summary
+2. UI architecture
+3. Components added
+4. Components reused
+5. Navigation improvements
+6. Roadmap implementation
+7. KPI presentation
+8. Sidebar implementation
+9. Print stylesheet
+10. Responsive behavior
+11. Accessibility improvements
+12. Performance improvements
+13. Files changed
+14. Tests added
+15. Commands executed
+16. Exit codes
+17. Total passing tests
+18. Known limitations
+19. Deferred items for Phase 2D
+20. Confirmation no AI APIs added
+21. Confirmation no exports added
+22. Confirmation no assessment logic changed
+23. Confirmation no recommendation logic changed
+24. Final verdict:
+   - Phase 2C complete
+   - or exact blockers
+
+STOP.
+
+Do NOT begin Phase 2D.
+Wait for approval.
