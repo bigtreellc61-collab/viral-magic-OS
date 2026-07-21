@@ -24,13 +24,19 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
+// Prefetch function: triggers the dynamic import so the chunk is downloaded
+// and cached before the user actually navigates to the route.
+function prefetch(loader: () => Promise<unknown>) {
+  return () => { loader(); };
+}
+
 const NAV_ITEMS = [
-  { href: '/',             label: 'Dashboard',  icon: LayoutDashboard },
-  { href: '/clients',      label: 'Clients',    icon: Users },
-  { href: '/projects',     label: 'Projects',   icon: FolderOpen },
-  { href: '/tasks',        label: 'Tasks',      icon: CheckSquare },
-  { href: '/diagnostics',  label: 'Diagnostics', icon: Stethoscope },
-  { href: '/settings',     label: 'Settings',   icon: Settings },
+  { href: '/',             label: 'Dashboard',  icon: LayoutDashboard, prefetch: prefetch(() => import('@/pages/dashboard')) },
+  { href: '/clients',      label: 'Clients',    icon: Users,           prefetch: prefetch(() => import('@/pages/clients')) },
+  { href: '/projects',     label: 'Projects',   icon: FolderOpen,      prefetch: prefetch(() => import('@/pages/projects')) },
+  { href: '/tasks',        label: 'Tasks',      icon: CheckSquare,     prefetch: prefetch(() => import('@/pages/tasks')) },
+  { href: '/diagnostics',  label: 'Diagnostics', icon: Stethoscope,    prefetch: prefetch(() => import('@/pages/diagnostics')) },
+  { href: '/settings',     label: 'Settings',   icon: Settings,        prefetch: prefetch(() => import('@/pages/settings')) },
 ];
 
 function isActive(location: string, href: string) {
@@ -92,10 +98,10 @@ export function Shell({ children, user }: { children: React.ReactNode; user: Aut
 
           <SidebarContent className="px-2 py-4">
             <SidebarMenu>
-              {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+              {NAV_ITEMS.map(({ href, label, icon: Icon, prefetch: onPrefetch }) => (
                 <SidebarMenuItem key={href}>
                   <SidebarMenuButton asChild isActive={isActive(location, href)}>
-                    <Link href={href}>
+                    <Link href={href} onMouseEnter={onPrefetch}>
                       <Icon className="size-4" />
                       <span>{label}</span>
                     </Link>

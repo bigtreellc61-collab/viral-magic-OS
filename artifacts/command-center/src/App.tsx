@@ -55,6 +55,24 @@ const GrowthBlueprintDetailPage = lazy(() =>
 );
 const NotFound = lazy(() => import('@/pages/not-found'));
 
+// Heavy routes prefetched during browser idle time so the first navigation to
+// them feels instant.  requestIdleCallback fires after the initial paint has
+// settled; we fall back to a short setTimeout for Safari which lacks rIC.
+const HEAVY_ROUTES: Array<() => Promise<unknown>> = [
+  () => import('@/pages/diagnostic-detail'),
+  () => import('@/pages/growth-assessment'),
+  () => import('@/pages/solution-recommendation-detail'),
+];
+
+function prefetchHeavyRoutes() {
+  const schedule =
+    typeof requestIdleCallback !== 'undefined'
+      ? (cb: () => void) => requestIdleCallback(cb, { timeout: 3000 })
+      : (cb: () => void) => setTimeout(cb, 200);
+
+  HEAVY_ROUTES.forEach((loader) => schedule(loader));
+}
+
 // Shared fallback shown while any page chunk is loading
 function PageLoader() {
   return (
@@ -106,6 +124,12 @@ function AuthWall() {
       setLocation('/');
     }
   }, [isLoading, needsSetup, isUnauthenticated, location, setLocation]);
+
+  // Once authenticated, kick off idle prefetch for heavy route chunks.
+  useEffect(() => {
+    if (!user) return;
+    prefetchHeavyRoutes();
+  }, [user]);
 
   if (isLoading) {
     return (
