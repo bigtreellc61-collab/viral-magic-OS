@@ -661,6 +661,172 @@ describe("POST /api/solution-recommendations/:id/archive", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GENERATE (/api/solution-recommendations/generate)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("POST /api/solution-recommendations/generate", () => {
+  /** Minimal approved assessment fixture */
+  const approvedAssessment = {
+    id: "assessment-001",
+    status: "approved",
+    diagnosticId: "diag-001",
+    diagnosticVersionId: "diagv-001",
+    clientId: "client-001",
+    projectId: "project-001",
+    healthScore: "75",
+    healthRating: "fair",
+    generatedSections: null,
+  };
+
+  /** One diagnostic score row so the engine has data to work with */
+  const scoreRows = [
+    {
+      categoryKey: "marketing",
+      categoryLabel: "Marketing",
+      currentPerformance: "50",
+      businessImpact: "3",
+      urgency: "3",
+      performanceGap: "50",
+      priorityScore: "85",
+      severity: "critical",
+      evidence: null,
+      observations: null,
+      recommendedAction: null,
+      diagnosticVersionId: "diagv-001",
+    },
+  ];
+
+  /** The new plan returned from the transaction */
+  const newPlan = makePlan("draft", { id: "plan-new" });
+
+  /**
+   * Sets up the three sequential select calls for a successful generate:
+   *   1. Load assessment
+   *   2. Check for existing active plan (returns empty — no conflict)
+   *   3. Load diagnostic scores
+   * Then sets up the transaction mock to return newPlan.
+   */
+  function setupSuccessfulGeneration() {
+    mockDb.select
+      .mockReturnValueOnce(makeChain([approvedAssessment]))  // 1: load assessment
+      .mockReturnValueOnce(makeChain([]))                    // 2: no existing plan
+      .mockReturnValueOnce(makeChain(scoreRows));            // 3: score rows
+
+    mockDb.transaction.mockImplementation(async (cb: (tx: any) => unknown) => {
+      const tx = {
+        insert: vi.fn().mockReturnValue(makeChain([newPlan])),
+        update: vi.fn().mockReturnValue(makeChain([newPlan])),
+        select: vi.fn().mockReturnValue(makeChain([])),
+      };
+      return cb(tx);
+    });
+  }
+
+  it("creates a draft plan and returns 201 on the happy path", async () => {
+    setupSuccessfulGeneration();
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(201);
+
+    expect(res.body.generated).toBe(true);
+    expect(res.body.plan).toBeDefined();
+    expect(res.body.plan.status).toBe("draft");
+  });
+
+  it("returns 400 when growthAssessmentId is missing from the request body", async () => {
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({})
+      .expect(400);
+
+    expect(res.body.error).toMatch(/growthAssessmentId is required/i);
+  });
+
+  it("returns 404 when the growth assessment does not exist", async () => {
+    mockDb.select.mockReturnValueOnce(makeChain([])); // assessment not found
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "nonexistent-id" })
+      .expect(404);
+
+    expect(res.body.error).toMatch(/growth assessment not found/i);
+  });
+
+  it("returns 400 when the assessment is not yet approved (status: pending)", async () => {
+    const pendingAssessment = { ...approvedAssessment, status: "pending" };
+
+    mockDb.select.mockReturnValueOnce(makeChain([pendingAssessment])); // assessment found
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(400);
+
+    expect(res.body.error).toMatch(/approved Growth Assessments/i);
+    expect(res.body.error).toMatch(/pending/i);
+  });
+
+  it("returns 400 when the assessment is in draft status (not approved)", async () => {
+    const draftAssessment = { ...approvedAssessment, status: "draft" };
+
+    mockDb.select.mockReturnValueOnce(makeChain([draftAssessment]));
+
+    await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(400);
+  });
+
+  it("returns 409 when an active (non-archived) plan already exists for the assessment", async () => {
+    const existingActivePlan = makePlan("awaiting_review");
+
+    mockDb.select
+      .mockReturnValueOnce(makeChain([approvedAssessment]))  // 1: load assessment
+      .mockReturnValueOnce(makeChain([existingActivePlan])); // 2: existing plan found
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(409);
+
+    expect(res.body.error).toMatch(/active plan already exists/i);
+    expect(res.body.planId).toBe(existingActivePlan.id);
+  });
+
+  it("includes the existing plan's status in the 409 error message", async () => {
+    const existingDraftPlan = makePlan("draft");
+
+    mockDb.select
+      .mockReturnValueOnce(makeChain([approvedAssessment]))
+      .mockReturnValueOnce(makeChain([existingDraftPlan]));
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(409);
+
+    expect(res.body.error).toMatch(/draft/i);
+  });
+
+  it("returns 400 when no diagnostic scores are found for the assessment version", async () => {
+    mockDb.select
+      .mockReturnValueOnce(makeChain([approvedAssessment]))  // 1: load assessment
+      .mockReturnValueOnce(makeChain([]))                    // 2: no existing plan
+      .mockReturnValueOnce(makeChain([]));                   // 3: no score rows
+
+    const res = await supertest(app)
+      .post("/api/solution-recommendations/generate")
+      .send({ growthAssessmentId: "assessment-001" })
+      .expect(400);
+
+    expect(res.body.error).toMatch(/no diagnostic scores found/i);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // FULL LIFECYCLE (sequential: draft → submit → approve → reopen → archive)
 // ─────────────────────────────────────────────────────────────────────────────
 
