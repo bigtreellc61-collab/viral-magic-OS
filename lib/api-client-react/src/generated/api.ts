@@ -40,6 +40,7 @@ import type {
   CreateClientNoteBody,
   CreateDiagnosticBody,
   CreateDiagnosticVersionBody,
+  CreateGrowthBlueprintBody,
   CreateProjectBody,
   CreateTaskBody,
   DashboardDiagnosticsMetrics,
@@ -61,6 +62,10 @@ import type {
   GetSolutionRecommendationPlanActivityParams,
   GrowthAssessmentActionBody,
   GrowthAssessmentRecord,
+  GrowthBlueprintDashboard,
+  GrowthBlueprintDetail,
+  GrowthBlueprintListResponse,
+  GrowthBlueprintRecord,
   HealthStatus,
   ListActivityParams,
   ListClientActivityParams,
@@ -104,6 +109,7 @@ import type {
   UpdateDiagnosticBody,
   UpdateExecutiveSummaryBody,
   UpdateGrowthAssessmentBody,
+  UpdateGrowthBlueprintBody,
   UpdateProjectBody,
   UpdateRecommendationBody,
   UpdateScoreResolutionBody,
@@ -138,6 +144,818 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetGrowthBlueprintDashboardUrl = () => {
+
+
+
+
+  return `/api/growth-blueprints/dashboard`
+}
+
+/**
+ * @summary Get aggregated Growth Blueprint dashboard metrics
+ */
+export const getGrowthBlueprintDashboard = async ( options?: RequestInit): Promise<GrowthBlueprintDashboard> => {
+
+  return customFetch<GrowthBlueprintDashboard>(getGetGrowthBlueprintDashboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthBlueprintDashboardQueryKey = () => {
+    return [
+    `/api/growth-blueprints/dashboard`
+    ] as const;
+    }
+
+
+export const getGetGrowthBlueprintDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthBlueprintDashboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>> = ({ signal }) => getGrowthBlueprintDashboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthBlueprintDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>>
+export type GetGrowthBlueprintDashboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get aggregated Growth Blueprint dashboard metrics
+ */
+
+export function useGetGrowthBlueprintDashboard<TData = Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthBlueprintDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListGrowthBlueprintsUrl = () => {
+
+
+
+
+  return `/api/growth-blueprints`
+}
+
+/**
+ * @summary List all Growth Blueprints
+ */
+export const listGrowthBlueprints = async ( options?: RequestInit): Promise<GrowthBlueprintListResponse> => {
+
+  return customFetch<GrowthBlueprintListResponse>(getListGrowthBlueprintsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGrowthBlueprintsQueryKey = () => {
+    return [
+    `/api/growth-blueprints`
+    ] as const;
+    }
+
+
+export const getListGrowthBlueprintsQueryOptions = <TData = Awaited<ReturnType<typeof listGrowthBlueprints>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprints>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGrowthBlueprintsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGrowthBlueprints>>> = ({ signal }) => listGrowthBlueprints({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprints>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGrowthBlueprintsQueryResult = NonNullable<Awaited<ReturnType<typeof listGrowthBlueprints>>>
+export type ListGrowthBlueprintsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all Growth Blueprints
+ */
+
+export function useListGrowthBlueprints<TData = Awaited<ReturnType<typeof listGrowthBlueprints>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprints>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGrowthBlueprintsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateGrowthBlueprintUrl = () => {
+
+
+
+
+  return `/api/growth-blueprints`
+}
+
+/**
+ * @summary Create a Growth Blueprint from an approved Solution Recommendation Plan
+ */
+export const createGrowthBlueprint = async (createGrowthBlueprintBody: CreateGrowthBlueprintBody, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getCreateGrowthBlueprintUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createGrowthBlueprintBody)
+  }
+);}
+
+
+
+
+
+export const getCreateGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGrowthBlueprint>>, TError,{data: BodyType<CreateGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createGrowthBlueprint>>, TError,{data: BodyType<CreateGrowthBlueprintBody>}, TContext> => {
+
+const mutationKey = ['createGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createGrowthBlueprint>>, {data: BodyType<CreateGrowthBlueprintBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createGrowthBlueprint(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof createGrowthBlueprint>>>
+    export type CreateGrowthBlueprintMutationBody = BodyType<CreateGrowthBlueprintBody>
+    export type CreateGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a Growth Blueprint from an approved Solution Recommendation Plan
+ */
+export const useCreateGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createGrowthBlueprint>>, TError,{data: BodyType<CreateGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createGrowthBlueprint>>,
+        TError,
+        {data: BodyType<CreateGrowthBlueprintBody>},
+        TContext
+      > => {
+      return useMutation(getCreateGrowthBlueprintMutationOptions(options));
+    }
+
+export const getGetGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}`
+}
+
+/**
+ * @summary Get a Growth Blueprint by ID with joined context
+ */
+export const getGrowthBlueprint = async (id: string, options?: RequestInit): Promise<GrowthBlueprintDetail> => {
+
+  return customFetch<GrowthBlueprintDetail>(getGetGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthBlueprintQueryKey = (id: string,) => {
+    return [
+    `/api/growth-blueprints/${id}`
+    ] as const;
+    }
+
+
+export const getGetGrowthBlueprintQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthBlueprint>>, TError = ErrorType<ErrorResponse>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprint>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthBlueprintQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthBlueprint>>> = ({ signal }) => getGrowthBlueprint(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprint>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthBlueprintQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthBlueprint>>>
+export type GetGrowthBlueprintQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a Growth Blueprint by ID with joined context
+ */
+
+export function useGetGrowthBlueprint<TData = Awaited<ReturnType<typeof getGrowthBlueprint>>, TError = ErrorType<ErrorResponse>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprint>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthBlueprintQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}`
+}
+
+/**
+ * @summary Update editable fields on a Growth Blueprint
+ */
+export const updateGrowthBlueprint = async (id: string,
+    updateGrowthBlueprintBody: UpdateGrowthBlueprintBody, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getUpdateGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateGrowthBlueprintBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprint>>, TError,{id: string;data: BodyType<UpdateGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprint>>, TError,{id: string;data: BodyType<UpdateGrowthBlueprintBody>}, TContext> => {
+
+const mutationKey = ['updateGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGrowthBlueprint>>, {id: string;data: BodyType<UpdateGrowthBlueprintBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateGrowthBlueprint(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof updateGrowthBlueprint>>>
+    export type UpdateGrowthBlueprintMutationBody = BodyType<UpdateGrowthBlueprintBody>
+    export type UpdateGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update editable fields on a Growth Blueprint
+ */
+export const useUpdateGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprint>>, TError,{id: string;data: BodyType<UpdateGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateGrowthBlueprint>>,
+        TError,
+        {id: string;data: BodyType<UpdateGrowthBlueprintBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateGrowthBlueprintMutationOptions(options));
+    }
+
+export const getStartGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/start`
+}
+
+/**
+ * @summary Transition blueprint from draft to in_progress
+ */
+export const startGrowthBlueprint = async (id: string, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getStartGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getStartGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['startGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  startGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof startGrowthBlueprint>>>
+
+    export type StartGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Transition blueprint from draft to in_progress
+ */
+export const useStartGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getStartGrowthBlueprintMutationOptions(options));
+    }
+
+export const getReadyGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/ready`
+}
+
+/**
+ * @summary Transition blueprint from in_progress to ready_for_review
+ */
+export const readyGrowthBlueprint = async (id: string, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getReadyGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getReadyGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof readyGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof readyGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['readyGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof readyGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  readyGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReadyGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof readyGrowthBlueprint>>>
+
+    export type ReadyGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Transition blueprint from in_progress to ready_for_review
+ */
+export const useReadyGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof readyGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof readyGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getReadyGrowthBlueprintMutationOptions(options));
+    }
+
+export const getApproveGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/approve`
+}
+
+/**
+ * @summary Approve a blueprint that is ready_for_review
+ */
+export const approveGrowthBlueprint = async (id: string, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getApproveGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getApproveGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof approveGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['approveGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof approveGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  approveGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApproveGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof approveGrowthBlueprint>>>
+
+    export type ApproveGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Approve a blueprint that is ready_for_review
+ */
+export const useApproveGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof approveGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof approveGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getApproveGrowthBlueprintMutationOptions(options));
+    }
+
+export const getArchiveGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/archive`
+}
+
+/**
+ * @summary Archive a Growth Blueprint
+ */
+export const archiveGrowthBlueprint = async (id: string, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getArchiveGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getArchiveGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof archiveGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['archiveGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof archiveGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  archiveGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ArchiveGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof archiveGrowthBlueprint>>>
+
+    export type ArchiveGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Archive a Growth Blueprint
+ */
+export const useArchiveGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof archiveGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof archiveGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getArchiveGrowthBlueprintMutationOptions(options));
+    }
+
+export const getListClientGrowthBlueprintsUrl = (id: string,) => {
+
+
+
+
+  return `/api/clients/${id}/growth-blueprints`
+}
+
+/**
+ * @summary List all Growth Blueprints for a client
+ */
+export const listClientGrowthBlueprints = async (id: string, options?: RequestInit): Promise<GrowthBlueprintListResponse> => {
+
+  return customFetch<GrowthBlueprintListResponse>(getListClientGrowthBlueprintsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListClientGrowthBlueprintsQueryKey = (id: string,) => {
+    return [
+    `/api/clients/${id}/growth-blueprints`
+    ] as const;
+    }
+
+
+export const getListClientGrowthBlueprintsQueryOptions = <TData = Awaited<ReturnType<typeof listClientGrowthBlueprints>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientGrowthBlueprints>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListClientGrowthBlueprintsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listClientGrowthBlueprints>>> = ({ signal }) => listClientGrowthBlueprints(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listClientGrowthBlueprints>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListClientGrowthBlueprintsQueryResult = NonNullable<Awaited<ReturnType<typeof listClientGrowthBlueprints>>>
+export type ListClientGrowthBlueprintsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all Growth Blueprints for a client
+ */
+
+export function useListClientGrowthBlueprints<TData = Awaited<ReturnType<typeof listClientGrowthBlueprints>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listClientGrowthBlueprints>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListClientGrowthBlueprintsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetGrowthBlueprintForPlanUrl = (id: string,) => {
+
+
+
+
+  return `/api/solution-recommendations/${id}/growth-blueprint`
+}
+
+/**
+ * @summary Get the active Growth Blueprint linked to a Solution Recommendation Plan
+ */
+export const getGrowthBlueprintForPlan = async (id: string, options?: RequestInit): Promise<GrowthBlueprintRecord | null> => {
+
+  return customFetch<GrowthBlueprintRecord | null>(getGetGrowthBlueprintForPlanUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGrowthBlueprintForPlanQueryKey = (id: string,) => {
+    return [
+    `/api/solution-recommendations/${id}/growth-blueprint`
+    ] as const;
+    }
+
+
+export const getGetGrowthBlueprintForPlanQueryOptions = <TData = Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGrowthBlueprintForPlanQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>> = ({ signal }) => getGrowthBlueprintForPlan(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGrowthBlueprintForPlanQueryResult = NonNullable<Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>>
+export type GetGrowthBlueprintForPlanQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the active Growth Blueprint linked to a Solution Recommendation Plan
+ */
+
+export function useGetGrowthBlueprintForPlan<TData = Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGrowthBlueprintForPlan>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGrowthBlueprintForPlanQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getGenerateSolutionRecommendationPlanUrl = () => {
 

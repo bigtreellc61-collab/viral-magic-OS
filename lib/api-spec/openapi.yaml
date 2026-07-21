@@ -30,7 +30,285 @@ tags:
     description: Business Growth Assessment Engine
   - name: solution-recommendations
     description: Solution Recommendation Engine
+  - name: growth-blueprints
+    description: Growth Blueprint Engine
 paths:
+  /growth-blueprints/dashboard:
+    get:
+      operationId: getGrowthBlueprintDashboard
+      tags: [growth-blueprints]
+      summary: Get aggregated Growth Blueprint dashboard metrics
+      responses:
+        "200":
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintDashboard"
+  /growth-blueprints:
+    get:
+      operationId: listGrowthBlueprints
+      tags: [growth-blueprints]
+      summary: List all Growth Blueprints
+      responses:
+        "200":
+          description: List of blueprints
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintListResponse"
+    post:
+      operationId: createGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Create a Growth Blueprint from an approved Solution Recommendation Plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGrowthBlueprintBody"
+      responses:
+        "201":
+          description: Blueprint created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Plan not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Active blueprint already exists for this plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}:
+    get:
+      operationId: getGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Get a Growth Blueprint by ID with joined context
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blueprint detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintDetail"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Update editable fields on a Growth Blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGrowthBlueprintBody"
+      responses:
+        "200":
+          description: Updated blueprint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Blueprint is locked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/start:
+    post:
+      operationId: startGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Transition blueprint from draft to in_progress
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated blueprint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/ready:
+    post:
+      operationId: readyGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Transition blueprint from in_progress to ready_for_review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated blueprint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/approve:
+    post:
+      operationId: approveGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Approve a blueprint that is ready_for_review
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated blueprint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Invalid transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/archive:
+    post:
+      operationId: archiveGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Archive a Growth Blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated blueprint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Already archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /clients/{id}/growth-blueprints:
+    get:
+      operationId: listClientGrowthBlueprints
+      tags: [growth-blueprints]
+      summary: List all Growth Blueprints for a client
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of blueprints
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintListResponse"
+  /solution-recommendations/{id}/growth-blueprint:
+    get:
+      operationId: getGrowthBlueprintForPlan
+      tags: [growth-blueprints]
+      summary: Get the active Growth Blueprint linked to a Solution Recommendation Plan
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Blueprint or null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/GrowthBlueprintRecord"
+                  - type: "null"
   /solution-recommendations/generate:
     post:
       operationId: generateSolutionRecommendationPlan
@@ -4251,3 +4529,212 @@ components:
             $ref: "#/components/schemas/ActivityRecord"
       required:
         - data
+    GrowthBlueprintRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum: [draft, in_progress, ready_for_review, approved, archived]
+        version:
+          type: integer
+        consultantNotes:
+          type: ["string", "null"]
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        growthAssessmentId:
+          type: string
+        solutionRecommendationPlanId:
+          type: string
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - status
+        - version
+        - clientId
+        - growthAssessmentId
+        - solutionRecommendationPlanId
+        - createdAt
+        - updatedAt
+    GrowthBlueprintDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+          enum: [draft, in_progress, ready_for_review, approved, archived]
+        version:
+          type: integer
+        consultantNotes:
+          type: ["string", "null"]
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        growthAssessmentId:
+          type: string
+        solutionRecommendationPlanId:
+          type: string
+        approvedBy:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdBy:
+          type: ["string", "null"]
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        clientName:
+          type: ["string", "null"]
+        projectName:
+          type: ["string", "null"]
+        assessmentHealthScore:
+          type: ["string", "null"]
+        assessmentHealthRating:
+          type: ["string", "null"]
+        assessmentStatus:
+          type: ["string", "null"]
+        planStatus:
+          type: ["string", "null"]
+        planExecutiveRecommendation:
+          type: ["string", "null"]
+        planOverallPriorityScore:
+          type: ["string", "null"]
+      required:
+        - id
+        - title
+        - status
+        - version
+        - clientId
+        - growthAssessmentId
+        - solutionRecommendationPlanId
+        - createdAt
+        - updatedAt
+    GrowthBlueprintSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+        clientId:
+          type: string
+        projectId:
+          type: ["string", "null"]
+        growthAssessmentId:
+          type: string
+        solutionRecommendationPlanId:
+          type: string
+        clientName:
+          type: ["string", "null"]
+        projectName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+      required:
+        - id
+        - title
+        - status
+        - version
+        - clientId
+        - growthAssessmentId
+        - solutionRecommendationPlanId
+        - createdAt
+        - updatedAt
+    GrowthBlueprintListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GrowthBlueprintSummary"
+      required:
+        - data
+    CreateGrowthBlueprintBody:
+      type: object
+      properties:
+        solutionRecommendationPlanId:
+          type: string
+        title:
+          type: string
+          minLength: 1
+      required:
+        - solutionRecommendationPlanId
+        - title
+    UpdateGrowthBlueprintBody:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+        consultantNotes:
+          type: ["string", "null"]
+    GrowthBlueprintDashboard:
+      type: object
+      properties:
+        draft:
+          type: integer
+        inProgress:
+          type: integer
+        readyForReview:
+          type: integer
+        approved:
+          type: integer
+        recentBlueprints:
+          type: array
+          items:
+            type: object
+      required:
+        - draft
+        - inProgress
+        - readyForReview
+        - approved
+        - recentBlueprints

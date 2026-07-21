@@ -50,6 +50,9 @@ const GrowthAssessmentPage = lazy(() =>
 const SolutionRecommendationDetailPage = lazy(
   () => import('@/pages/solution-recommendation-detail'),
 );
+const GrowthBlueprintDetailPage = lazy(() =>
+  import('@/pages/growth-blueprint-detail').then((m) => ({ default: m.GrowthBlueprintDetailPage })),
+);
 const NotFound = lazy(() => import('@/pages/not-found'));
 
 // Shared fallback shown while any page chunk is loading
@@ -166,6 +169,9 @@ function AuthWall() {
           </Route>
           <Route path="/solution-recommendations/:id">
             {() => <SolutionRecommendationDetailPage />}
+          </Route>
+          <Route path="/growth-blueprints/:id">
+            {(params) => <GrowthBlueprintDetailPage />}
           </Route>
           <Route path="/settings">
             {() => <SettingsPage user={user} />}

@@ -9,3 +9,4 @@ export * from "./tasks";
 export * from "./diagnostics";
 export * from "./growthAssessments";
 export * from "./solutionRecommendations";
+export * from "./growthBlueprints";

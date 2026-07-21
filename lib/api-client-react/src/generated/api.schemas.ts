@@ -1190,6 +1190,145 @@ export interface SolutionRecommendationActivityResponse {
   data: ActivityRecord[];
 }
 
+export type GrowthBlueprintRecordStatus = typeof GrowthBlueprintRecordStatus[keyof typeof GrowthBlueprintRecordStatus];
+
+
+export const GrowthBlueprintRecordStatus = {
+  draft: 'draft',
+  in_progress: 'in_progress',
+  ready_for_review: 'ready_for_review',
+  approved: 'approved',
+  archived: 'archived',
+} as const;
+
+export interface GrowthBlueprintRecord {
+  id: string;
+  title: string;
+  status: GrowthBlueprintRecordStatus;
+  version: number;
+  /** @nullable */
+  consultantNotes?: string | null;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  growthAssessmentId: string;
+  solutionRecommendationPlanId: string;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type GrowthBlueprintDetailStatus = typeof GrowthBlueprintDetailStatus[keyof typeof GrowthBlueprintDetailStatus];
+
+
+export const GrowthBlueprintDetailStatus = {
+  draft: 'draft',
+  in_progress: 'in_progress',
+  ready_for_review: 'ready_for_review',
+  approved: 'approved',
+  archived: 'archived',
+} as const;
+
+export interface GrowthBlueprintDetail {
+  id: string;
+  title: string;
+  status: GrowthBlueprintDetailStatus;
+  version: number;
+  /** @nullable */
+  consultantNotes?: string | null;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  growthAssessmentId: string;
+  solutionRecommendationPlanId: string;
+  /** @nullable */
+  approvedBy?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  /** @nullable */
+  createdBy?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  projectName?: string | null;
+  /** @nullable */
+  assessmentHealthScore?: string | null;
+  /** @nullable */
+  assessmentHealthRating?: string | null;
+  /** @nullable */
+  assessmentStatus?: string | null;
+  /** @nullable */
+  planStatus?: string | null;
+  /** @nullable */
+  planExecutiveRecommendation?: string | null;
+  /** @nullable */
+  planOverallPriorityScore?: string | null;
+}
+
+export interface GrowthBlueprintSummary {
+  id: string;
+  title: string;
+  status: string;
+  version: number;
+  clientId: string;
+  /** @nullable */
+  projectId?: string | null;
+  growthAssessmentId: string;
+  solutionRecommendationPlanId: string;
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  projectName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+}
+
+export interface GrowthBlueprintListResponse {
+  data: GrowthBlueprintSummary[];
+}
+
+export interface CreateGrowthBlueprintBody {
+  solutionRecommendationPlanId: string;
+  /** @minLength 1 */
+  title: string;
+}
+
+export interface UpdateGrowthBlueprintBody {
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  consultantNotes?: string | null;
+}
+
+export type GrowthBlueprintDashboardRecentBlueprintsItem = { [key: string]: unknown };
+
+export interface GrowthBlueprintDashboard {
+  draft: number;
+  inProgress: number;
+  readyForReview: number;
+  approved: number;
+  recentBlueprints: GrowthBlueprintDashboardRecentBlueprintsItem[];
+}
+
 export type GetSolutionRecommendationPlanActivityParams = {
 /**
  * @minimum 1

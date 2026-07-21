@@ -10,6 +10,7 @@ import tasksRouter from "./tasks";
 import diagnosticsRouter from "./diagnostics";
 import growthAssessmentsRouter from "./growth-assessments";
 import solutionRecommendationsRouter from "./solution-recommendations";
+import growthBlueprintsRouter from "./growth-blueprints";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(tasksRouter);
 router.use(diagnosticsRouter);
 router.use(growthAssessmentsRouter);
 router.use(solutionRecommendationsRouter);
+router.use(growthBlueprintsRouter);
 
 export default router;

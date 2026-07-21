@@ -1,0 +1,156 @@
+VIRAL MAGIC OS
+
+PHASE 2A — GROWTH BLUEPRINT FOUNDATION
+
+This task begins Growth Blueprint Module 2.
+
+The audit has been completed.
+
+Proceed using the audit recommendations.
+
+OBJECTIVE
+
+Build only the foundational infrastructure for the Growth Blueprint.
+
+Do NOT build the complete blueprint generation system.
+
+Do NOT build executive reports.
+
+Do NOT build PDF exports.
+
+Do NOT build presentation views.
+
+Do NOT build client-facing deliverables.
+
+Do NOT implement later phases.
+
+Only establish the foundation required for future Blueprint generation.
+
+Reuse existing architecture wherever possible.
+
+The Business Growth Assessment and Recommendation Engine remain the single source of truth.
+
+Do not duplicate data already available.
+
+The Growth Blueprint should reference and organize existing information, not recreate it.
+
+SCOPE
+
+Implement only:
+
+1. Growth Blueprint data model (minimum required fields only)
+
+2. Relationships to:
+   - Client
+   - Project
+   - Growth Assessment
+   - Recommendation Plan
+
+3. Blueprint lifecycle
+
+Suggested lifecycle:
+
+Draft
+↓
+
+In Progress
+↓
+
+Ready for Review
+↓
+
+Approved
+↓
+
+Archived
+
+4. Backend CRUD endpoints
+
+5. OpenAPI updates
+
+6. Generated client hooks
+
+7. Placeholder frontend page
+
+Include:
+
+Overview tab
+
+No generation logic yet.
+
+No executive report.
+
+No roadmap generation.
+
+No PDF.
+
+No exports.
+
+Display only:
+
+Blueprint metadata
+
+Connected client
+
+Connected project
+
+Connected assessment
+
+Connected recommendation plan
+
+Lifecycle status
+
+Created date
+
+Updated date
+
+Version
+
+Consultant notes
+
+Approval state
+
+Use existing UI patterns established in Phase 1F.
+
+Do not invent a new design system.
+
+VALIDATION
+
+Run:
+
+TypeScript
+
+Backend tests
+
+Frontend build
+
+OpenAPI generation
+
+Regression tests
+
+OUTPUT
+
+Return:
+
+Completed work
+
+Files changed
+
+Database additions
+
+Routes added
+
+Components added
+
+Tests run
+
+Commands executed
+
+Exit codes
+
+Known limitations
+
+STOP.
+
+Do NOT begin Phase 2B.
+Wait for approval.

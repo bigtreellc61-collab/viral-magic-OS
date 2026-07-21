@@ -9,6 +9,303 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Get aggregated Growth Blueprint dashboard metrics
+ */
+export const GetGrowthBlueprintDashboardResponse = zod.object({
+  "draft": zod.number(),
+  "inProgress": zod.number(),
+  "readyForReview": zod.number(),
+  "approved": zod.number(),
+  "recentBlueprints": zod.array(zod.object({
+
+}))
+})
+
+
+/**
+ * @summary List all Growth Blueprints
+ */
+export const ListGrowthBlueprintsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.string(),
+  "version": zod.number(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish()
+}))
+})
+
+
+/**
+ * @summary Create a Growth Blueprint from an approved Solution Recommendation Plan
+ */
+
+
+
+export const CreateGrowthBlueprintBody = zod.object({
+  "solutionRecommendationPlanId": zod.string(),
+  "title": zod.string().min(1)
+})
+
+export const CreateGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get a Growth Blueprint by ID with joined context
+ */
+export const GetGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish(),
+  "assessmentHealthScore": zod.string().nullish(),
+  "assessmentHealthRating": zod.string().nullish(),
+  "assessmentStatus": zod.string().nullish(),
+  "planStatus": zod.string().nullish(),
+  "planExecutiveRecommendation": zod.string().nullish(),
+  "planOverallPriorityScore": zod.string().nullish()
+})
+
+
+/**
+ * @summary Update editable fields on a Growth Blueprint
+ */
+export const UpdateGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const UpdateGrowthBlueprintBody = zod.object({
+  "title": zod.string().nullish(),
+  "consultantNotes": zod.string().nullish()
+})
+
+export const UpdateGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Transition blueprint from draft to in_progress
+ */
+export const StartGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const StartGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Transition blueprint from in_progress to ready_for_review
+ */
+export const ReadyGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ReadyGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Approve a blueprint that is ready_for_review
+ */
+export const ApproveGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ApproveGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Archive a Growth Blueprint
+ */
+export const ArchiveGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ArchiveGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List all Growth Blueprints for a client
+ */
+export const ListClientGrowthBlueprintsParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ListClientGrowthBlueprintsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.string(),
+  "version": zod.number(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "clientName": zod.string().nullish(),
+  "projectName": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish()
+}))
+})
+
+
+/**
+ * @summary Get the active Growth Blueprint linked to a Solution Recommendation Plan
+ */
+export const GetGrowthBlueprintForPlanParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetGrowthBlueprintForPlanResponse = zod.union([zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),zod.null()])
+
+
+/**
  * @summary Generate a Solution Recommendation Plan from an approved Growth Assessment
  */
 export const GenerateSolutionRecommendationPlanBody = zod.object({
