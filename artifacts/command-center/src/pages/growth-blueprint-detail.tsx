@@ -849,6 +849,36 @@ function BlueprintSidebar({
             );
           })}
         </div>
+
+        {/* Quick wins + critical counts */}
+        {initiatives.length > 0 && (
+          <div className="space-y-1.5 pt-1 border-t border-slate-800/50">
+            {(() => {
+              const qw = initiatives.filter((i: any) =>
+                i.roadmapReason?.toLowerCase().includes("quick win"),
+              ).length;
+              const crit = initiatives.filter(
+                (i: any) => i.priorityClassification === "Critical Priority",
+              ).length;
+              return (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500">⚡ Quick Wins</span>
+                    <span className={cn("text-[11px] font-semibold tabular-nums", qw > 0 ? "text-amber-400" : "text-slate-700")}>
+                      {qw}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-500">Critical Priority</span>
+                    <span className={cn("text-[11px] font-semibold tabular-nums", crit > 0 ? "text-red-400" : "text-slate-700")}>
+                      {crit}
+                    </span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       {/* Meta */}
@@ -1168,6 +1198,14 @@ export function GrowthBlueprintDetailPage() {
     (blueprint as any).versionLabel ??
     `v${blueprint.version}.${(blueprint as any).revisionNumber ?? 0}`;
 
+  // Derived executive snapshot counts (from already-loaded initiatives data)
+  const quickWinCount = initiatives.filter((i) =>
+    i.roadmapReason?.toLowerCase().includes("quick win"),
+  ).length;
+  const criticalCount = initiatives.filter(
+    (i) => i.priorityClassification === "Critical Priority",
+  ).length;
+
   // ── Render ────────────────────────────────────────────────────
 
   return (
@@ -1247,6 +1285,29 @@ export function GrowthBlueprintDetailPage() {
                   </span>
                 )}
               </div>
+
+              {/* Executive snapshot stats — visible once initiatives are loaded */}
+              {initiatives.length > 0 && (
+                <div className="flex items-center gap-4 flex-wrap text-xs pt-0.5">
+                  <span className="text-slate-500">
+                    <span className="font-semibold text-slate-300 tabular-nums">{initiatives.length}</span>{" "}
+                    {initiatives.length === 1 ? "initiative" : "initiatives"}
+                  </span>
+                  {quickWinCount > 0 && (
+                    <span className="text-amber-400">
+                      ⚡{" "}
+                      <span className="font-semibold tabular-nums">{quickWinCount}</span>{" "}
+                      {quickWinCount === 1 ? "quick win" : "quick wins"}
+                    </span>
+                  )}
+                  {criticalCount > 0 && (
+                    <span className="text-red-400">
+                      <span className="font-semibold tabular-nums">{criticalCount}</span>{" "}
+                      critical {criticalCount === 1 ? "priority" : "priorities"}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Right: health score */}

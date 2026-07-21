@@ -1,0 +1,206 @@
+VIRAL MAGIC OS
+
+PHASE 2C — EXECUTIVE PRESENTATION REVIEW AND END-TO-END VALIDATION
+
+CONTEXT
+
+Phase 2C — Executive Presentation Layer has been completed.
+
+The Growth Blueprint detail page was transformed from a tab-based internal interface into a three-column executive document with:
+
+- left-side section navigation
+- scroll-based content
+- active-section highlighting
+- executive presentation styling
+- 30/60/90-day roadmap
+- sticky summary sidebar
+- print stylesheet
+- existing mutations and hooks preserved
+- 108/108 backend tests passing
+- frontend TypeScript clean
+
+OBJECTIVE
+
+Perform a complete review of Phase 2C before beginning Phase 2D.
+
+This task is primarily validation, polish, and correction.
+
+Do not add exports.
+
+Do not add PDF generation.
+
+Do not add Word generation.
+
+Do not add PowerPoint generation.
+
+Do not add AI.
+
+Do not add new backend business logic unless required to fix a confirmed defect.
+
+Do not begin Phase 2D.
+
+FIRST
+
+Audit the actual completed Phase 2C implementation.
+
+Confirm:
+
+- route loads correctly
+- all Growth Blueprint sections render
+- sticky navigation works
+- active section highlighting works
+- sidebar stays usable
+- lifecycle actions still work
+- consultant edits still work
+- overrides still work
+- regeneration still works
+- version history still works
+- approved and archived blueprints remain read-only
+- source links still work
+- print view is professional
+- responsive behavior is acceptable
+
+END-TO-END WORKFLOW TEST
+
+Walk through the complete workflow using a test client:
+
+1. Create or use an existing client.
+2. Open or create a project.
+3. Complete a Business Growth Assessment.
+4. Generate the Solution Recommendation Plan.
+5. Approve the Recommendation Plan.
+6. Create a Growth Blueprint.
+7. Start the Blueprint.
+8. Generate the Blueprint.
+9. Review every executive section.
+10. Edit one consultant override.
+11. Regenerate and confirm the override remains.
+12. Move or reorder one roadmap initiative.
+13. Mark the Blueprint ready for review.
+14. Approve the Blueprint.
+15. Confirm the approved Blueprint is read-only.
+16. Create a revision.
+17. Confirm the old approved version remains unchanged.
+18. Review version history.
+19. Test browser print preview.
+20. Confirm all linked client, project, assessment, and recommendation navigation works.
+
+VISUAL REVIEW
+
+Review the page as a first-time executive client.
+
+Check:
+
+- immediate clarity
+- hierarchy
+- spacing
+- typography
+- card density
+- section titles
+- empty states
+- long-text wrapping
+- roadmap readability
+- KPI readability
+- dependency presentation
+- sidebar usefulness
+- excessive scrolling
+- visual clutter
+- duplicated information
+- mobile usability
+- print readability
+
+Make only small, targeted improvements.
+
+Do not redesign the page again unless a serious usability issue is found.
+
+EXECUTIVE SNAPSHOT
+
+Confirm the top of the document gives a fast CEO-level overview.
+
+It should clearly display, where available:
+
+- client
+- project
+- Blueprint title
+- version
+- lifecycle status
+- overall assessment score
+- health rating
+- number of priorities
+- number of initiatives
+- number of quick wins
+- critical risks
+- generated date
+- approved date
+
+Do not invent new business metrics.
+
+Use only existing data.
+
+PRINT REVIEW
+
+Check browser print preview for:
+
+- US Letter
+- A4
+- clean white background
+- readable black text
+- hidden controls
+- hidden navigation
+- hidden sticky sidebar where appropriate
+- no cut-off cards
+- no orphaned headings
+- sensible page breaks
+- roadmap readability
+- version and client identification
+- professional margins
+
+TESTING
+
+Run:
+
+- backend tests
+- frontend TypeScript
+- frontend production build
+- any existing frontend tests
+- OpenAPI validation if relevant
+- codegen verification if files changed
+
+Capture:
+
+- commands
+- exit codes
+- passing test totals
+- any warnings
+
+COMPLETION REPORT
+
+Return:
+
+1. Executive summary
+2. End-to-end workflow result
+3. Visual review findings
+4. Fixes made
+5. Files changed
+6. Print review result
+7. Responsive review result
+8. Lifecycle validation
+9. Override/regeneration validation
+10. Versioning validation
+11. Navigation validation
+12. Tests run
+13. Commands executed
+14. Exit codes
+15. Total passing tests
+16. Remaining issues
+17. Recommended Phase 2D scope
+18. Confirmation no export system was added
+19. Confirmation no AI was added
+20. Final verdict:
+   - Phase 2C validated and ready for Phase 2D
+   - or Phase 2C requires additional fixes
+
+STOP.
+
+Do not begin Phase 2D.
+Wait for approval.

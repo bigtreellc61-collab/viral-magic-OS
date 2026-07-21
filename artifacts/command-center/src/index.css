@@ -253,10 +253,9 @@
     line-height: 1.6 !important;
   }
 
-  /* Page setup */
+  /* Page setup — margins work for both US Letter and A4 */
   @page {
     margin: 20mm 18mm 20mm 18mm;
-    size: A4 portrait;
   }
 
   /* Print header (blueprint title strip) */
