@@ -27,6 +27,11 @@ import type {
   ApproveDiagnosticBody,
   ApproveRecommendationBody,
   AuthUser,
+  BlueprintGenerationResult,
+  BlueprintInitiativeListResponse,
+  BlueprintInitiativeRecord,
+  BlueprintSectionListResponse,
+  BlueprintSectionRecord,
   BottleneckRecommendationRecord,
   ClientDuplicateCheckBody,
   ClientDuplicateCheckResult,
@@ -66,6 +71,7 @@ import type {
   GrowthBlueprintDetail,
   GrowthBlueprintListResponse,
   GrowthBlueprintRecord,
+  GrowthBlueprintVersionListResponse,
   HealthStatus,
   ListActivityParams,
   ListClientActivityParams,
@@ -86,10 +92,12 @@ import type {
   ProjectMetricsSummary,
   ProjectProgress,
   ProjectRecord,
+  ReorderInitiativesBody,
   RestoreClientBody,
   RestoreDiagnosticBody,
   RestoreProjectBody,
   RestoreTaskBody,
+  ReviseGrowthBlueprintBody,
   SaveDiagnosticDraft200,
   SaveDraftScoresBody,
   SetupInput,
@@ -104,6 +112,8 @@ import type {
   TaskMetricsSummary,
   TaskRecord,
   ToggleNotePinBody,
+  UpdateBlueprintInitiativeBody,
+  UpdateBlueprintSectionBody,
   UpdateClientBody,
   UpdateClientNoteBody,
   UpdateDiagnosticBody,
@@ -956,6 +966,744 @@ export function useGetGrowthBlueprintForPlan<TData = Awaited<ReturnType<typeof g
 
 
 
+
+export const getGenerateGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/generate`
+}
+
+/**
+ * @summary Assemble all sections and initiatives from source data
+ */
+export const generateGrowthBlueprint = async (id: string, options?: RequestInit): Promise<BlueprintGenerationResult> => {
+
+  return customFetch<BlueprintGenerationResult>(getGenerateGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGenerateGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['generateGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  generateGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof generateGrowthBlueprint>>>
+
+    export type GenerateGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Assemble all sections and initiatives from source data
+ */
+export const useGenerateGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getGenerateGrowthBlueprintMutationOptions(options));
+    }
+
+export const getRegenerateGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/regenerate`
+}
+
+/**
+ * @summary Regenerate blueprint content, preserving consultant overrides
+ */
+export const regenerateGrowthBlueprint = async (id: string, options?: RequestInit): Promise<BlueprintGenerationResult> => {
+
+  return customFetch<BlueprintGenerationResult>(getRegenerateGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRegenerateGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof regenerateGrowthBlueprint>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['regenerateGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof regenerateGrowthBlueprint>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  regenerateGrowthBlueprint(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegenerateGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof regenerateGrowthBlueprint>>>
+
+    export type RegenerateGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Regenerate blueprint content, preserving consultant overrides
+ */
+export const useRegenerateGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof regenerateGrowthBlueprint>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof regenerateGrowthBlueprint>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getRegenerateGrowthBlueprintMutationOptions(options));
+    }
+
+export const getReviseGrowthBlueprintUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/revise`
+}
+
+/**
+ * @summary Create a new draft version from an approved blueprint
+ */
+export const reviseGrowthBlueprint = async (id: string,
+    reviseGrowthBlueprintBody?: ReviseGrowthBlueprintBody, options?: RequestInit): Promise<GrowthBlueprintRecord> => {
+
+  return customFetch<GrowthBlueprintRecord>(getReviseGrowthBlueprintUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(reviseGrowthBlueprintBody)
+  }
+);}
+
+
+
+
+
+export const getReviseGrowthBlueprintMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviseGrowthBlueprint>>, TError,{id: string;data?: BodyType<ReviseGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviseGrowthBlueprint>>, TError,{id: string;data?: BodyType<ReviseGrowthBlueprintBody>}, TContext> => {
+
+const mutationKey = ['reviseGrowthBlueprint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviseGrowthBlueprint>>, {id: string;data?: BodyType<ReviseGrowthBlueprintBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reviseGrowthBlueprint(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviseGrowthBlueprintMutationResult = NonNullable<Awaited<ReturnType<typeof reviseGrowthBlueprint>>>
+    export type ReviseGrowthBlueprintMutationBody = BodyType<ReviseGrowthBlueprintBody> | undefined
+    export type ReviseGrowthBlueprintMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a new draft version from an approved blueprint
+ */
+export const useReviseGrowthBlueprint = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviseGrowthBlueprint>>, TError,{id: string;data?: BodyType<ReviseGrowthBlueprintBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviseGrowthBlueprint>>,
+        TError,
+        {id: string;data?: BodyType<ReviseGrowthBlueprintBody>},
+        TContext
+      > => {
+      return useMutation(getReviseGrowthBlueprintMutationOptions(options));
+    }
+
+export const getListGrowthBlueprintVersionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/versions`
+}
+
+/**
+ * @summary Get version history for a Growth Blueprint
+ */
+export const listGrowthBlueprintVersions = async (id: string, options?: RequestInit): Promise<GrowthBlueprintVersionListResponse> => {
+
+  return customFetch<GrowthBlueprintVersionListResponse>(getListGrowthBlueprintVersionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGrowthBlueprintVersionsQueryKey = (id: string,) => {
+    return [
+    `/api/growth-blueprints/${id}/versions`
+    ] as const;
+    }
+
+
+export const getListGrowthBlueprintVersionsQueryOptions = <TData = Awaited<ReturnType<typeof listGrowthBlueprintVersions>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGrowthBlueprintVersionsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGrowthBlueprintVersions>>> = ({ signal }) => listGrowthBlueprintVersions(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintVersions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGrowthBlueprintVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof listGrowthBlueprintVersions>>>
+export type ListGrowthBlueprintVersionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get version history for a Growth Blueprint
+ */
+
+export function useListGrowthBlueprintVersions<TData = Awaited<ReturnType<typeof listGrowthBlueprintVersions>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintVersions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGrowthBlueprintVersionsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListGrowthBlueprintSectionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/sections`
+}
+
+/**
+ * @summary Get ordered sections for a Growth Blueprint
+ */
+export const listGrowthBlueprintSections = async (id: string, options?: RequestInit): Promise<BlueprintSectionListResponse> => {
+
+  return customFetch<BlueprintSectionListResponse>(getListGrowthBlueprintSectionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGrowthBlueprintSectionsQueryKey = (id: string,) => {
+    return [
+    `/api/growth-blueprints/${id}/sections`
+    ] as const;
+    }
+
+
+export const getListGrowthBlueprintSectionsQueryOptions = <TData = Awaited<ReturnType<typeof listGrowthBlueprintSections>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintSections>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGrowthBlueprintSectionsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGrowthBlueprintSections>>> = ({ signal }) => listGrowthBlueprintSections(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintSections>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGrowthBlueprintSectionsQueryResult = NonNullable<Awaited<ReturnType<typeof listGrowthBlueprintSections>>>
+export type ListGrowthBlueprintSectionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get ordered sections for a Growth Blueprint
+ */
+
+export function useListGrowthBlueprintSections<TData = Awaited<ReturnType<typeof listGrowthBlueprintSections>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintSections>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGrowthBlueprintSectionsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateGrowthBlueprintSectionUrl = (id: string,
+    sectionId: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/sections/${sectionId}`
+}
+
+/**
+ * @summary Edit consultant override content for a section
+ */
+export const updateGrowthBlueprintSection = async (id: string,
+    sectionId: string,
+    updateBlueprintSectionBody: UpdateBlueprintSectionBody, options?: RequestInit): Promise<BlueprintSectionRecord> => {
+
+  return customFetch<BlueprintSectionRecord>(getUpdateGrowthBlueprintSectionUrl(id,sectionId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateBlueprintSectionBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateGrowthBlueprintSectionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintSection>>, TError,{id: string;sectionId: string;data: BodyType<UpdateBlueprintSectionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintSection>>, TError,{id: string;sectionId: string;data: BodyType<UpdateBlueprintSectionBody>}, TContext> => {
+
+const mutationKey = ['updateGrowthBlueprintSection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGrowthBlueprintSection>>, {id: string;sectionId: string;data: BodyType<UpdateBlueprintSectionBody>}> = (props) => {
+          const {id,sectionId,data} = props ?? {};
+
+          return  updateGrowthBlueprintSection(id,sectionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGrowthBlueprintSectionMutationResult = NonNullable<Awaited<ReturnType<typeof updateGrowthBlueprintSection>>>
+    export type UpdateGrowthBlueprintSectionMutationBody = BodyType<UpdateBlueprintSectionBody>
+    export type UpdateGrowthBlueprintSectionMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Edit consultant override content for a section
+ */
+export const useUpdateGrowthBlueprintSection = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintSection>>, TError,{id: string;sectionId: string;data: BodyType<UpdateBlueprintSectionBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateGrowthBlueprintSection>>,
+        TError,
+        {id: string;sectionId: string;data: BodyType<UpdateBlueprintSectionBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateGrowthBlueprintSectionMutationOptions(options));
+    }
+
+export const getResetGrowthBlueprintSectionUrl = (id: string,
+    sectionId: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/sections/${sectionId}/reset`
+}
+
+/**
+ * @summary Remove consultant override and revert section to generated content
+ */
+export const resetGrowthBlueprintSection = async (id: string,
+    sectionId: string, options?: RequestInit): Promise<BlueprintSectionRecord> => {
+
+  return customFetch<BlueprintSectionRecord>(getResetGrowthBlueprintSectionUrl(id,sectionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getResetGrowthBlueprintSectionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetGrowthBlueprintSection>>, TError,{id: string;sectionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof resetGrowthBlueprintSection>>, TError,{id: string;sectionId: string}, TContext> => {
+
+const mutationKey = ['resetGrowthBlueprintSection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resetGrowthBlueprintSection>>, {id: string;sectionId: string}> = (props) => {
+          const {id,sectionId} = props ?? {};
+
+          return  resetGrowthBlueprintSection(id,sectionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResetGrowthBlueprintSectionMutationResult = NonNullable<Awaited<ReturnType<typeof resetGrowthBlueprintSection>>>
+
+    export type ResetGrowthBlueprintSectionMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Remove consultant override and revert section to generated content
+ */
+export const useResetGrowthBlueprintSection = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resetGrowthBlueprintSection>>, TError,{id: string;sectionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof resetGrowthBlueprintSection>>,
+        TError,
+        {id: string;sectionId: string},
+        TContext
+      > => {
+      return useMutation(getResetGrowthBlueprintSectionMutationOptions(options));
+    }
+
+export const getListGrowthBlueprintInitiativesUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/initiatives`
+}
+
+/**
+ * @summary Get ordered initiatives for a Growth Blueprint
+ */
+export const listGrowthBlueprintInitiatives = async (id: string, options?: RequestInit): Promise<BlueprintInitiativeListResponse> => {
+
+  return customFetch<BlueprintInitiativeListResponse>(getListGrowthBlueprintInitiativesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGrowthBlueprintInitiativesQueryKey = (id: string,) => {
+    return [
+    `/api/growth-blueprints/${id}/initiatives`
+    ] as const;
+    }
+
+
+export const getListGrowthBlueprintInitiativesQueryOptions = <TData = Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>, TError = ErrorType<unknown>>(id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGrowthBlueprintInitiativesQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>> = ({ signal }) => listGrowthBlueprintInitiatives(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGrowthBlueprintInitiativesQueryResult = NonNullable<Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>>
+export type ListGrowthBlueprintInitiativesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get ordered initiatives for a Growth Blueprint
+ */
+
+export function useListGrowthBlueprintInitiatives<TData = Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>, TError = ErrorType<unknown>>(
+ id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGrowthBlueprintInitiatives>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGrowthBlueprintInitiativesQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getReorderGrowthBlueprintInitiativesUrl = (id: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/initiatives/reorder`
+}
+
+/**
+ * @summary Batch-update initiative sequence order
+ */
+export const reorderGrowthBlueprintInitiatives = async (id: string,
+    reorderInitiativesBody: ReorderInitiativesBody, options?: RequestInit): Promise<BlueprintInitiativeListResponse> => {
+
+  return customFetch<BlueprintInitiativeListResponse>(getReorderGrowthBlueprintInitiativesUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(reorderInitiativesBody)
+  }
+);}
+
+
+
+
+
+export const getReorderGrowthBlueprintInitiativesMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>, TError,{id: string;data: BodyType<ReorderInitiativesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>, TError,{id: string;data: BodyType<ReorderInitiativesBody>}, TContext> => {
+
+const mutationKey = ['reorderGrowthBlueprintInitiatives'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>, {id: string;data: BodyType<ReorderInitiativesBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reorderGrowthBlueprintInitiatives(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReorderGrowthBlueprintInitiativesMutationResult = NonNullable<Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>>
+    export type ReorderGrowthBlueprintInitiativesMutationBody = BodyType<ReorderInitiativesBody>
+    export type ReorderGrowthBlueprintInitiativesMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Batch-update initiative sequence order
+ */
+export const useReorderGrowthBlueprintInitiatives = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>, TError,{id: string;data: BodyType<ReorderInitiativesBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reorderGrowthBlueprintInitiatives>>,
+        TError,
+        {id: string;data: BodyType<ReorderInitiativesBody>},
+        TContext
+      > => {
+      return useMutation(getReorderGrowthBlueprintInitiativesMutationOptions(options));
+    }
+
+export const getUpdateGrowthBlueprintInitiativeUrl = (id: string,
+    initiativeId: string,) => {
+
+
+
+
+  return `/api/growth-blueprints/${id}/initiatives/${initiativeId}`
+}
+
+/**
+ * @summary Edit blueprint-specific initiative fields
+ */
+export const updateGrowthBlueprintInitiative = async (id: string,
+    initiativeId: string,
+    updateBlueprintInitiativeBody: UpdateBlueprintInitiativeBody, options?: RequestInit): Promise<BlueprintInitiativeRecord> => {
+
+  return customFetch<BlueprintInitiativeRecord>(getUpdateGrowthBlueprintInitiativeUrl(id,initiativeId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateBlueprintInitiativeBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateGrowthBlueprintInitiativeMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>, TError,{id: string;initiativeId: string;data: BodyType<UpdateBlueprintInitiativeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>, TError,{id: string;initiativeId: string;data: BodyType<UpdateBlueprintInitiativeBody>}, TContext> => {
+
+const mutationKey = ['updateGrowthBlueprintInitiative'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>, {id: string;initiativeId: string;data: BodyType<UpdateBlueprintInitiativeBody>}> = (props) => {
+          const {id,initiativeId,data} = props ?? {};
+
+          return  updateGrowthBlueprintInitiative(id,initiativeId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGrowthBlueprintInitiativeMutationResult = NonNullable<Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>>
+    export type UpdateGrowthBlueprintInitiativeMutationBody = BodyType<UpdateBlueprintInitiativeBody>
+    export type UpdateGrowthBlueprintInitiativeMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Edit blueprint-specific initiative fields
+ */
+export const useUpdateGrowthBlueprintInitiative = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>, TError,{id: string;initiativeId: string;data: BodyType<UpdateBlueprintInitiativeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateGrowthBlueprintInitiative>>,
+        TError,
+        {id: string;initiativeId: string;data: BodyType<UpdateBlueprintInitiativeBody>},
+        TContext
+      > => {
+      return useMutation(getUpdateGrowthBlueprintInitiativeMutationOptions(options));
+    }
 
 export const getGenerateSolutionRecommendationPlanUrl = () => {
 

@@ -88,6 +88,16 @@ export const GetGrowthBlueprintResponse = zod.object({
   "title": zod.string(),
   "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
   "version": zod.number(),
+  "revisionNumber": zod.number().optional(),
+  "versionLabel": zod.string().nullish(),
+  "isCurrent": zod.boolean().optional(),
+  "previousVersionId": zod.string().nullish(),
+  "generationStatus": zod.string().nullish(),
+  "generationError": zod.string().nullish(),
+  "generatedAt": zod.coerce.date().nullish(),
+  "sourceAssessmentStatus": zod.string().nullish(),
+  "sourcePlanStatus": zod.string().nullish(),
+  "supersededAt": zod.coerce.date().nullish(),
   "consultantNotes": zod.string().nullish(),
   "clientId": zod.string(),
   "projectId": zod.string().nullish(),
@@ -303,6 +313,342 @@ export const GetGrowthBlueprintForPlanResponse = zod.union([zod.object({
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
 }),zod.null()])
+
+
+/**
+ * @summary Assemble all sections and initiatives from source data
+ */
+export const GenerateGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GenerateGrowthBlueprintResponse = zod.object({
+  "blueprint": zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "summary": zod.object({
+  "sectionCount": zod.number(),
+  "initiativeCount": zod.number(),
+  "periodBreakdown": zod.object({
+
+}).optional()
+})
+})
+
+
+/**
+ * @summary Regenerate blueprint content, preserving consultant overrides
+ */
+export const RegenerateGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RegenerateGrowthBlueprintResponse = zod.object({
+  "blueprint": zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}),
+  "summary": zod.object({
+  "sectionCount": zod.number(),
+  "initiativeCount": zod.number(),
+  "periodBreakdown": zod.object({
+
+}).optional()
+})
+})
+
+
+/**
+ * @summary Create a new draft version from an approved blueprint
+ */
+export const ReviseGrowthBlueprintParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ReviseGrowthBlueprintBody = zod.object({
+  "title": zod.string().nullish()
+})
+
+export const ReviseGrowthBlueprintResponse = zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['draft', 'in_progress', 'ready_for_review', 'approved', 'archived']),
+  "version": zod.number(),
+  "consultantNotes": zod.string().nullish(),
+  "clientId": zod.string(),
+  "projectId": zod.string().nullish(),
+  "growthAssessmentId": zod.string(),
+  "solutionRecommendationPlanId": zod.string(),
+  "approvedBy": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdBy": zod.string().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get version history for a Growth Blueprint
+ */
+export const ListGrowthBlueprintVersionsParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ListGrowthBlueprintVersionsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "status": zod.string(),
+  "version": zod.number(),
+  "revisionNumber": zod.number(),
+  "versionLabel": zod.string(),
+  "isCurrent": zod.boolean(),
+  "previousVersionId": zod.string().nullish(),
+  "generationStatus": zod.string().nullish(),
+  "approvedAt": zod.coerce.date().nullish(),
+  "supersededAt": zod.coerce.date().nullish(),
+  "archivedAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Get ordered sections for a Growth Blueprint
+ */
+export const ListGrowthBlueprintSectionsParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ListGrowthBlueprintSectionsResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sectionKey": zod.string(),
+  "title": zod.string(),
+  "sectionOrder": zod.number(),
+  "generatedContent": zod.string().nullish(),
+  "consultantContent": zod.string().nullish(),
+  "finalContent": zod.string().nullish(),
+  "hasOverride": zod.boolean().optional(),
+  "sourceReferences": zod.object({
+
+}).optional(),
+  "generationStatus": zod.string().nullish(),
+  "isLocked": zod.boolean(),
+  "generatedAt": zod.coerce.date().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Edit consultant override content for a section
+ */
+export const UpdateGrowthBlueprintSectionParams = zod.object({
+  "id": zod.coerce.string(),
+  "sectionId": zod.coerce.string()
+})
+
+export const UpdateGrowthBlueprintSectionBody = zod.object({
+  "consultantContent": zod.string().nullable()
+})
+
+export const UpdateGrowthBlueprintSectionResponse = zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sectionKey": zod.string(),
+  "title": zod.string(),
+  "sectionOrder": zod.number(),
+  "generatedContent": zod.string().nullish(),
+  "consultantContent": zod.string().nullish(),
+  "finalContent": zod.string().nullish(),
+  "hasOverride": zod.boolean().optional(),
+  "sourceReferences": zod.object({
+
+}).optional(),
+  "generationStatus": zod.string().nullish(),
+  "isLocked": zod.boolean(),
+  "generatedAt": zod.coerce.date().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Remove consultant override and revert section to generated content
+ */
+export const ResetGrowthBlueprintSectionParams = zod.object({
+  "id": zod.coerce.string(),
+  "sectionId": zod.coerce.string()
+})
+
+export const ResetGrowthBlueprintSectionResponse = zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sectionKey": zod.string(),
+  "title": zod.string(),
+  "sectionOrder": zod.number(),
+  "generatedContent": zod.string().nullish(),
+  "consultantContent": zod.string().nullish(),
+  "finalContent": zod.string().nullish(),
+  "hasOverride": zod.boolean().optional(),
+  "sourceReferences": zod.object({
+
+}).optional(),
+  "generationStatus": zod.string().nullish(),
+  "isLocked": zod.boolean(),
+  "generatedAt": zod.coerce.date().nullish(),
+  "updatedBy": zod.string().nullish(),
+  "createdAt": zod.coerce.date(),
+  "updatedAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get ordered initiatives for a Growth Blueprint
+ */
+export const ListGrowthBlueprintInitiativesParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ListGrowthBlueprintInitiativesResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sourceRecommendationId": zod.string().nullish(),
+  "title": zod.string(),
+  "summary": zod.string().nullish(),
+  "domain": zod.string(),
+  "priorityClassification": zod.string(),
+  "effortLevel": zod.string().nullish(),
+  "roadmapPeriod": zod.string(),
+  "roadmapReason": zod.string().nullish(),
+  "overrideRoadmapPeriod": zod.boolean(),
+  "sequenceOrder": zod.number(),
+  "ownerPlaceholder": zod.string().nullish(),
+  "targetPeriodLabel": zod.string().nullish(),
+  "expectedBusinessImpact": zod.string().nullish(),
+  "consultantGuidance": zod.string().nullish(),
+  "status": zod.string().nullish(),
+  "updatedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Batch-update initiative sequence order
+ */
+export const ReorderGrowthBlueprintInitiativesParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const ReorderGrowthBlueprintInitiativesBody = zod.object({
+  "order": zod.array(zod.object({
+  "id": zod.string(),
+  "sequenceOrder": zod.number()
+}))
+})
+
+export const ReorderGrowthBlueprintInitiativesResponse = zod.object({
+  "data": zod.array(zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sourceRecommendationId": zod.string().nullish(),
+  "title": zod.string(),
+  "summary": zod.string().nullish(),
+  "domain": zod.string(),
+  "priorityClassification": zod.string(),
+  "effortLevel": zod.string().nullish(),
+  "roadmapPeriod": zod.string(),
+  "roadmapReason": zod.string().nullish(),
+  "overrideRoadmapPeriod": zod.boolean(),
+  "sequenceOrder": zod.number(),
+  "ownerPlaceholder": zod.string().nullish(),
+  "targetPeriodLabel": zod.string().nullish(),
+  "expectedBusinessImpact": zod.string().nullish(),
+  "consultantGuidance": zod.string().nullish(),
+  "status": zod.string().nullish(),
+  "updatedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+
+/**
+ * @summary Edit blueprint-specific initiative fields
+ */
+export const UpdateGrowthBlueprintInitiativeParams = zod.object({
+  "id": zod.coerce.string(),
+  "initiativeId": zod.coerce.string()
+})
+
+export const UpdateGrowthBlueprintInitiativeBody = zod.object({
+  "roadmapPeriod": zod.string().optional(),
+  "sequenceOrder": zod.number().optional(),
+  "ownerPlaceholder": zod.string().nullish(),
+  "targetPeriodLabel": zod.string().nullish(),
+  "consultantGuidance": zod.string().nullish(),
+  "status": zod.string().nullish()
+})
+
+export const UpdateGrowthBlueprintInitiativeResponse = zod.object({
+  "id": zod.string(),
+  "blueprintId": zod.string(),
+  "sourceRecommendationId": zod.string().nullish(),
+  "title": zod.string(),
+  "summary": zod.string().nullish(),
+  "domain": zod.string(),
+  "priorityClassification": zod.string(),
+  "effortLevel": zod.string().nullish(),
+  "roadmapPeriod": zod.string(),
+  "roadmapReason": zod.string().nullish(),
+  "overrideRoadmapPeriod": zod.boolean(),
+  "sequenceOrder": zod.number(),
+  "ownerPlaceholder": zod.string().nullish(),
+  "targetPeriodLabel": zod.string().nullish(),
+  "expectedBusinessImpact": zod.string().nullish(),
+  "consultantGuidance": zod.string().nullish(),
+  "status": zod.string().nullish(),
+  "updatedAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+})
 
 
 /**

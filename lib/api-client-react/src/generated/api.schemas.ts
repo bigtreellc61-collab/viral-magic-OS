@@ -1243,6 +1243,24 @@ export interface GrowthBlueprintDetail {
   title: string;
   status: GrowthBlueprintDetailStatus;
   version: number;
+  revisionNumber?: number;
+  /** @nullable */
+  versionLabel?: string | null;
+  isCurrent?: boolean;
+  /** @nullable */
+  previousVersionId?: string | null;
+  /** @nullable */
+  generationStatus?: string | null;
+  /** @nullable */
+  generationError?: string | null;
+  /** @nullable */
+  generatedAt?: string | null;
+  /** @nullable */
+  sourceAssessmentStatus?: string | null;
+  /** @nullable */
+  sourcePlanStatus?: string | null;
+  /** @nullable */
+  supersededAt?: string | null;
   /** @nullable */
   consultantNotes?: string | null;
   clientId: string;
@@ -1327,6 +1345,143 @@ export interface GrowthBlueprintDashboard {
   readyForReview: number;
   approved: number;
   recentBlueprints: GrowthBlueprintDashboardRecentBlueprintsItem[];
+}
+
+export type BlueprintSectionRecordSourceReferences = { [key: string]: unknown };
+
+export interface BlueprintSectionRecord {
+  id: string;
+  blueprintId: string;
+  sectionKey: string;
+  title: string;
+  sectionOrder: number;
+  /** @nullable */
+  generatedContent?: string | null;
+  /** @nullable */
+  consultantContent?: string | null;
+  /** @nullable */
+  finalContent?: string | null;
+  hasOverride?: boolean;
+  sourceReferences?: BlueprintSectionRecordSourceReferences;
+  /** @nullable */
+  generationStatus?: string | null;
+  isLocked: boolean;
+  /** @nullable */
+  generatedAt?: string | null;
+  /** @nullable */
+  updatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BlueprintSectionListResponse {
+  data: BlueprintSectionRecord[];
+}
+
+export interface UpdateBlueprintSectionBody {
+  /** @nullable */
+  consultantContent: string | null;
+}
+
+export interface BlueprintInitiativeRecord {
+  id: string;
+  blueprintId: string;
+  /** @nullable */
+  sourceRecommendationId?: string | null;
+  title: string;
+  /** @nullable */
+  summary?: string | null;
+  domain: string;
+  priorityClassification: string;
+  /** @nullable */
+  effortLevel?: string | null;
+  roadmapPeriod: string;
+  /** @nullable */
+  roadmapReason?: string | null;
+  overrideRoadmapPeriod: boolean;
+  sequenceOrder: number;
+  /** @nullable */
+  ownerPlaceholder?: string | null;
+  /** @nullable */
+  targetPeriodLabel?: string | null;
+  /** @nullable */
+  expectedBusinessImpact?: string | null;
+  /** @nullable */
+  consultantGuidance?: string | null;
+  /** @nullable */
+  status?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface BlueprintInitiativeListResponse {
+  data: BlueprintInitiativeRecord[];
+}
+
+export interface UpdateBlueprintInitiativeBody {
+  roadmapPeriod?: string;
+  sequenceOrder?: number;
+  /** @nullable */
+  ownerPlaceholder?: string | null;
+  /** @nullable */
+  targetPeriodLabel?: string | null;
+  /** @nullable */
+  consultantGuidance?: string | null;
+  /** @nullable */
+  status?: string | null;
+}
+
+export type ReorderInitiativesBodyOrderItem = {
+  id: string;
+  sequenceOrder: number;
+};
+
+export interface ReorderInitiativesBody {
+  order: ReorderInitiativesBodyOrderItem[];
+}
+
+export type BlueprintGenerationResultSummaryPeriodBreakdown = { [key: string]: unknown };
+
+export type BlueprintGenerationResultSummary = {
+  sectionCount: number;
+  initiativeCount: number;
+  periodBreakdown?: BlueprintGenerationResultSummaryPeriodBreakdown;
+};
+
+export interface BlueprintGenerationResult {
+  blueprint: GrowthBlueprintRecord;
+  summary: BlueprintGenerationResultSummary;
+}
+
+export interface ReviseGrowthBlueprintBody {
+  /** @nullable */
+  title?: string | null;
+}
+
+export interface GrowthBlueprintVersionRecord {
+  id: string;
+  title: string;
+  status: string;
+  version: number;
+  revisionNumber: number;
+  versionLabel: string;
+  isCurrent: boolean;
+  /** @nullable */
+  previousVersionId?: string | null;
+  /** @nullable */
+  generationStatus?: string | null;
+  /** @nullable */
+  approvedAt?: string | null;
+  /** @nullable */
+  supersededAt?: string | null;
+  /** @nullable */
+  archivedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GrowthBlueprintVersionListResponse {
+  data: GrowthBlueprintVersionRecord[];
 }
 
 export type GetSolutionRecommendationPlanActivityParams = {

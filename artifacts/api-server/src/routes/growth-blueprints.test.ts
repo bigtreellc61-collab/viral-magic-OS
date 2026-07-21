@@ -23,10 +23,15 @@ const mockDb = vi.hoisted(() => ({
 vi.mock("@workspace/db", () => ({
   db: mockDb,
   growthBlueprintsTable: {},
+  growthBlueprintSectionsTable: {},
+  growthBlueprintInitiativesTable: {},
   clientsTable: {},
   projectsTable: {},
   growthAssessmentsTable: {},
   solutionRecommendationPlansTable: {},
+  solutionRecommendationsTable: {},
+  solutionRecommendationActionsTable: {},
+  solutionRecommendationDependenciesTable: {},
   activityRecordsTable: {},
   usersTable: {},
   pool: { query: vi.fn() },
@@ -273,15 +278,35 @@ describe("POST /growth-blueprints/:id/start", () => {
 });
 
 // ─── Tests: POST /growth-blueprints/:id/ready ────────────────────────────────
+// The route requires: generationStatus === "complete", exec section present,
+// strategic_priorities section present, at least one initiative.
+
+const generatedInProgressBlueprint = {
+  ...baseBlueprint,
+  status: "in_progress",
+  generationStatus: "complete",
+};
+
+const execSection = { sectionKey: "executive_summary", generationStatus: "complete" };
+const strategicSection = { sectionKey: "strategic_priorities", generationStatus: "complete" };
+const mockInitiative = { id: "init-1" };
 
 describe("POST /growth-blueprints/:id/ready", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("200 — transitions in_progress → ready_for_review", async () => {
-    const ready = { ...baseBlueprint, status: "ready_for_review" };
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "in_progress" }]),
-    );
+  it("200 — transitions in_progress → ready_for_review when all validations pass", async () => {
+    const ready = { ...generatedInProgressBlueprint, status: "ready_for_review" };
+    // 1. Select blueprint
+    mockDb.select.mockReturnValueOnce(chainSelect([generatedInProgressBlueprint]));
+    // 2. Select exec section
+    mockDb.select.mockReturnValueOnce(chainSelect([execSection]));
+    // 3. Select strategic_priorities section
+    mockDb.select.mockReturnValueOnce(chainSelect([strategicSection]));
+    // 4. Select at least one initiative
+    mockDb.select.mockReturnValueOnce(chainSelect([mockInitiative]));
+    // 5. transitionBlueprint: select blueprint again
+    mockDb.select.mockReturnValueOnce(chainSelect([generatedInProgressBlueprint]));
+    // 6. transitionBlueprint: update
     mockDb.update.mockReturnValueOnce(chainUpdate([ready]));
 
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/ready");
@@ -289,8 +314,26 @@ describe("POST /growth-blueprints/:id/ready", () => {
     expect(res.body.status).toBe("ready_for_review");
   });
 
+  it("400 — rejects when blueprint has not been generated", async () => {
+    // Blueprint without generationStatus: "complete"
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "in_progress", generationStatus: null }]));
+
+    const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/ready");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toContain("generated");
+  });
+
   it("409 — rejects transition from draft (must go through in_progress first)", async () => {
-    mockDb.select.mockReturnValueOnce(chainSelect([baseBlueprint])); // draft
+    // transitionBlueprint selects the blueprint and rejects wrong status
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "draft", generationStatus: "complete" }]));
+    // exec section mock
+    mockDb.select.mockReturnValueOnce(chainSelect([execSection]));
+    // strategic section mock
+    mockDb.select.mockReturnValueOnce(chainSelect([strategicSection]));
+    // initiative mock
+    mockDb.select.mockReturnValueOnce(chainSelect([mockInitiative]));
+    // transitionBlueprint selects again → same blueprint
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "draft" }]));
 
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/ready");
     expect(res.status).toBe(409);
@@ -298,16 +341,30 @@ describe("POST /growth-blueprints/:id/ready", () => {
 });
 
 // ─── Tests: POST /growth-blueprints/:id/approve ──────────────────────────────
+// Approve does: select blueprint → update blueprint → update sections (lock) →
+// (optionally) update previous version when previousVersionId is set
+
+function chainUpdateNoReturn() {
+  return {
+    update: vi.fn().mockReturnThis(),
+    set: vi.fn().mockReturnThis(),
+    where: vi.fn().mockResolvedValue(undefined),
+  };
+}
 
 describe("POST /growth-blueprints/:id/approve", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("200 — transitions ready_for_review → approved", async () => {
-    const approved = { ...baseBlueprint, status: "approved", approvedAt: new Date().toISOString() };
+    const approved = { ...baseBlueprint, status: "approved", approvedAt: new Date().toISOString(), previousVersionId: null };
+    // 1. Select blueprint
     mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "ready_for_review" }]),
+      chainSelect([{ ...baseBlueprint, status: "ready_for_review", previousVersionId: null }]),
     );
+    // 2. Update blueprint to approved
     mockDb.update.mockReturnValueOnce(chainUpdate([approved]));
+    // 3. Update sections to locked (no returning needed)
+    mockDb.update.mockReturnValueOnce(chainUpdateNoReturn());
 
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/approve");
     expect(res.status).toBe(200);
@@ -337,12 +394,8 @@ describe("POST /growth-blueprints/:id/archive", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("200 — archives a draft blueprint", async () => {
-    const archived = {
-      ...baseBlueprint,
-      status: "archived",
-      archivedAt: new Date().toISOString(),
-    };
-    mockDb.select.mockReturnValueOnce(chainSelect([baseBlueprint]));
+    const archived = { ...baseBlueprint, status: "archived", isCurrent: false, archivedAt: new Date().toISOString() };
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, archivedAt: null }]));
     mockDb.update.mockReturnValueOnce(chainUpdate([archived]));
 
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/archive");
@@ -351,14 +404,8 @@ describe("POST /growth-blueprints/:id/archive", () => {
   });
 
   it("200 — archives an approved blueprint", async () => {
-    const archived = {
-      ...baseBlueprint,
-      status: "archived",
-      archivedAt: new Date().toISOString(),
-    };
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "approved" }]),
-    );
+    const archived = { ...baseBlueprint, status: "archived", isCurrent: false, archivedAt: new Date().toISOString() };
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "approved", archivedAt: null }]));
     mockDb.update.mockReturnValueOnce(chainUpdate([archived]));
 
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/archive");
@@ -387,44 +434,40 @@ describe("POST /growth-blueprints/:id/archive", () => {
 describe("Full lifecycle: draft → in_progress → ready_for_review → approved → archived", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("correctly progresses through all states without 409", async () => {
+  it("correctly progresses through all states without errors", async () => {
     const app = makeApp();
 
     // draft → in_progress
-    mockDb.select.mockReturnValueOnce(chainSelect([baseBlueprint]));
-    mockDb.update.mockReturnValueOnce(
-      chainUpdate([{ ...baseBlueprint, status: "in_progress" }]),
-    );
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, archivedAt: null }]));
+    mockDb.update.mockReturnValueOnce(chainUpdate([{ ...baseBlueprint, status: "in_progress" }]));
     const start = await supertest(app).post("/growth-blueprints/bp-1/start");
     expect(start.status).toBe(200);
 
     // in_progress → ready_for_review
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "in_progress" }]),
-    );
-    mockDb.update.mockReturnValueOnce(
-      chainUpdate([{ ...baseBlueprint, status: "ready_for_review" }]),
-    );
+    // Route: select blueprint, select exec section, select strategic section, select initiative, transitionBlueprint select, update
+    const ipBlueprint = { ...baseBlueprint, status: "in_progress", generationStatus: "complete", archivedAt: null };
+    mockDb.select.mockReturnValueOnce(chainSelect([ipBlueprint]));
+    mockDb.select.mockReturnValueOnce(chainSelect([execSection]));
+    mockDb.select.mockReturnValueOnce(chainSelect([strategicSection]));
+    mockDb.select.mockReturnValueOnce(chainSelect([mockInitiative]));
+    mockDb.select.mockReturnValueOnce(chainSelect([ipBlueprint]));
+    mockDb.update.mockReturnValueOnce(chainUpdate([{ ...ipBlueprint, status: "ready_for_review" }]));
     const ready = await supertest(app).post("/growth-blueprints/bp-1/ready");
     expect(ready.status).toBe(200);
 
     // ready_for_review → approved
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "ready_for_review" }]),
-    );
-    mockDb.update.mockReturnValueOnce(
-      chainUpdate([{ ...baseBlueprint, status: "approved", approvedAt: new Date() }]),
-    );
+    // Route: select blueprint, update blueprint, update sections
+    const rfr = { ...baseBlueprint, status: "ready_for_review", previousVersionId: null, archivedAt: null };
+    const approved = { ...baseBlueprint, status: "approved", approvedAt: new Date().toISOString(), previousVersionId: null };
+    mockDb.select.mockReturnValueOnce(chainSelect([rfr]));
+    mockDb.update.mockReturnValueOnce(chainUpdate([approved]));
+    mockDb.update.mockReturnValueOnce(chainUpdateNoReturn());
     const approve = await supertest(app).post("/growth-blueprints/bp-1/approve");
     expect(approve.status).toBe(200);
 
     // approved → archived
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "approved" }]),
-    );
-    mockDb.update.mockReturnValueOnce(
-      chainUpdate([{ ...baseBlueprint, status: "archived", archivedAt: new Date() }]),
-    );
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "approved", archivedAt: null }]));
+    mockDb.update.mockReturnValueOnce(chainUpdate([{ ...baseBlueprint, status: "archived", archivedAt: new Date().toISOString() }]));
     const archive = await supertest(app).post("/growth-blueprints/bp-1/archive");
     expect(archive.status).toBe(200);
   });
@@ -435,29 +478,28 @@ describe("Full lifecycle: draft → in_progress → ready_for_review → approve
 describe("Invalid lifecycle transitions", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("cannot skip draft → ready_for_review (must go through in_progress)", async () => {
-    mockDb.select.mockReturnValueOnce(chainSelect([baseBlueprint])); // draft
+  it("cannot skip draft → ready_for_review without generation (returns 400)", async () => {
+    // Blueprint is draft, generationStatus is null → 400 (not generated)
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "draft", generationStatus: null, archivedAt: null }]));
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/ready");
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(400);
   });
 
   it("cannot skip draft → approved", async () => {
-    mockDb.select.mockReturnValueOnce(chainSelect([baseBlueprint])); // draft
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, archivedAt: null }])); // draft
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/approve");
     expect(res.status).toBe(409);
   });
 
   it("cannot restart an in_progress blueprint (start expects draft)", async () => {
-    mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "in_progress" }]),
-    );
+    mockDb.select.mockReturnValueOnce(chainSelect([{ ...baseBlueprint, status: "in_progress", archivedAt: null }]));
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/start");
     expect(res.status).toBe(409);
   });
 
   it("cannot approve an archived blueprint", async () => {
     mockDb.select.mockReturnValueOnce(
-      chainSelect([{ ...baseBlueprint, status: "archived", archivedAt: new Date() }]),
+      chainSelect([{ ...baseBlueprint, status: "archived", archivedAt: new Date().toISOString() }]),
     );
     const res = await supertest(makeApp()).post("/growth-blueprints/bp-1/approve");
     expect(res.status).toBe(409);

@@ -10,3 +10,5 @@ export * from "./diagnostics";
 export * from "./growthAssessments";
 export * from "./solutionRecommendations";
 export * from "./growthBlueprints";
+export * from "./growthBlueprintSections";
+export * from "./growthBlueprintInitiatives";

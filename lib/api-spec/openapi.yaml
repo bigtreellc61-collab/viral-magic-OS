@@ -309,6 +309,278 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/GrowthBlueprintRecord"
                   - type: "null"
+  /growth-blueprints/{id}/generate:
+    post:
+      operationId: generateGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Assemble all sections and initiatives from source data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Generation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintGenerationResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/regenerate:
+    post:
+      operationId: regenerateGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Regenerate blueprint content, preserving consultant overrides
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Regeneration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintGenerationResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/revise:
+    post:
+      operationId: reviseGrowthBlueprint
+      tags: [growth-blueprints]
+      summary: Create a new draft version from an approved blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviseGrowthBlueprintBody"
+      responses:
+        "201":
+          description: New draft revision
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintRecord"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/versions:
+    get:
+      operationId: listGrowthBlueprintVersions
+      tags: [growth-blueprints]
+      summary: Get version history for a Growth Blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Version list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GrowthBlueprintVersionListResponse"
+  /growth-blueprints/{id}/sections:
+    get:
+      operationId: listGrowthBlueprintSections
+      tags: [growth-blueprints]
+      summary: Get ordered sections for a Growth Blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Section list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintSectionListResponse"
+  /growth-blueprints/{id}/sections/{sectionId}:
+    patch:
+      operationId: updateGrowthBlueprintSection
+      tags: [growth-blueprints]
+      summary: Edit consultant override content for a section
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: sectionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBlueprintSectionBody"
+      responses:
+        "200":
+          description: Updated section
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintSectionRecord"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/sections/{sectionId}/reset:
+    post:
+      operationId: resetGrowthBlueprintSection
+      tags: [growth-blueprints]
+      summary: Remove consultant override and revert section to generated content
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: sectionId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reset section
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintSectionRecord"
+        "409":
+          description: No override to reset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /growth-blueprints/{id}/initiatives:
+    get:
+      operationId: listGrowthBlueprintInitiatives
+      tags: [growth-blueprints]
+      summary: Get ordered initiatives for a Growth Blueprint
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Initiative list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintInitiativeListResponse"
+  /growth-blueprints/{id}/initiatives/reorder:
+    post:
+      operationId: reorderGrowthBlueprintInitiatives
+      tags: [growth-blueprints]
+      summary: Batch-update initiative sequence order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReorderInitiativesBody"
+      responses:
+        "200":
+          description: Updated initiative list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintInitiativeListResponse"
+  /growth-blueprints/{id}/initiatives/{initiativeId}:
+    patch:
+      operationId: updateGrowthBlueprintInitiative
+      tags: [growth-blueprints]
+      summary: Edit blueprint-specific initiative fields
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: initiativeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBlueprintInitiativeBody"
+      responses:
+        "200":
+          description: Updated initiative
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlueprintInitiativeRecord"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /solution-recommendations/generate:
     post:
       operationId: generateSolutionRecommendationPlan
@@ -4591,6 +4863,28 @@ components:
           enum: [draft, in_progress, ready_for_review, approved, archived]
         version:
           type: integer
+        revisionNumber:
+          type: integer
+        versionLabel:
+          type: ["string", "null"]
+        isCurrent:
+          type: boolean
+        previousVersionId:
+          type: ["string", "null"]
+        generationStatus:
+          type: ["string", "null"]
+        generationError:
+          type: ["string", "null"]
+        generatedAt:
+          type: ["string", "null"]
+          format: date-time
+        sourceAssessmentStatus:
+          type: ["string", "null"]
+        sourcePlanStatus:
+          type: ["string", "null"]
+        supersededAt:
+          type: ["string", "null"]
+          format: date-time
         consultantNotes:
           type: ["string", "null"]
         clientId:
@@ -4738,3 +5032,241 @@ components:
         - readyForReview
         - approved
         - recentBlueprints
+    BlueprintSectionRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        blueprintId:
+          type: string
+        sectionKey:
+          type: string
+        title:
+          type: string
+        sectionOrder:
+          type: integer
+        generatedContent:
+          type: ["string", "null"]
+        consultantContent:
+          type: ["string", "null"]
+        finalContent:
+          type: ["string", "null"]
+        hasOverride:
+          type: boolean
+        sourceReferences:
+          type: object
+        generationStatus:
+          type: ["string", "null"]
+        isLocked:
+          type: boolean
+        generatedAt:
+          type: ["string", "null"]
+          format: date-time
+        updatedBy:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - blueprintId
+        - sectionKey
+        - title
+        - sectionOrder
+        - isLocked
+        - createdAt
+        - updatedAt
+    BlueprintSectionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlueprintSectionRecord"
+      required:
+        - data
+    UpdateBlueprintSectionBody:
+      type: object
+      properties:
+        consultantContent:
+          type: ["string", "null"]
+      required:
+        - consultantContent
+    BlueprintInitiativeRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        blueprintId:
+          type: string
+        sourceRecommendationId:
+          type: ["string", "null"]
+        title:
+          type: string
+        summary:
+          type: ["string", "null"]
+        domain:
+          type: string
+        priorityClassification:
+          type: string
+        effortLevel:
+          type: ["string", "null"]
+        roadmapPeriod:
+          type: string
+        roadmapReason:
+          type: ["string", "null"]
+        overrideRoadmapPeriod:
+          type: boolean
+        sequenceOrder:
+          type: integer
+        ownerPlaceholder:
+          type: ["string", "null"]
+        targetPeriodLabel:
+          type: ["string", "null"]
+        expectedBusinessImpact:
+          type: ["string", "null"]
+        consultantGuidance:
+          type: ["string", "null"]
+        status:
+          type: ["string", "null"]
+        updatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - blueprintId
+        - title
+        - domain
+        - priorityClassification
+        - roadmapPeriod
+        - sequenceOrder
+        - overrideRoadmapPeriod
+        - createdAt
+        - updatedAt
+    BlueprintInitiativeListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlueprintInitiativeRecord"
+      required:
+        - data
+    UpdateBlueprintInitiativeBody:
+      type: object
+      properties:
+        roadmapPeriod:
+          type: string
+        sequenceOrder:
+          type: integer
+        ownerPlaceholder:
+          type: ["string", "null"]
+        targetPeriodLabel:
+          type: ["string", "null"]
+        consultantGuidance:
+          type: ["string", "null"]
+        status:
+          type: ["string", "null"]
+    ReorderInitiativesBody:
+      type: object
+      properties:
+        order:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              sequenceOrder:
+                type: integer
+            required:
+              - id
+              - sequenceOrder
+      required:
+        - order
+    BlueprintGenerationResult:
+      type: object
+      properties:
+        blueprint:
+          $ref: "#/components/schemas/GrowthBlueprintRecord"
+        summary:
+          type: object
+          properties:
+            sectionCount:
+              type: integer
+            initiativeCount:
+              type: integer
+            periodBreakdown:
+              type: object
+          required:
+            - sectionCount
+            - initiativeCount
+      required:
+        - blueprint
+        - summary
+    ReviseGrowthBlueprintBody:
+      type: object
+      properties:
+        title:
+          type: ["string", "null"]
+    GrowthBlueprintVersionRecord:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+        revisionNumber:
+          type: integer
+        versionLabel:
+          type: string
+        isCurrent:
+          type: boolean
+        previousVersionId:
+          type: ["string", "null"]
+        generationStatus:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+          format: date-time
+        supersededAt:
+          type: ["string", "null"]
+          format: date-time
+        archivedAt:
+          type: ["string", "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - status
+        - version
+        - revisionNumber
+        - versionLabel
+        - isCurrent
+        - createdAt
+        - updatedAt
+    GrowthBlueprintVersionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/GrowthBlueprintVersionRecord"
+      required:
+        - data

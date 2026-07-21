@@ -1,0 +1,759 @@
+VIRAL MAGIC OS
+
+PHASE 2B — GROWTH BLUEPRINT ASSEMBLY ENGINE
+
+CONTEXT
+
+Phase 2A — Growth Blueprint Foundation is complete.
+
+Existing Growth Blueprint capabilities now include:
+
+- growth_blueprints database table
+- relationships to:
+  - client
+  - project
+  - Business Growth Assessment
+  - Solution Recommendation Plan
+- lifecycle:
+  - draft
+  - in_progress
+  - ready_for_review
+  - approved
+  - archived
+- 11 backend endpoints
+- OpenAPI schemas and generated hooks
+- placeholder detail page
+- Overview and Approval tabs
+- consultant notes
+- lifecycle actions
+- 67 backend tests passing
+
+The Growth Blueprint is currently only a shell referencing existing assessment and recommendation data.
+
+OBJECTIVE
+
+Build Phase 2B as a deterministic Growth Blueprint Assembly Engine.
+
+The engine must transform approved assessment and recommendation data into a structured, editable, client-ready strategic blueprint.
+
+Do not use OpenAI, Claude, or any external AI API.
+
+Do not invent recommendations.
+
+Do not duplicate the Business Growth Assessment or Solution Recommendation Engine.
+
+The existing assessment and approved recommendation plan remain the source of truth.
+
+The Growth Blueprint should organize, summarize, sequence, and present existing information.
+
+ARCHITECTURAL RULES
+
+1. Reuse existing assessment and recommendation data wherever possible.
+
+2. Store only Blueprint-specific content, ordering, overrides, consultant additions, and snapshot data required for historical integrity.
+
+3. Do not copy entire source records unnecessarily.
+
+4. Approved blueprints must not silently change when their source assessment or recommendation plan later changes.
+
+5. Draft or in-progress blueprints may be regenerated deliberately.
+
+6. Approved blueprints must be preserved as historical versions.
+
+7. Do not rebuild Signal Hunter functionality.
+
+8. Do not build PDF, Word, PowerPoint, public sharing, or client portal features in Phase 2B.
+
+9. Do not begin Phase 2C or Phase 2D.
+
+FIRST: AUDIT PHASE 2A IMPLEMENTATION
+
+Before modifying code, inspect the actual Phase 2A implementation and confirm:
+
+- growth_blueprints schema
+- existing version field
+- uniqueness constraints
+- foreign-key behavior
+- lifecycle implementation
+- create endpoint requirements
+- approved-plan relationship
+- current detail response
+- frontend page structure
+- generated hook names
+- current tests
+- whether approved blueprints can currently be edited
+
+Use the actual codebase as the source of truth.
+
+If the Phase 2A implementation conflicts with this prompt, make the smallest safe adjustment and document it.
+
+PHASE 2B SCOPE
+
+Implement the following.
+
+==================================================
+1. BLUEPRINT VERSIONING AND SOURCE SNAPSHOT
+==================================================
+
+Formalize Blueprint versioning before adding generated content.
+
+Each Growth Blueprint must include or support:
+
+- version number
+- revision number if appropriate
+- parentBlueprintId or previousVersionId
+- isCurrent
+- source assessment ID
+- source recommendation plan ID
+- source assessment status
+- source recommendation-plan status
+- generatedAt
+- approvedAt
+- source snapshot metadata
+- supersededAt where applicable
+
+Recommended display format:
+
+- Version 1.0
+- Version 1.1
+- Version 2.0
+
+Version behavior:
+
+A. First Blueprint created from an approved recommendation plan:
+- version 1.0
+- draft
+- current version
+
+B. Regenerating a draft or in-progress Blueprint:
+- update the same Blueprint only when explicitly requested
+- preserve consultant-edited fields that are marked as overrides
+
+C. Revising an approved Blueprint:
+- do not overwrite it
+- create a new draft version
+- link it to the previous approved Blueprint
+- mark the prior version as superseded only when the new version is approved
+- preserve prior approved content
+
+D. Archived Blueprint:
+- remains read-only
+- cannot become current without creating a new version
+
+Do not overengineer semantic versioning.
+
+Use the smallest model that supports:
+
+- historical versions
+- current version
+- revisions after approval
+- traceability
+
+==================================================
+2. BLUEPRINT SECTIONS
+==================================================
+
+Create structured Blueprint sections.
+
+Minimum required sections:
+
+1. Executive Summary
+
+2. Current Business State
+
+3. Key Strengths
+
+4. Critical Vulnerabilities
+
+5. Primary Risks
+
+6. Immediate Quick Wins
+
+7. Strategic Priorities
+
+8. 30-Day Action Plan
+
+9. 60-Day Action Plan
+
+10. 90-Day Action Plan
+
+11. Longer-Term Roadmap
+
+12. Business Impact
+
+13. Success Metrics and KPIs
+
+14. Dependencies and Constraints
+
+15. Consultant Guidance
+
+16. Executive Decision Summary
+
+Each section should support:
+
+- section key
+- section title
+- section order
+- generated content
+- consultant-edited content
+- final displayed content
+- source references
+- generated timestamp
+- updated timestamp
+- generation status
+- locked or editable state where useful
+
+Use a normalized section table unless the existing architecture strongly favors a structured JSON field.
+
+Choose the approach that best supports:
+
+- editing individual sections
+- reordering
+- regeneration
+- historical versions
+- source traceability
+- future exports
+
+Document the decision.
+
+==================================================
+3. BLUEPRINT INITIATIVES
+==================================================
+
+Create a structured Blueprint initiative model for recommendations placed into the roadmap.
+
+Each initiative should support at minimum:
+
+- blueprintId
+- sourceRecommendationId
+- title
+- summary
+- domain
+- priority
+- phase or time horizon
+- sequence/order
+- owner or responsible role
+- target date or target period
+- expected business impact
+- effort
+- urgency
+- dependency summary
+- risk summary
+- success metrics
+- consultant guidance
+- status
+- source reference
+- consultant override fields
+- createdAt
+- updatedAt
+
+Do not duplicate every recommendation field blindly.
+
+Reference the source recommendation and store only Blueprint-specific sequencing, presentation, ownership, timing, and snapshot information required for approved-version integrity.
+
+==================================================
+4. DETERMINISTIC ASSEMBLY ENGINE
+==================================================
+
+Build a deterministic service that assembles the Growth Blueprint from:
+
+Business Growth Assessment:
+- overall score
+- health rating
+- domain scores
+- strengths
+- vulnerabilities
+- risks
+- quick wins
+- strategic priorities
+- growth opportunities
+- relevant assessment summary fields
+
+Approved Solution Recommendation Plan:
+- executive recommendation
+- recommendation records
+- recommendation priority
+- domain
+- action plans
+- dependencies
+- business impact
+- success metrics
+- consultant notes
+- approved status
+- ordering if present
+
+The engine must not create unsupported facts.
+
+It may:
+
+- organize
+- rank
+- group
+- summarize using deterministic templates
+- sequence recommendations
+- assign recommendations to roadmap periods
+- assemble source-backed narrative text
+
+It must not:
+
+- fabricate financial projections
+- invent client facts
+- create unsupported recommendations
+- infer named owners without consultant input
+- promise results
+- overwrite consultant edits without warning
+
+==================================================
+5. ROADMAP ASSIGNMENT RULES
+==================================================
+
+Create deterministic rules for assigning recommendations to:
+
+- 30 days
+- 60 days
+- 90 days
+- longer term
+
+Use existing fields where available:
+
+- priority
+- urgency
+- effort
+- dependencies
+- implementation sequence
+- business impact
+- recommendation order
+- quick-win designation
+- prerequisite relationships
+
+Suggested fallback logic:
+
+30 days:
+- critical or high priority
+- lower effort
+- immediate risk reduction
+- quick wins
+- prerequisites for later work
+
+60 days:
+- high or medium priority
+- moderate effort
+- depends on 30-day foundations
+- operational improvements
+
+90 days:
+- medium priority
+- larger implementation effort
+- requires prior dependencies
+- system-building initiatives
+
+Longer term:
+- lower urgency
+- high complexity
+- strategic expansion
+- optimization after foundational work
+
+Use actual existing enum values and data structures.
+
+Do not invent incompatible enums.
+
+Every roadmap assignment should include a machine-readable reason, such as:
+
+- high priority and low effort
+- required dependency
+- immediate risk mitigation
+- strategic but higher complexity
+
+==================================================
+6. SECTION ASSEMBLY RULES
+==================================================
+
+Use deterministic templates.
+
+Executive Summary:
+- overall health rating
+- assessment score
+- dominant strengths
+- highest vulnerabilities
+- top strategic priorities
+- number of approved initiatives
+- overall strategic direction from the approved plan
+
+Current Business State:
+- assessment findings and domain scores
+- weakest and strongest domains
+- primary constraints
+
+Key Strengths:
+- assessment strengths
+- strongest domain results
+- positive operating capabilities
+
+Critical Vulnerabilities:
+- assessment vulnerabilities
+- weak domains
+- material operating gaps
+
+Primary Risks:
+- assessment risks
+- recommendation risk notes
+- unresolved dependencies
+
+Immediate Quick Wins:
+- assessment quick wins
+- qualifying recommendations assigned to 30 days
+
+Strategic Priorities:
+- approved recommendations grouped and ranked
+- assessment strategic priorities
+
+30/60/90-Day Action Plans:
+- ordered Blueprint initiatives
+- actions
+- dependencies
+- success metrics
+- owner placeholders when no owner exists
+
+Longer-Term Roadmap:
+- deferred or high-complexity initiatives
+
+Business Impact:
+- use approved recommendation business-impact data
+- do not invent dollar values
+- clearly label qualitative versus quantified impact
+
+Success Metrics and KPIs:
+- consolidate source success metrics
+- preserve attribution to initiatives
+
+Dependencies and Constraints:
+- consolidate dependencies
+- display sequencing relationships
+- identify blockers without inventing them
+
+Consultant Guidance:
+- editable consultant-only or consultant-authored guidance
+- preserve existing consultant notes
+- do not expose internal-only notes as client-facing by default
+
+Executive Decision Summary:
+- list decisions leadership must approve, assign, fund, or prioritize
+- derive only from source recommendations and consultant inputs
+- no invented executive decisions
+
+==================================================
+7. CONTENT OVERRIDES AND REGENERATION
+==================================================
+
+Support generated content and consultant overrides.
+
+Required behavior:
+
+- generatedContent stores deterministic output
+- consultantContent or overrideContent stores manual edits
+- final content displays override when present, otherwise generated content
+- regeneration updates generated content only
+- regeneration must not erase consultant overrides
+- user can intentionally reset an override back to generated content
+- approved and archived Blueprint versions are read-only
+- a revision must be created to change approved content
+
+Implement only the smallest UI needed for this behavior.
+
+==================================================
+8. BACKEND ENDPOINTS
+==================================================
+
+Add only the endpoints required for Phase 2B.
+
+Suggested endpoints:
+
+POST /api/growth-blueprints/:id/generate
+- assembles all sections and initiatives
+- allowed only for draft or in_progress
+- validates approved source recommendation plan
+- returns generation summary
+
+POST /api/growth-blueprints/:id/regenerate
+- regenerates generated content
+- preserves overrides
+- draft or in_progress only
+
+POST /api/growth-blueprints/:id/revise
+- creates a new draft version from an approved Blueprint
+
+GET /api/growth-blueprints/:id/versions
+- version history
+
+GET /api/growth-blueprints/:id/sections
+- ordered sections
+
+PATCH /api/growth-blueprints/:id/sections/:sectionId
+- edit consultant override content or title where allowed
+
+POST /api/growth-blueprints/:id/sections/:sectionId/reset
+- remove override and return to generated content
+
+GET /api/growth-blueprints/:id/initiatives
+- ordered initiatives
+
+PATCH /api/growth-blueprints/:id/initiatives/:initiativeId
+- edit Blueprint-specific sequencing, timing, owner, target period, guidance, or override fields
+
+POST /api/growth-blueprints/:id/initiatives/reorder
+- update initiative order safely
+
+Use REST patterns already established in the project.
+
+Do not add endpoints that are not needed.
+
+Ensure all lifecycle and authorization checks match existing conventions.
+
+==================================================
+9. FRONTEND
+==================================================
+
+Expand the existing Growth Blueprint detail page.
+
+Required tabs:
+
+1. Executive
+2. Business State
+3. Strategic Priorities
+4. 30/60/90 Roadmap
+5. Business Impact
+6. KPIs
+7. Dependencies
+8. Consultant Guidance
+9. Approval
+10. Version History
+
+Use existing UI patterns from:
+
+- Growth Assessment
+- Solution Recommendation detail
+- Phase 1F lifecycle UI
+- current Growth Blueprint page
+
+Required frontend capabilities:
+
+- Generate Blueprint button
+- Regenerate Blueprint button for eligible statuses
+- Create Revision button for approved Blueprint
+- section navigation
+- display generated versus consultant-edited state
+- edit section override
+- reset override
+- edit initiative Blueprint-specific fields
+- move or reorder initiatives
+- change roadmap period when allowed
+- version history view
+- linked source navigation
+- loading, empty, error, and read-only states
+
+Do not build a presentation-style client report yet.
+
+Do not build charts unless existing components already make them trivial and directly useful.
+
+Do not redesign the application.
+
+==================================================
+10. BLUEPRINT LIST AND ENTRY POINTS
+==================================================
+
+Add practical entry points using existing architecture.
+
+At minimum:
+
+- Recommendation Plan detail:
+  - Create Growth Blueprint when approved and none exists
+  - Open Growth Blueprint when one exists
+
+- Growth Assessment detail:
+  - show linked Growth Blueprint where applicable
+
+- Client detail:
+  - list Growth Blueprints
+
+- Project detail:
+  - list Growth Blueprints
+
+- Dashboard or existing Growth Blueprint dashboard:
+  - show counts by lifecycle
+  - show recent Blueprints
+  - link to current version
+
+Do not create duplicate navigation destinations.
+
+==================================================
+11. VALIDATION RULES
+==================================================
+
+Generation requires:
+
+- linked client
+- linked project
+- linked Growth Assessment
+- linked approved Solution Recommendation Plan
+- at least one recommendation
+- required source data available
+
+Ready for Review should require:
+
+- Blueprint generated successfully
+- Executive Summary present
+- at least one Strategic Priority
+- at least one roadmap initiative
+- at least one success metric
+- no unresolved generation errors
+
+Approval should require:
+
+- Ready for Review status
+- all mandatory sections complete
+- current version
+- approval metadata
+- no source-link integrity errors
+
+Use clear 400, 404, 409, and authorization responses consistent with the current API.
+
+==================================================
+12. ACTIVITY HISTORY
+==================================================
+
+Use the existing activity logging system.
+
+Log:
+
+- Blueprint generated
+- Blueprint regenerated
+- section edited
+- section override reset
+- initiative updated
+- initiative reordered
+- roadmap period changed
+- revision created
+- ready for review
+- approved
+- superseded
+- archived
+
+Do not create a second activity-log system.
+
+==================================================
+13. TESTING
+==================================================
+
+Add comprehensive tests for:
+
+Assembly:
+- successful generation
+- missing assessment
+- unapproved recommendation plan
+- no recommendations
+- correct section creation
+- correct initiative creation
+- no duplicated initiatives
+- deterministic repeatability
+
+Roadmap rules:
+- quick win assignment
+- dependency-first assignment
+- effort and priority fallback
+- longer-term assignment
+- assignment-reason persistence
+
+Overrides:
+- section override saved
+- regeneration preserves override
+- reset returns to generated content
+
+Versioning:
+- initial version
+- revise approved Blueprint
+- prior approved version remains unchanged
+- new revision is draft
+- version history ordering
+- current version behavior
+- superseded behavior after approval
+
+Lifecycle:
+- generated Blueprint can progress
+- incomplete Blueprint cannot become ready
+- approved Blueprint is read-only
+- archived Blueprint is read-only
+
+Authorization and isolation:
+- users cannot access unauthorized client Blueprints
+- linked records must belong to the same authorized client/project context
+
+Regression:
+- all existing Phase 1A through Phase 2A tests
+- Business Growth Assessment
+- Solution Recommendation Engine
+- Growth Blueprint Phase 2A lifecycle
+- TypeScript
+- frontend production build
+- OpenAPI/codegen
+
+==================================================
+14. IMPLEMENTATION DISCIPLINE
+==================================================
+
+Before coding:
+
+1. Inspect current patterns.
+2. Produce a concise implementation plan.
+3. Identify files and migrations.
+4. Confirm no duplication of assessment or recommendation data.
+5. Then implement.
+
+Use small internal steps.
+
+Do not rewrite working Phase 1E, Phase 1F, or Phase 2A code unless required.
+
+Do not make unrelated cleanup changes.
+
+Do not add external dependencies unless clearly necessary.
+
+Do not add external APIs.
+
+Do not add Signal Hunter features.
+
+==================================================
+15. COMPLETION REPORT
+==================================================
+
+At completion, return:
+
+1. Executive summary
+2. Architecture decisions
+3. Versioning model
+4. Database changes
+5. Assembly rules
+6. Roadmap assignment rules
+7. Backend endpoints
+8. Frontend additions
+9. Entry-point integrations
+10. Activity logging
+11. Validation rules
+12. Files changed
+13. Migration status
+14. OpenAPI/codegen status
+15. Tests added
+16. All commands executed
+17. Exit codes
+18. Total passing tests
+19. Known limitations
+20. Deferred Phase 2C and Phase 2D items
+21. Confirmation that no AI API was added
+22. Confirmation that Signal Hunter functionality was not added
+23. Confirmation that approved Blueprint versions are preserved
+24. Final verdict:
+   - Phase 2B complete
+   - or Phase 2B incomplete with exact blockers
+
+STOP after Phase 2B.
+
+Do not begin Phase 2C.
+Wait for approval.

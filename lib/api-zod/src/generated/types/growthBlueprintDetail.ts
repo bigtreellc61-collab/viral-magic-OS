@@ -12,6 +12,24 @@ export interface GrowthBlueprintDetail {
   title: string;
   status: GrowthBlueprintDetailStatus;
   version: number;
+  revisionNumber?: number;
+  /** @nullable */
+  versionLabel?: string | null;
+  isCurrent?: boolean;
+  /** @nullable */
+  previousVersionId?: string | null;
+  /** @nullable */
+  generationStatus?: string | null;
+  /** @nullable */
+  generationError?: string | null;
+  /** @nullable */
+  generatedAt?: Date | null;
+  /** @nullable */
+  sourceAssessmentStatus?: string | null;
+  /** @nullable */
+  sourcePlanStatus?: string | null;
+  /** @nullable */
+  supersededAt?: Date | null;
   /** @nullable */
   consultantNotes?: string | null;
   clientId: string;
