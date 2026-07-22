@@ -1,0 +1,263 @@
+VIRAL MAGIC OS
+
+PHASE 2E — VERSION 1.0 STABILIZATION SPRINT
+
+OBJECTIVE
+
+Implement only the approved launch-readiness fixes identified in AUDIT_REPORT.md.
+
+This is a focused stabilization sprint.
+
+Do NOT add features.
+
+Do NOT redesign the application.
+
+Do NOT perform broad refactors.
+
+Do NOT fix unrelated cleanup items.
+
+Make the smallest safe changes necessary for Version 1.0 readiness.
+
+--------------------------------------------------
+
+APPROVED FIX 1 — H-1 CLIENT DUPLICATE CHECK CRASH
+
+File:
+
+artifacts/api-server/src/routes/clients.ts
+
+The duplicate-check route imports:
+
+CheckClientDuplicateBody
+
+but calls:
+
+ClientDuplicateCheckBody.parse(...)
+
+Correct the reference so the imported schema is used.
+
+Verify:
+
+POST /api/clients/check-duplicate no longer throws a ReferenceError.
+
+Add or update an automated test proving the endpoint does not return 500 because of the undefined variable.
+
+--------------------------------------------------
+
+APPROVED FIX 2 — H-2 NOT-FOUND RECOVERY SCREENS
+
+Update the client detail and Growth Blueprint detail not-found states.
+
+Replace bare red error text with a styled error card containing:
+
+• clear title
+• short explanation
+• link or button back to the relevant list page
+• optional dashboard link
+
+Do not redesign the entire page.
+
+Verify invalid client and Blueprint IDs do not strand the user.
+
+Also review other existing invalid-route screens for consistent recovery behavior.
+
+--------------------------------------------------
+
+APPROVED FIX 3 — M-1 DASHBOARD FOUNDATION ERROR HANDLING
+
+File:
+
+artifacts/api-server/src/routes/dashboard.ts
+
+Move fetchRecentActivity() inside the existing try/catch or otherwise ensure any failure is handled consistently.
+
+The endpoint must not crash because recent activity retrieval fails.
+
+Preserve the existing API response contract where possible.
+
+Add regression coverage if practical.
+
+--------------------------------------------------
+
+APPROVED FIX 4 — M-6 BLUEPRINT QUERY CLEANUP
+
+File:
+
+artifacts/api-server/src/routes/growth-blueprints.ts
+
+Remove the two dead .limit(0) placeholder queries.
+
+Replace the Promise.all(recIds.map(...)) N+1 recommendation action queries with one database query using inArray or the existing project-standard equivalent.
+
+Preserve ordering and output shape.
+
+Do not change Blueprint business logic.
+
+Add or update tests confirming generated Blueprint content remains unchanged.
+
+--------------------------------------------------
+
+APPROVED FIX 5 — M-3 ATOMIC DIAGNOSTIC SCORE SAVE
+
+Locate the diagnostic score upsert loop.
+
+Wrap all score upserts for one save operation inside:
+
+db.transaction(async (tx) => {
+  ...
+})
+
+Use the transaction object for every write inside the operation.
+
+If any score write fails, the entire save must roll back.
+
+Preserve current endpoint responses and validation rules.
+
+Add an automated test proving partial writes cannot succeed when one operation fails, using mocks and no live database.
+
+--------------------------------------------------
+
+APPROVED FIX 6 — L-1 PASSWORD AUTOCOMPLETE
+
+Files include:
+
+artifacts/command-center/src/pages/login.tsx
+artifacts/command-center/src/pages/settings.tsx
+
+Add appropriate attributes:
+
+• login email: autoComplete="email"
+• login password: autoComplete="current-password"
+• current password: autoComplete="current-password"
+• new password: autoComplete="new-password"
+• confirm new password: autoComplete="new-password"
+
+Do not change authentication behavior.
+
+Also change the login email placeholder from:
+
+admin@example.com
+
+to:
+
+your@email.com
+
+--------------------------------------------------
+
+APPROVED FIX 7 — L-3 ACTIVITY ERROR OBSERVABILITY
+
+File:
+
+artifacts/api-server/src/lib/activity.ts
+
+Ensure swallowed activity failures are logged with the project-standard logger.
+
+Use logger.warn or the established equivalent.
+
+Do not allow activity logging failures to break the primary business operation.
+
+Do not expose sensitive data in logs.
+
+--------------------------------------------------
+
+APPROVED FIX 8 — STALE VERSION COPY
+
+Update version-specific UI text that is no longer accurate.
+
+Remove or replace:
+
+• “Phase 1A deployment”
+• “PHASE 1E — GROWTH ASSESSMENT”
+
+Use version-neutral production wording such as:
+
+• Viral Magic OS
+• Consulting Command Center
+• Version 1.0
+
+Do not add a new settings system solely for this change.
+
+--------------------------------------------------
+
+APPROVED FIX 9 — LOCKED PLAN REGRESSION TESTS
+
+Add automated tests for:
+
+PATCH /api/solution-recommendations/:id
+
+and:
+
+PATCH /api/solution-recommendations/:id/recommendations/:recId
+
+Confirm:
+
+• Approved plan returns 409
+• Archived plan returns 409
+• Draft plan returns 200 with updated content
+• Reopened plan returns 200 with updated content
+
+This should be test coverage only unless a verified defect is discovered.
+
+--------------------------------------------------
+
+DO NOT IMPLEMENT IN THIS SPRINT
+
+Do not implement:
+
+• skeleton screens
+• broad dashboard fetch refactor
+• large-file splitting
+• client portal
+• AI features
+• billing
+• white labeling
+• team collaboration
+• broad type-cast cleanup
+• Account tab redesign
+• new database tables
+• new modules
+• Version 2.0 features
+
+--------------------------------------------------
+
+VALIDATION
+
+Run:
+
+pnpm --filter @workspace/api-server test
+
+Run frontend TypeScript checking.
+
+Run the full production build.
+
+Confirm:
+
+• all existing tests pass
+• all new tests pass
+• no live database is required for unit tests
+• production build succeeds
+• no unrelated files changed
+• no new console errors
+• no endpoint contract changes unless explicitly reported
+
+--------------------------------------------------
+
+RETURN
+
+1. Executive summary
+2. Files changed
+3. Fixes completed
+4. Tests added
+5. Before-and-after test totals
+6. TypeScript results
+7. Build results
+8. Any defects discovered
+9. Any approved item not completed and why
+10. Final recommendation:
+
+• Ready for Version 1.0
+• Ready after additional fixes
+• Not ready
+
+STOP after completing these approved stabilization fixes.
+Do not begin additional cleanup or new development.
