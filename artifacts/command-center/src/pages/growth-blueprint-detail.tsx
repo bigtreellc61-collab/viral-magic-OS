@@ -1470,16 +1470,27 @@ export function GrowthBlueprintDetailPage() {
   }
   if (error || !blueprint) {
     return (
-      <div className="p-6 text-center space-y-3">
-        <p className="text-red-400 text-sm">
-          {(error as any)?.data?.error ?? "Blueprint not found."}
-        </p>
-        <button
-          onClick={() => navigate("/")}
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
-        >
-          ← Back to dashboard
-        </button>
+      <div className="flex items-center justify-center h-[50vh] p-6 animate-in fade-in duration-300">
+        <div className="w-full max-w-md rounded-xl border border-border/50 bg-card/80 shadow-xl p-8 flex flex-col items-center text-center gap-4">
+          <h2 className="text-lg font-semibold text-foreground">Blueprint Not Found</h2>
+          <p className="text-sm text-muted-foreground max-w-[260px]">
+            {(error as any)?.data?.error ?? "This blueprint may have been deleted or the link is no longer valid."}
+          </p>
+          <div className="flex gap-3 flex-wrap justify-center">
+            <button
+              onClick={() => navigate(-1 as any)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              ← Go Back
+            </button>
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center rounded-md border border-border/50 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Dashboard
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

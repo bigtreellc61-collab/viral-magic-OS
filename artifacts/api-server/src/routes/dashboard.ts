@@ -8,13 +8,14 @@ import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
 
-const APP_VERSION = "1.0.0-rc";
-const PHASE = "Phase 1E — Growth Assessment";
+const APP_VERSION = "1.0.0";
+const PHASE = "Version 1.0";
 
 router.get("/dashboard/foundation", requireAuth, async (_req, res) => {
   let databaseConnected = false;
   let adminAccountExists = false;
   let settingsConfigured = false;
+  let recentActivity: Awaited<ReturnType<typeof fetchRecentActivity>> = [];
 
   try {
     const [{ count: userCount }] = await db
@@ -27,11 +28,11 @@ router.get("/dashboard/foundation", requireAuth, async (_req, res) => {
       .select({ count: sql<number>`count(*)` })
       .from(applicationSettingsTable);
     settingsConfigured = Number(settingsCount) > 0;
-  } catch (err) {
-    logger.error({ err }, "Foundation status database check failed");
-  }
 
-  const recentActivity = await fetchRecentActivity(10);
+    recentActivity = await fetchRecentActivity(10);
+  } catch (err) {
+    logger.error({ err }, "Foundation status check failed");
+  }
 
   const data = GetFoundationStatusResponse.parse({
     databaseConnected,

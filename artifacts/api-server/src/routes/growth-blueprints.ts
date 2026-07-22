@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { and, asc, desc, eq, isNull, ne } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, ne } from "drizzle-orm";
 import {
   db,
   growthBlueprintsTable,
@@ -355,55 +355,18 @@ router.post("/growth-blueprints/:id/generate", requireAuth, async (req, res) => 
       return void res.status(400).json({ error: "The linked plan has no recommendations. At least one recommendation is required to generate the blueprint." });
     }
 
-    const [actions, dependencies] = await Promise.all([
+    const recIds = recommendations.map((r) => r.id);
+    const [allActionsReal, dependencies] = await Promise.all([
       db
         .select()
         .from(solutionRecommendationActionsTable)
-        .where(
-          eq(
-            solutionRecommendationActionsTable.recommendationId,
-            // fetch actions for all recs in this plan
-            // use a subquery via inArray approach — simplest: fetch all and filter in JS
-            recommendations[0].id,
-          ),
-        )
-        .limit(0), // placeholder — we fetch all below
+        .where(inArray(solutionRecommendationActionsTable.recommendationId, recIds))
+        .orderBy(asc(solutionRecommendationActionsTable.sortOrder)),
       db
         .select()
         .from(solutionRecommendationDependenciesTable)
         .where(eq(solutionRecommendationDependenciesTable.planId, plan.id)),
     ]);
-
-    // Fetch all actions for all recommendations in this plan
-    const allActions = await db
-      .select()
-      .from(solutionRecommendationActionsTable)
-      .where(
-        eq(
-          solutionRecommendationActionsTable.recommendationId,
-          // We need all actions; drizzle inArray requires the list
-          // Workaround: fetch via a join approach or collect IDs
-          recommendations[0].id, // placeholder
-        ),
-      )
-      .limit(0);
-
-    // Direct query using raw IN list
-    const recIds = recommendations.map((r) => r.id);
-    let allActionsReal: typeof allActions = [];
-    if (recIds.length > 0) {
-      // Use separate queries per rec (max 5 recs per the engine)
-      const actionResults = await Promise.all(
-        recIds.map((rid) =>
-          db
-            .select()
-            .from(solutionRecommendationActionsTable)
-            .where(eq(solutionRecommendationActionsTable.recommendationId, rid))
-            .orderBy(asc(solutionRecommendationActionsTable.sortOrder)),
-        ),
-      );
-      allActionsReal = actionResults.flat();
-    }
 
     // Mark generation pending
     await db
@@ -599,22 +562,17 @@ router.post("/growth-blueprints/:id/regenerate", requireAuth, async (req, res) =
     }
 
     const recIds = recommendations.map((r) => r.id);
-    const [allActionsResult, dependencies] = await Promise.all([
-      Promise.all(
-        recIds.map((rid) =>
-          db
-            .select()
-            .from(solutionRecommendationActionsTable)
-            .where(eq(solutionRecommendationActionsTable.recommendationId, rid))
-            .orderBy(asc(solutionRecommendationActionsTable.sortOrder)),
-        ),
-      ),
+    const [allActions, dependencies] = await Promise.all([
+      db
+        .select()
+        .from(solutionRecommendationActionsTable)
+        .where(inArray(solutionRecommendationActionsTable.recommendationId, recIds))
+        .orderBy(asc(solutionRecommendationActionsTable.sortOrder)),
       db
         .select()
         .from(solutionRecommendationDependenciesTable)
         .where(eq(solutionRecommendationDependenciesTable.planId, plan.id)),
     ]);
-    const allActions = allActionsResult.flat();
 
     let result;
     try {

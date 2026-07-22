@@ -159,7 +159,7 @@ router.get("/clients", requireAuth, async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 router.post("/clients/check-duplicate", requireAuth, async (req, res) => {
   try {
-    const body = ClientDuplicateCheckBody.parse(req.body);
+    const body = CheckClientDuplicateBody.parse(req.body);
     const { email, companyName } = body;
 
     if (!email && !companyName) {

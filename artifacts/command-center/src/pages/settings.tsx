@@ -420,14 +420,14 @@ export function SettingsPage({ user }: { user: AuthUser }) {
                   <FormField control={passwordForm.control} name="currentPassword" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Current Password</FormLabel>
-                      <FormControl><Input type="password" {...field} /></FormControl>
+                      <FormControl><Input type="password" autoComplete="current-password" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={passwordForm.control} name="newPassword" render={({ field }) => (
                     <FormItem>
                       <FormLabel>New Password</FormLabel>
-                      <FormControl><Input type="password" {...field} /></FormControl>
+                      <FormControl><Input type="password" autoComplete="new-password" {...field} /></FormControl>
                       <FormDescription>Must be at least 10 characters long.</FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -435,7 +435,7 @@ export function SettingsPage({ user }: { user: AuthUser }) {
                   <FormField control={passwordForm.control} name="confirmPassword" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Confirm New Password</FormLabel>
-                      <FormControl><Input type="password" {...field} /></FormControl>
+                      <FormControl><Input type="password" autoComplete="new-password" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />

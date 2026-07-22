@@ -435,56 +435,58 @@ router.post("/diagnostics/:diagnosticId/save-draft", requireAuth, async (req, re
       }
     }
 
-    // Upsert scores
-    for (const score of scores) {
-      const existing = await db.select().from(diagnosticScoresTable)
-        .where(and(eq(diagnosticScoresTable.diagnosticVersionId, version.id), eq(diagnosticScoresTable.categoryKey, score.categoryKey)))
-        .limit(1);
+    // Upsert scores atomically — if any write fails the entire save rolls back
+    await db.transaction(async (tx) => {
+      for (const score of scores) {
+        const existing = await tx.select().from(diagnosticScoresTable)
+          .where(and(eq(diagnosticScoresTable.diagnosticVersionId, version.id), eq(diagnosticScoresTable.categoryKey, score.categoryKey)))
+          .limit(1);
 
-      const cp = score.currentPerformance != null ? Number(score.currentPerformance) : null;
-      const bi = score.businessImpact != null ? Number(score.businessImpact) : null;
-      const ur = score.urgency != null ? Number(score.urgency) : null;
+        const cp = score.currentPerformance != null ? Number(score.currentPerformance) : null;
+        const bi = score.businessImpact != null ? Number(score.businessImpact) : null;
+        const ur = score.urgency != null ? Number(score.urgency) : null;
 
-      let performanceGap: number | null = null;
-      let priorityScore: number | null = null;
-      let severity: string | null = null;
+        let performanceGap: number | null = null;
+        let priorityScore: number | null = null;
+        let severity: string | null = null;
 
-      if (cp != null && bi != null && ur != null) {
-        const calc = calcCategory({ currentPerformance: cp, businessImpact: bi, urgency: ur });
-        performanceGap = calc.performanceGap;
-        priorityScore = calc.priorityScore;
-        severity = calc.severity;
+        if (cp != null && bi != null && ur != null) {
+          const calc = calcCategory({ currentPerformance: cp, businessImpact: bi, urgency: ur });
+          performanceGap = calc.performanceGap;
+          priorityScore = calc.priorityScore;
+          severity = calc.severity;
+        }
+
+        const scoreData: any = {
+          categoryKey: score.categoryKey,
+          categoryLabel: score.categoryLabel ?? score.categoryKey,
+          categoryDescription: score.categoryDescription ?? null,
+          displayOrder: score.displayOrder ?? 0,
+          currentPerformance: cp?.toString() ?? null,
+          businessImpact: bi?.toString() ?? null,
+          urgency: ur?.toString() ?? null,
+          performanceGap: performanceGap?.toString() ?? null,
+          priorityScore: priorityScore?.toString() ?? null,
+          severity,
+          evidence: score.evidence ?? null,
+          observations: score.observations ?? null,
+          notes: score.notes ?? null,
+          recommendedAction: score.recommendedAction ?? null,
+          updatedAt: new Date(),
+        };
+
+        if (existing[0]) {
+          await tx.update(diagnosticScoresTable).set(scoreData).where(eq(diagnosticScoresTable.id, existing[0].id));
+        } else {
+          await tx.insert(diagnosticScoresTable).values({ diagnosticVersionId: version.id, ...scoreData });
+        }
       }
 
-      const scoreData: any = {
-        categoryKey: score.categoryKey,
-        categoryLabel: score.categoryLabel ?? score.categoryKey,
-        categoryDescription: score.categoryDescription ?? null,
-        displayOrder: score.displayOrder ?? 0,
-        currentPerformance: cp?.toString() ?? null,
-        businessImpact: bi?.toString() ?? null,
-        urgency: ur?.toString() ?? null,
-        performanceGap: performanceGap?.toString() ?? null,
-        priorityScore: priorityScore?.toString() ?? null,
-        severity,
-        evidence: score.evidence ?? null,
-        observations: score.observations ?? null,
-        notes: score.notes ?? null,
-        recommendedAction: score.recommendedAction ?? null,
-        updatedAt: new Date(),
-      };
-
-      if (existing[0]) {
-        await db.update(diagnosticScoresTable).set(scoreData).where(eq(diagnosticScoresTable.id, existing[0].id));
-      } else {
-        await db.insert(diagnosticScoresTable).values({ diagnosticVersionId: version.id, ...scoreData });
+      // Update status to in_progress if draft (inside transaction so it rolls back with scores)
+      if (diagnostic.status === "draft") {
+        await tx.update(diagnosticsTable).set({ status: "in_progress", updatedAt: new Date(), updatedBy: userId }).where(eq(diagnosticsTable.id, diagnosticId));
       }
-    }
-
-    // Update status to in_progress if draft
-    if (diagnostic.status === "draft") {
-      await db.update(diagnosticsTable).set({ status: "in_progress", updatedAt: new Date(), updatedBy: userId }).where(eq(diagnosticsTable.id, diagnosticId));
-    }
+    });
 
     await logActivity({ activityType: "DIAGNOSTIC.DRAFT_SAVED", description: `Draft saved for "${diagnostic.diagnosticName}"`, actorUserId: userId, entityType: "diagnostic", entityId: diagnosticId, metadata: { versionId: version.id } });
 

@@ -171,7 +171,28 @@ export function ClientDetailPage({ clientId }: ClientDetailPageProps) {
   };
 
   if (isLoading) return <div className="flex items-center justify-center h-[50vh]"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  if (error || !client) return <div className="p-6 text-destructive text-sm">Client not found.</div>;
+  if (error || !client) return (
+    <div className="flex items-center justify-center h-[50vh] p-6 animate-in fade-in duration-300">
+      <Card className="w-full max-w-md border-border/50 bg-card/80 shadow-xl">
+        <CardContent className="pt-8 pb-8 flex flex-col items-center text-center gap-4">
+          <h2 className="text-lg font-semibold text-foreground">Client Not Found</h2>
+          <p className="text-sm text-muted-foreground max-w-[260px]">
+            This client may have been deleted or the link is no longer valid.
+          </p>
+          <div className="flex gap-3 flex-wrap justify-center">
+            <Link href="/clients">
+              <Button variant="default" size="sm">
+                <ArrowLeft className="h-4 w-4 mr-1" /> Back to Clients
+              </Button>
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" size="sm">Dashboard</Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
   const displayName = getClientDisplayName(client);
   const isArchived = Boolean(client.archivedAt);

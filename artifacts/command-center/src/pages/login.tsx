@@ -83,7 +83,7 @@ export function LoginPage() {
                     <FormItem>
                       <FormLabel className="text-muted-foreground">Email Address</FormLabel>
                       <FormControl>
-                        <Input className="bg-background/50 focus-visible:ring-primary/50" type="email" placeholder="admin@example.com" {...field} />
+                        <Input className="bg-background/50 focus-visible:ring-primary/50" type="email" autoComplete="email" placeholder="your@email.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -96,7 +96,7 @@ export function LoginPage() {
                     <FormItem>
                       <FormLabel className="text-muted-foreground">Password</FormLabel>
                       <FormControl>
-                        <Input className="bg-background/50 focus-visible:ring-primary/50" type="password" placeholder="••••••••" {...field} />
+                        <Input className="bg-background/50 focus-visible:ring-primary/50" type="password" autoComplete="current-password" placeholder="••••••••" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

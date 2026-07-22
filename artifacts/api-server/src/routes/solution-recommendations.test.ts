@@ -1144,3 +1144,154 @@ describe("Full recommendation lifecycle (sequential transitions)", () => {
     expect(res.body.error).toBeDefined();
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /api/solution-recommendations/:id  (plan-level field edits)
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("PATCH /api/solution-recommendations/:id", () => {
+  it("allows editing a draft plan (200 with updated content)", async () => {
+    const plan = makePlan("draft");
+    const updated = makePlan("draft", { executiveRecommendation: "Updated recommendation" });
+    mockDb.select.mockReturnValue(makeChain([plan]));
+    mockDb.update.mockReturnValue(makeChain([updated]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001")
+      .send({ executiveRecommendation: "Updated recommendation" })
+      .expect(200);
+
+    expect(res.body.status).toBe("draft");
+  });
+
+  it("allows editing a reopened plan (200 with updated content)", async () => {
+    const plan = makePlan("reopened");
+    const updated = makePlan("reopened", { executiveRecommendation: "Revised recommendation" });
+    mockDb.select.mockReturnValue(makeChain([plan]));
+    mockDb.update.mockReturnValue(makeChain([updated]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001")
+      .send({ executiveRecommendation: "Revised recommendation" })
+      .expect(200);
+
+    expect(res.body.status).toBe("reopened");
+  });
+
+  it("returns 409 when editing an approved plan", async () => {
+    mockDb.select.mockReturnValue(makeChain([makePlan("approved")]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001")
+      .send({ executiveRecommendation: "Should be blocked" })
+      .expect(409);
+
+    expect(res.body.error).toMatch(/approved/i);
+  });
+
+  it("returns 409 when editing an archived plan", async () => {
+    mockDb.select.mockReturnValue(
+      makeChain([makePlan("archived", { archivedAt: new Date().toISOString() })]),
+    );
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001")
+      .send({ executiveRecommendation: "Should be blocked" })
+      .expect(409);
+
+    expect(res.body.error).toBeDefined();
+  });
+
+  it("returns 404 when the plan does not exist", async () => {
+    mockDb.select.mockReturnValue(makeChain([]));
+
+    await supertest(app)
+      .patch("/api/solution-recommendations/plan-001")
+      .send({ executiveRecommendation: "No such plan" })
+      .expect(404);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH /api/solution-recommendations/:id/recommendations/:recId
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("PATCH /api/solution-recommendations/:id/recommendations/:recId", () => {
+  it("allows editing a recommendation on a draft plan (200)", async () => {
+    const plan = makePlan("draft");
+    const rec = makeRec({ adminNotes: null });
+    const updatedRec = makeRec({ adminNotes: "Prioritise this quarter" });
+    mockDb.select
+      .mockReturnValueOnce(makeChain([plan]))
+      .mockReturnValueOnce(makeChain([rec]));
+    mockDb.update.mockReturnValue(makeChain([updatedRec]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-001")
+      .send({ adminNotes: "Prioritise this quarter" })
+      .expect(200);
+
+    expect(res.body.adminNotes).toBe("Prioritise this quarter");
+  });
+
+  it("allows editing a recommendation on a reopened plan (200)", async () => {
+    const plan = makePlan("reopened");
+    const rec = makeRec();
+    const updatedRec = makeRec({ adminNotes: "Deprioritised" });
+    mockDb.select
+      .mockReturnValueOnce(makeChain([plan]))
+      .mockReturnValueOnce(makeChain([rec]));
+    mockDb.update.mockReturnValue(makeChain([updatedRec]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-001")
+      .send({ adminNotes: "Deprioritised" })
+      .expect(200);
+
+    expect(res.body.adminNotes).toBe("Deprioritised");
+  });
+
+  it("returns 409 when the parent plan is approved", async () => {
+    mockDb.select.mockReturnValue(makeChain([makePlan("approved")]));
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-001")
+      .send({ adminNotes: "Should be blocked" })
+      .expect(409);
+
+    expect(res.body.error).toMatch(/approved/i);
+  });
+
+  it("returns 409 when the parent plan is archived", async () => {
+    mockDb.select.mockReturnValue(
+      makeChain([makePlan("archived", { archivedAt: new Date().toISOString() })]),
+    );
+
+    const res = await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-001")
+      .send({ adminNotes: "Should be blocked" })
+      .expect(409);
+
+    expect(res.body.error).toBeDefined();
+  });
+
+  it("returns 404 when the plan does not exist", async () => {
+    mockDb.select.mockReturnValue(makeChain([]));
+
+    await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-001")
+      .send({ adminNotes: "No such plan" })
+      .expect(404);
+  });
+
+  it("returns 404 when the recommendation does not belong to the plan", async () => {
+    mockDb.select
+      .mockReturnValueOnce(makeChain([makePlan("draft")]))
+      .mockReturnValueOnce(makeChain([])); // rec not found
+
+    await supertest(app)
+      .patch("/api/solution-recommendations/plan-001/recommendations/rec-999")
+      .send({ adminNotes: "Wrong plan" })
+      .expect(404);
+  });
+});

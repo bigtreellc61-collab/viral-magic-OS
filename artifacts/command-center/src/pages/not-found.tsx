@@ -15,7 +15,7 @@ export default function NotFound() {
             System Route Not Found
           </h1>
           <p className="text-sm text-muted-foreground mb-8 max-w-[280px]">
-            The requested module does not exist in the current Phase 1A deployment.
+            The requested page does not exist in Viral Magic OS.
           </p>
           <Link href="/">
             <Button variant="default" className="w-full sm:w-auto px-8">Return to Dashboard</Button>
