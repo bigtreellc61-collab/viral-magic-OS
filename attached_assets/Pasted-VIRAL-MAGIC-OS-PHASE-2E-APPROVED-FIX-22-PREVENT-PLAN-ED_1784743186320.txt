@@ -1,0 +1,141 @@
+VIRAL MAGIC OS
+
+PHASE 2E — APPROVED FIX #22
+
+PREVENT PLAN EDITS FROM SILENTLY SUCCEEDING ON LOCKED PLANS
+
+OBJECTIVE
+
+Add automated regression tests for the existing edit-lock rules on Solution Recommendation Plans.
+
+This task is test coverage only unless the tests expose a real defect.
+
+Do NOT redesign the lifecycle.
+
+Do NOT change endpoint contracts unless a verified bug requires it.
+
+Do NOT add new features.
+
+--------------------------------------------------
+
+EXPECTED BUSINESS RULES
+
+Editable statuses:
+
+• Draft
+• Reopened
+
+Locked statuses:
+
+• Approved
+• Archived
+
+For locked plans, edit attempts must return HTTP 409.
+
+--------------------------------------------------
+
+TEST THE PLAN PATCH ENDPOINT
+
+Endpoint:
+
+PATCH /api/solution-recommendations/:id
+
+Add tests confirming:
+
+1. Approved plan returns 409.
+2. Archived plan returns 409.
+3. Draft plan returns 200 and includes the updated field.
+4. Reopened plan returns 200 and includes the updated field.
+
+Use representative editable fields already supported by the route.
+
+--------------------------------------------------
+
+TEST THE RECOMMENDATION PATCH ENDPOINT
+
+Endpoint:
+
+PATCH /api/solution-recommendations/:id/recommendations/:recId
+
+Add tests confirming:
+
+1. Approved parent plan returns 409.
+2. Archived parent plan returns 409.
+3. Draft parent plan returns 200 and includes the updated recommendation field.
+4. Reopened parent plan returns 200 and includes the updated recommendation field.
+
+Use an existing supported recommendation field, such as consultant notes, where appropriate.
+
+--------------------------------------------------
+
+TEST REQUIREMENTS
+
+Extend:
+
+artifacts/api-server/src/routes/solution-recommendations.test.ts
+
+Review the existing route handlers and mock helpers before editing.
+
+Relevant implementation:
+
+artifacts/api-server/src/routes/solution-recommendations.ts
+
+Plan PATCH handler:
+approximately lines 405–452
+
+Recommendation PATCH handler:
+approximately lines 459–518
+
+Tests must run without a live database.
+
+Reuse existing mocks and test patterns.
+
+Avoid duplicate setup when a helper can cleanly cover multiple lifecycle states.
+
+--------------------------------------------------
+
+DEFECT HANDLING
+
+If all new tests pass against the current implementation:
+
+• Do not modify production route code.
+• Report that this was a coverage gap only.
+
+If a test reveals that an approved or archived plan can be edited:
+
+• Make the smallest possible route fix.
+• Preserve existing response contracts.
+• Add the regression test proving the fix.
+• Clearly report the production code change.
+
+--------------------------------------------------
+
+VALIDATION
+
+Run:
+
+pnpm --filter @workspace/api-server test
+
+Also run the relevant test file directly if supported.
+
+Confirm:
+
+• all existing tests pass
+• all new tests pass
+• no live database is required
+• no unrelated files were changed
+
+--------------------------------------------------
+
+RETURN
+
+1. Files changed
+2. Tests added
+3. Status scenarios covered
+4. Whether production code changed
+5. Test command
+6. Test totals
+7. Exit code
+8. Final confirmation
+
+STOP after completing this approved fix.
