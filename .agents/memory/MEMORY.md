@@ -7,3 +7,4 @@
 - [Dashboard diagnostics API shape](dashboard-diag-api-shape.md) — diagData fields are top-level (total, criticalBottlenecks, awaitingReview…), NOT nested under .metrics; historical code used .metrics which was wrong.
 - [Orval 8.x zod.looseObject Zod v3 incompatibility](orval-zod-looseobject.md) — orval 8.21+ emits zod.looseObject() for bare type:object; Zod v3 crashes. Run sed patch after every orval codegen.
 - [Phase completion milestones](phase-completion.md) — phases 1A–1F-B complete and verified; 1F-B fix was a dist rebuild, not source edits.
+- [Document generation library esbuild externals](doc-gen-esbuild-externals.md) — pdfmake, docx, pptxgenjs must be externalized in build.mjs; vi.hoisted() required for mocks referenced in vi.mock() factories.

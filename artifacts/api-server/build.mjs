@@ -103,6 +103,11 @@ async function buildAll() {
       // Reads a sibling table.sql file via path traversal at runtime; must
       // stay resolvable from node_modules rather than bundled.
       "connect-pg-simple",
+      // Document generation libraries — externalized to avoid bundling issues
+      // with CJS interop and internal file resolution.
+      "pdfmake",
+      "docx",
+      "pptxgenjs",
     ],
     sourcemap: "linked",
     plugins: [

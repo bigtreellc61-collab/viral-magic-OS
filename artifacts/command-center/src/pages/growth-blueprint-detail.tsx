@@ -49,6 +49,7 @@ import {
   Clock,
   Printer,
   Activity,
+  Download,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -958,6 +959,7 @@ export function GrowthBlueprintDetailPage() {
 
   const [activeSection, setActiveSection] = useState("exec");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState<"pdf" | "docx" | "pptx" | null>(null);
   const [confirmAction, setConfirmAction] = useState<
     | "start"
     | "ready"
@@ -1131,6 +1133,46 @@ export function GrowthBlueprintDetailPage() {
     if (action === "regenerate") regenerateBp.mutate({ id });
     if (action === "revise") reviseBp.mutate({ id, data: {} });
   }, [confirmAction, id]);
+
+  // ── Export handler ────────────────────────────────────────────
+
+  const handleExport = useCallback(
+    async (format: "pdf" | "docx" | "pptx") => {
+      if (!id || exportingFormat) return;
+      setExportingFormat(format);
+      try {
+        const res = await fetch(`/api/growth-blueprints/${id}/export/${format}`, {
+          credentials: "include",
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          toast({
+            title: "Export failed",
+            description: (body as any).error ?? `Could not export as ${format.toUpperCase()}.`,
+            variant: "destructive",
+          });
+          return;
+        }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        const disposition = res.headers.get("Content-Disposition") ?? "";
+        const match = disposition.match(/filename="([^"]+)"/);
+        a.href = url;
+        a.download = match?.[1] ?? `blueprint.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast({ title: `Exported as ${format.toUpperCase()}` });
+      } catch {
+        toast({ title: "Export failed", description: "Network error. Please try again.", variant: "destructive" });
+      } finally {
+        setExportingFormat(null);
+      }
+    },
+    [id, exportingFormat, toast],
+  );
 
   // ── Section helpers ───────────────────────────────────────────
 
@@ -1410,6 +1452,53 @@ export function GrowthBlueprintDetailPage() {
               Archive
             </button>
           )}
+          {/* Export buttons — approved / archived only */}
+          {(blueprint?.status === "approved" || blueprint?.status === "archived") &&
+            blueprint?.generationStatus === "complete" && (
+              <>
+                <div className="h-4 w-px bg-slate-700/50 mx-0.5" />
+                <button
+                  onClick={() => handleExport("pdf")}
+                  disabled={!!exportingFormat}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 border border-slate-700/60 hover:border-slate-600 rounded-md transition-colors disabled:opacity-50"
+                  title="Export as PDF"
+                >
+                  {exportingFormat === "pdf" ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                  PDF
+                </button>
+                <button
+                  onClick={() => handleExport("docx")}
+                  disabled={!!exportingFormat}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 border border-slate-700/60 hover:border-slate-600 rounded-md transition-colors disabled:opacity-50"
+                  title="Export as Word document"
+                >
+                  {exportingFormat === "docx" ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                  Word
+                </button>
+                <button
+                  onClick={() => handleExport("pptx")}
+                  disabled={!!exportingFormat}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-slate-200 border border-slate-700/60 hover:border-slate-600 rounded-md transition-colors disabled:opacity-50"
+                  title="Export as PowerPoint presentation"
+                >
+                  {exportingFormat === "pptx" ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
+                  Slides
+                </button>
+              </>
+            )}
+
           <button
             onClick={() => window.print()}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-500 hover:text-slate-300 border border-slate-800 hover:border-slate-700 rounded-md transition-colors"

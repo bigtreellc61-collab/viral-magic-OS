@@ -13,6 +13,7 @@ import solutionRecommendationsRouter from "./solution-recommendations";
 import growthBlueprintsRouter from "./growth-blueprints";
 import blueprintSectionsRouter from "./blueprint-sections";
 import blueprintInitiativesRouter from "./blueprint-initiatives";
+import blueprintExportsRouter from "./blueprint-exports";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(solutionRecommendationsRouter);
 router.use(growthBlueprintsRouter);
 router.use(blueprintSectionsRouter);
 router.use(blueprintInitiativesRouter);
+router.use(blueprintExportsRouter);
 
 export default router;
