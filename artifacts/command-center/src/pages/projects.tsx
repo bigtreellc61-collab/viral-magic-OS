@@ -323,7 +323,11 @@ export function ProjectsPage() {
                 {projects.map((project) => {
                   const overdue = isOverdue(project.targetCompletionDate, project.projectStatus);
                   return (
-                    <TableRow key={project.id} className="border-border/50 hover:bg-muted/20">
+                    <TableRow
+                      key={project.id}
+                      className="border-border/50 hover:bg-muted/20"
+                      onMouseEnter={() => import('@/pages/project-detail')}
+                    >
                       <TableCell>
                         <Link href={`/projects/${project.id}`}>
                           <span className="font-medium hover:text-primary transition-colors cursor-pointer">

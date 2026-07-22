@@ -391,7 +391,11 @@ function TableView({ clients, onArchive, onRestore, onDelete }: {
               const isArchived = Boolean(client.archivedAt);
               const displayName = getClientDisplayName(client);
               return (
-                <TableRow key={client.id} className="hover:bg-muted/20 group">
+                <TableRow
+                  key={client.id}
+                  className="hover:bg-muted/20 group"
+                  onMouseEnter={() => import('@/pages/client-detail')}
+                >
                   <TableCell className="font-medium max-w-[200px]">
                     <Link href={`/clients/${client.id}`}>
                       <span className="truncate block hover:text-primary transition-colors cursor-pointer">{displayName}</span>

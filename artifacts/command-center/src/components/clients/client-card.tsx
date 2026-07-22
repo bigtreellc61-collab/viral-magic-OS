@@ -22,7 +22,10 @@ export function ClientCard({ client, onArchive, onRestore, onDelete }: ClientCar
   const isArchived = Boolean(client.archivedAt);
 
   return (
-    <Card className="border-border/50 bg-card/80 hover:border-primary/30 hover:shadow-md transition-all duration-200 group">
+    <Card
+      className="border-border/50 bg-card/80 hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
+      onMouseEnter={() => import('@/pages/client-detail')}
+    >
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
