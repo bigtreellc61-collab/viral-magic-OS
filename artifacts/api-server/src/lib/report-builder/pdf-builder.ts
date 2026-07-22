@@ -9,6 +9,7 @@
 import type { BrandingConfig } from "../branding";
 import type { BlueprintExportModel } from "./blueprint-model";
 import { getSectionsByKeys, formatDate, SECTION_GROUPS } from "./blueprint-model";
+import { buildExecutiveSummary, type ExecutiveSummary } from "./executive-summary-model";
 
 // pdfmake is externalized in esbuild — loaded at runtime from node_modules.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -169,6 +170,173 @@ function initiativeTable(
   };
 }
 
+// ─── Executive One-Page Summary page ─────────────────────────────
+
+function buildPdfExecSummaryPage(
+  summary: ExecutiveSummary,
+  indicatorHex: string,
+): object[] {
+  const bullet = (items: string[], icon = "•"): object[] =>
+    items.length > 0
+      ? items.map((t) => ({
+          text: `${icon}  ${t}`,
+          fontSize: 9,
+          color: C.body,
+          lineHeight: 1.4,
+          margin: [0, 2, 0, 2],
+        }))
+      : [{ text: "—", fontSize: 9, color: C.muted, italics: true, margin: [0, 2, 0, 2] }];
+
+  const items: object[] = [];
+
+  items.push(...chapterHeading("EX", "Executive One-Page Summary"));
+
+  // Meta table
+  items.push({
+    table: {
+      widths: ["*", "*", "*", "*", "*"],
+      body: [
+        [
+          { text: "CLIENT", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, fillColor: C.bg },
+          { text: "PROJECT", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, fillColor: C.bg },
+          { text: "VERSION", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, fillColor: C.bg },
+          { text: "ASSESSMENT DATE", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, fillColor: C.bg },
+          { text: "PREPARED DATE", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, fillColor: C.bg },
+        ],
+        [
+          { text: summary.client, fontSize: 9, bold: true, color: C.ink, fillColor: C.bg },
+          { text: summary.project ?? "—", fontSize: 9, color: C.body, fillColor: C.bg },
+          { text: summary.blueprintVersion, fontSize: 9, color: C.body, fillColor: C.bg },
+          { text: summary.assessmentDate, fontSize: 9, color: C.body, fillColor: C.bg },
+          { text: summary.preparedDate, fontSize: 9, color: C.body, fillColor: C.bg },
+        ],
+      ],
+    },
+    layout: {
+      hLineWidth: () => 0.5,
+      vLineWidth: () => 0,
+      hLineColor: () => C.border,
+      paddingTop: () => 4,
+      paddingBottom: () => 4,
+      paddingLeft: () => 6,
+      paddingRight: () => 6,
+    },
+    margin: [0, 0, 0, 10],
+  });
+
+  // Health score
+  items.push({
+    columns: [
+      {
+        stack: [
+          { text: "BUSINESS HEALTH", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1.5, margin: [0, 0, 0, 3] },
+          {
+            columns: [
+              { canvas: [{ type: "ellipse", x: 5, y: 8, r1: 5, r2: 5, color: indicatorHex }], width: 16 },
+              {
+                stack: [
+                  { text: summary.healthScore !== null ? `${summary.healthScore.toFixed(0)} / 100` : "— / 100", fontSize: 16, bold: true, color: indicatorHex },
+                  { text: (summary.healthRating ?? "").replace(/_/g, " "), fontSize: 8, color: C.muted, margin: [0, 2, 0, 0] },
+                ],
+              },
+            ],
+            columnGap: 6,
+          },
+        ],
+        width: "auto",
+      },
+      { text: "", width: "*" },
+    ],
+    margin: [0, 0, 0, 10],
+  });
+
+  items.push(hline(0, 10));
+
+  // Three columns: Risks | Opportunities | Quick Wins
+  items.push({
+    columns: [
+      { stack: [subsectionHeading("Revenue Risks"), ...bullet(summary.topRevenueRisks)] },
+      { stack: [subsectionHeading("Growth Opportunities"), ...bullet(summary.topGrowthOpportunities)] },
+      { stack: [subsectionHeading("30-Day Quick Wins"), ...bullet(summary.quickWins, "⚡")] },
+    ],
+    columnGap: 20,
+    margin: [0, 0, 0, 10],
+  });
+
+  items.push(hline(0, 10));
+
+  // Roadmap counts (3 rows: labels / numbers / "initiatives")
+  items.push({
+    columns: [
+      { text: "30 DAYS", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, alignment: "center" },
+      { text: "60 DAYS", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, alignment: "center" },
+      { text: "90 DAYS", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, alignment: "center" },
+      { text: "LONG TERM", fontSize: 7, color: C.muted, bold: true, characterSpacing: 1, alignment: "center" },
+    ],
+    columnGap: 8,
+    margin: [0, 0, 0, 2],
+  });
+  items.push({
+    columns: [
+      { text: String(summary.roadmapSummary["30_days"]), fontSize: 22, bold: true, color: C.ink, alignment: "center" },
+      { text: String(summary.roadmapSummary["60_days"]), fontSize: 22, bold: true, color: C.ink, alignment: "center" },
+      { text: String(summary.roadmapSummary["90_days"]), fontSize: 22, bold: true, color: C.ink, alignment: "center" },
+      { text: String(summary.roadmapSummary.longer_term), fontSize: 22, bold: true, color: C.ink, alignment: "center" },
+    ],
+    columnGap: 8,
+    margin: [0, 0, 0, 2],
+  });
+  items.push({
+    columns: [
+      { text: "initiatives", fontSize: 7, color: C.muted, alignment: "center" },
+      { text: "initiatives", fontSize: 7, color: C.muted, alignment: "center" },
+      { text: "initiatives", fontSize: 7, color: C.muted, alignment: "center" },
+      { text: "initiatives", fontSize: 7, color: C.muted, alignment: "center" },
+    ],
+    columnGap: 8,
+    margin: [0, 0, 0, 10],
+  });
+
+  items.push(hline(0, 10));
+
+  // Impact + Recommendation
+  items.push({
+    columns: [
+      {
+        stack: [
+          subsectionHeading("Expected Business Impact"),
+          bodyText(summary.expectedBusinessImpact || "See Business Impact section for full details.", [0, 0, 0, 0]),
+        ],
+      },
+      {
+        stack: [
+          subsectionHeading("Executive Recommendation"),
+          bodyText(summary.executiveRecommendation, [0, 0, 0, 0]),
+        ],
+      },
+    ],
+    columnGap: 24,
+    margin: [0, 0, 0, 10],
+  });
+
+  // Next steps
+  if (summary.recommendedNextSteps.length > 0) {
+    items.push(hline(0, 8));
+    items.push(subsectionHeading("Recommended Next Steps"));
+    items.push({
+      columns: summary.recommendedNextSteps.map((step, i) => ({
+        text: `${i + 1}.  ${step}`,
+        fontSize: 9,
+        color: C.body,
+        lineHeight: 1.4,
+      })),
+      columnGap: 16,
+    });
+  }
+
+  return items;
+}
+
 // ─── Main export ─────────────────────────────────────────────────
 
 export async function buildPdf(
@@ -186,6 +354,16 @@ export async function buildPdf(
     day: "numeric",
     year: "numeric",
   });
+
+  const summary = buildExecutiveSummary(blueprint, preparedDate);
+  const indicatorHex =
+    summary.healthIndicator === "green"
+      ? "#10b981"
+      : summary.healthIndicator === "yellow"
+      ? "#f59e0b"
+      : summary.healthIndicator === "red"
+      ? "#ef4444"
+      : C.muted;
 
   // ── Document definition ───────────────────────────────────────
 
@@ -345,10 +523,17 @@ export async function buildPdf(
       { text: "", pageBreak: "after" },
 
       // ─────────────────────────────────────────────────────────
-      // PAGE 2 — TABLE OF CONTENTS
+      // PAGE 2 — EXECUTIVE ONE-PAGE SUMMARY
+      // ─────────────────────────────────────────────────────────
+      ...buildPdfExecSummaryPage(summary, indicatorHex),
+      { text: "", pageBreak: "after" },
+
+      // ─────────────────────────────────────────────────────────
+      // PAGE 3 — TABLE OF CONTENTS
       // ─────────────────────────────────────────────────────────
       ...chapterHeading("", "Table of Contents"),
       ...([
+        ["EX", "Executive One-Page Summary"],
         ["01", "Executive Summary"],
         ["02", "Business Health Snapshot"],
         ["03", "Strategic Priorities"],

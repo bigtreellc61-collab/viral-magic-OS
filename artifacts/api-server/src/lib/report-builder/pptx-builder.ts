@@ -9,6 +9,7 @@ import PptxGenJS from "pptxgenjs";
 import type { BrandingConfig } from "../branding";
 import type { BlueprintExportModel, BlueprintInitiative } from "./blueprint-model";
 import { getSectionsByKeys, formatDate, SECTION_GROUPS } from "./blueprint-model";
+import { buildExecutiveSummary, type ExecutiveSummary } from "./executive-summary-model";
 
 // ─── Slide design constants ───────────────────────────────────────
 
@@ -320,6 +321,102 @@ function addClosingSlide(
   });
 }
 
+// ─── Executive Snapshot slide ─────────────────────────────────────
+
+function addExecSnapshotSlide(
+  pptx: PptxGenJS,
+  summary: ExecutiveSummary,
+  branding: BrandingConfig,
+): void {
+  const slide = pptx.addSlide();
+  slide.background = { color: LIGHT_BG };
+
+  // Accent bar
+  slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.06, h: H, fill: { color: ACCENT }, line: { color: ACCENT } });
+
+  // Slide number + title
+  slide.addText("02", { x: 0.25, y: 0.2, w: 0.6, h: 0.3, fontSize: 9, color: MUTED, fontFace: "Calibri" });
+  slide.addText("CEO Snapshot", { x: 0.25, y: 0.48, w: 6, h: 0.55, fontSize: 22, bold: true, color: INK, fontFace: "Calibri" });
+  slide.addText("Executive One-Page Summary", { x: 0.25, y: 1.02, w: 6, h: 0.28, fontSize: 10, color: MUTED, fontFace: "Calibri", italics: true });
+
+  // Meta strip (right side of header)
+  const metaText = [
+    `Client: ${summary.client}`,
+    `Project: ${summary.project ?? "—"}`,
+    `${summary.blueprintVersion}`,
+    `Assessed: ${summary.assessmentDate}`,
+    `Prepared: ${summary.preparedDate}`,
+  ].join("  ·  ");
+  slide.addText(metaText, { x: 0.25, y: 1.32, w: W - 0.5, h: 0.22, fontSize: 7.5, color: MUTED, fontFace: "Calibri", wrap: true });
+
+  // Divider
+  slide.addShape(pptx.ShapeType.line, { x: 0.25, y: 1.56, w: W - 0.5, h: 0, line: { color: BORDER, width: 0.5 } });
+
+  // ── Left panel: Health Score ─────────────────────────────────
+  const indicatorColor =
+    summary.healthIndicator === "green" ? "10B981"
+    : summary.healthIndicator === "yellow" ? "F59E0B"
+    : summary.healthIndicator === "red" ? "EF4444"
+    : MUTED;
+
+  slide.addShape(pptx.ShapeType.rect, { x: 0.25, y: 1.65, w: 2.15, h: 2.5, fill: { color: DARK_BG }, line: { color: DARK_BG } });
+  slide.addText("HEALTH SCORE", { x: 0.35, y: 1.75, w: 1.95, h: 0.22, fontSize: 7, color: MUTED, fontFace: "Calibri", align: "center", bold: true });
+  slide.addText(summary.healthScore !== null ? `${summary.healthScore.toFixed(0)}` : "—", {
+    x: 0.35, y: 1.95, w: 1.95, h: 0.75,
+    fontSize: 40, bold: true, color: indicatorColor, fontFace: "Calibri", align: "center",
+  });
+  slide.addText("/100", { x: 0.35, y: 2.68, w: 1.95, h: 0.22, fontSize: 9, color: MUTED, fontFace: "Calibri", align: "center" });
+  slide.addText((summary.healthRating ?? "").replace(/_/g, " "), { x: 0.35, y: 2.92, w: 1.95, h: 0.22, fontSize: 9, color: indicatorColor, fontFace: "Calibri", align: "center" });
+
+  // Roadmap counts inside left panel
+  slide.addShape(pptx.ShapeType.line, { x: 0.35, y: 3.25, w: 1.85, h: 0, line: { color: BORDER, width: 0.3 } });
+  slide.addText("ROADMAP", { x: 0.35, y: 3.32, w: 1.95, h: 0.2, fontSize: 7, color: MUTED, fontFace: "Calibri", align: "center", bold: true });
+  const roadmapText = `30d: ${summary.roadmapSummary["30_days"]}   60d: ${summary.roadmapSummary["60_days"]}\n90d: ${summary.roadmapSummary["90_days"]}   LT: ${summary.roadmapSummary.longer_term}`;
+  slide.addText(roadmapText, { x: 0.35, y: 3.54, w: 1.95, h: 0.56, fontSize: 11, bold: true, color: WHITE, fontFace: "Calibri", align: "center", lineSpacingMultiple: 1.4 });
+
+  // ── Middle panel: Risks + Opportunities ─────────────────────
+  const midX = 2.55;
+  const midW = 3.55;
+
+  slide.addText("REVENUE RISKS", { x: midX, y: 1.65, w: midW, h: 0.22, fontSize: 7, color: MUTED, fontFace: "Calibri", bold: true });
+  const risksText = summary.topRevenueRisks.length > 0
+    ? summary.topRevenueRisks.map((r) => `•  ${r}`).join("\n")
+    : "—";
+  slide.addText(risksText, { x: midX, y: 1.9, w: midW, h: 1.0, fontSize: 9, color: BODY, fontFace: "Calibri", wrap: true, valign: "top", lineSpacingMultiple: 1.4 });
+
+  slide.addShape(pptx.ShapeType.line, { x: midX, y: 3.0, w: midW, h: 0, line: { color: BORDER, width: 0.3 } });
+  slide.addText("GROWTH OPPORTUNITIES", { x: midX, y: 3.06, w: midW, h: 0.22, fontSize: 7, color: MUTED, fontFace: "Calibri", bold: true });
+  const oppsText = summary.topGrowthOpportunities.length > 0
+    ? summary.topGrowthOpportunities.map((o) => `•  ${o}`).join("\n")
+    : "—";
+  slide.addText(oppsText, { x: midX, y: 3.3, w: midW, h: 0.85, fontSize: 9, color: BODY, fontFace: "Calibri", wrap: true, valign: "top", lineSpacingMultiple: 1.4 });
+
+  // ── Right panel: Quick Wins + Recommendation ─────────────────
+  const rtX = 6.35;
+  const rtW = 3.4;
+
+  slide.addText("30-DAY QUICK WINS", { x: rtX, y: 1.65, w: rtW, h: 0.22, fontSize: 7, color: MUTED, fontFace: "Calibri", bold: true });
+  const qwText = summary.quickWins.length > 0
+    ? summary.quickWins.map((w) => `⚡  ${w}`).join("\n")
+    : "—";
+  slide.addText(qwText, { x: rtX, y: 1.9, w: rtW, h: 1.0, fontSize: 9, color: BODY, fontFace: "Calibri", wrap: true, valign: "top", lineSpacingMultiple: 1.4 });
+
+  slide.addShape(pptx.ShapeType.line, { x: rtX, y: 3.0, w: rtW, h: 0, line: { color: BORDER, width: 0.3 } });
+  slide.addText("EXECUTIVE RECOMMENDATION", { x: rtX, y: 3.06, w: rtW, h: 0.22, fontSize: 7, color: MUTED, fontFace: "Calibri", bold: true });
+  slide.addText(truncate(summary.executiveRecommendation, 280), { x: rtX, y: 3.3, w: rtW, h: 0.85, fontSize: 8.5, color: BODY, fontFace: "Calibri", wrap: true, valign: "top", lineSpacingMultiple: 1.4, italics: true });
+
+  // ── Bottom strip: Next Steps ──────────────────────────────────
+  if (summary.recommendedNextSteps.length > 0) {
+    slide.addShape(pptx.ShapeType.rect, { x: 0.25, y: 4.28, w: W - 0.5, h: 0.75, fill: { color: "1E293B" }, line: { color: "334155" } });
+    slide.addText("NEXT STEPS", { x: 0.4, y: 4.32, w: 1.2, h: 0.2, fontSize: 7, color: MUTED, fontFace: "Calibri", bold: true });
+    const stepsText = summary.recommendedNextSteps.map((s, i) => `${i + 1}.  ${s}`).join("     ");
+    slide.addText(stepsText, { x: 0.4, y: 4.52, w: W - 0.9, h: 0.42, fontSize: 9, color: WHITE, fontFace: "Calibri", wrap: true, valign: "top", lineSpacingMultiple: 1.3 });
+  }
+
+  // Footer
+  slide.addText(branding.reportFooter, { x: 0.25, y: H - 0.25, w: W - 0.5, h: 0.25, fontSize: 7, color: MUTED, fontFace: "Calibri" });
+}
+
 // ─── Main export ─────────────────────────────────────────────────
 
 export async function buildPptx(
@@ -338,21 +435,29 @@ export async function buildPptx(
   const firstContent = (keys: readonly string[]) =>
     sec(keys).map((s) => s.content).join("\n\n") || "";
 
+  const execSummary = buildExecutiveSummary(
+    blueprint,
+    new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+  );
+
   // ── Slide 1: Cover ────────────────────────────────────────────
   addCoverSlide(pptx, blueprint, branding);
 
-  // ── Slide 2: Executive Summary ────────────────────────────────
+  // ── Slide 2: CEO Snapshot ─────────────────────────────────────
+  addExecSnapshotSlide(pptx, execSummary, branding);
+
+  // ── Slide 3: Executive Summary ────────────────────────────────
   addContentSlide(
-    pptx, "02", "Executive Summary",
+    pptx, "03", "Executive Summary",
     firstContent(SECTION_GROUPS.executive),
     branding, { dark: true },
   );
 
-  // ── Slide 3: Business Health ──────────────────────────────────
+  // ── Slide 4: Business Health ──────────────────────────────────
   const healthSecs = sec(SECTION_GROUPS.health);
   const healthBody = healthSecs.slice(0, 2).map((s) => s.content).join("\n\n");
   const healthRight = healthSecs.slice(2).map((s) => `${s.title.toUpperCase()}\n${s.content}`).join("\n\n");
-  addContentSlide(pptx, "03", "Business Health Snapshot", healthBody, branding, {
+  addContentSlide(pptx, "04", "Business Health Snapshot", healthBody, branding, {
     rightText: [
       blueprint.assessmentHealthScore !== null
         ? `Health Score: ${blueprint.assessmentHealthScore.toFixed(0)} / 100  (${(blueprint.assessmentHealthRating ?? "").replace(/_/g, " ")})`
@@ -361,46 +466,46 @@ export async function buildPptx(
     ].filter(Boolean).join("\n\n"),
   });
 
-  // ── Slide 4: Strategic Priorities ────────────────────────────
+  // ── Slide 5: Strategic Priorities ────────────────────────────
   addContentSlide(
-    pptx, "04", "Strategic Priorities",
+    pptx, "05", "Strategic Priorities",
     firstContent(SECTION_GROUPS.strategic),
     branding,
   );
 
-  // ── Slides 5–8: Roadmap periods ──────────────────────────────
+  // ── Slides 6–9: Roadmap periods ──────────────────────────────
   const roadmapNarr = sec(SECTION_GROUPS.roadmap);
   const getNarr = (key: string) =>
     roadmapNarr.find((s) => s.sectionKey === key)?.content ?? "";
 
-  addRoadmapSlide(pptx, "05", "30-Day Plan", "30_days", blueprint.byPeriod["30_days"], getNarr("action_plan_30_days"), branding);
-  addRoadmapSlide(pptx, "06", "60-Day Plan", "60_days", blueprint.byPeriod["60_days"], getNarr("action_plan_60_days"), branding);
-  addRoadmapSlide(pptx, "07", "90-Day Plan", "90_days", blueprint.byPeriod["90_days"], getNarr("action_plan_90_days"), branding);
-  addRoadmapSlide(pptx, "08", "Long-Term Roadmap", "longer_term", blueprint.byPeriod.longer_term, getNarr("longer_term_roadmap"), branding);
+  addRoadmapSlide(pptx, "06", "30-Day Plan", "30_days", blueprint.byPeriod["30_days"], getNarr("action_plan_30_days"), branding);
+  addRoadmapSlide(pptx, "07", "60-Day Plan", "60_days", blueprint.byPeriod["60_days"], getNarr("action_plan_60_days"), branding);
+  addRoadmapSlide(pptx, "08", "90-Day Plan", "90_days", blueprint.byPeriod["90_days"], getNarr("action_plan_90_days"), branding);
+  addRoadmapSlide(pptx, "09", "Long-Term Roadmap", "longer_term", blueprint.byPeriod.longer_term, getNarr("longer_term_roadmap"), branding);
 
-  // ── Slide 9: KPIs ─────────────────────────────────────────────
+  // ── Slide 10: KPIs ────────────────────────────────────────────
   addContentSlide(
-    pptx, "09", "KPIs & Success Metrics",
+    pptx, "10", "KPIs & Success Metrics",
     firstContent(SECTION_GROUPS.kpis),
     branding,
   );
 
-  // ── Slide 10: Business Impact ─────────────────────────────────
+  // ── Slide 11: Business Impact ─────────────────────────────────
   addContentSlide(
-    pptx, "10", "Business Impact",
+    pptx, "11", "Business Impact",
     firstContent(SECTION_GROUPS.impact),
     branding,
   );
 
-  // ── Slide 11: Executive Decisions ─────────────────────────────
+  // ── Slide 12: Executive Decisions ─────────────────────────────
   addContentSlide(
-    pptx, "11", "Executive Decisions Required",
+    pptx, "12", "Executive Decisions Required",
     firstContent(SECTION_GROUPS.decisions),
     branding,
     { dark: true },
   );
 
-  // ── Slide 12: Closing ─────────────────────────────────────────
+  // ── Slide 13: Closing ─────────────────────────────────────────
   addClosingSlide(pptx, blueprint, branding);
 
   const buffer = await pptx.write({ outputType: "nodebuffer" });

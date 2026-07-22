@@ -132,6 +132,38 @@ const PERIOD_SECTION_KEY: Record<string, string> = {
   "longer_term": "longer_term_roadmap",
 };
 
+// ─── Executive snapshot helpers (used by CeoSnapshotPanel) ───────
+
+function extractSummaryItems(text: string, max: number): string[] {
+  if (!text.trim()) return [];
+  const bulletLines = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => /^[-*•]|^\d+[.)]\s/.test(l))
+    .map((l) => l.replace(/^[-*•]\s*|^\d+[.)]\s+/, "").trim())
+    .filter(Boolean)
+    .slice(0, max);
+  if (bulletLines.length > 0) return bulletLines;
+  return text
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/\n/g, " ").trim())
+    .filter(Boolean)
+    .slice(0, max);
+}
+
+const EXEC_RECOMMENDATIONS: Record<string, string> = {
+  strong:
+    "This business demonstrates strong foundational health with significant growth potential. We recommend accelerating the identified strategic opportunities to capture market advantage and drive sustained revenue expansion.",
+  stable:
+    "This business is operating from a stable base with clear opportunities to strengthen performance. We recommend a focused implementation of the identified priorities to drive measurable, sustainable revenue growth.",
+  vulnerable:
+    "This business shows signs of vulnerability that require prompt attention. We recommend immediate action on the identified critical priorities to stabilize operations and restore growth momentum within 90 days.",
+  at_risk:
+    "This business faces significant risks that demand urgent executive action. We recommend activating the high-priority initiatives immediately and establishing weekly accountability checkpoints to track measurable progress.",
+  critical:
+    "This business is at a critical juncture requiring decisive intervention. We recommend an emergency response focused exclusively on the most critical priorities to stabilize performance within 30 days.",
+};
+
 // ─── Health score color helper ───────────────────────────────────
 
 function healthScoreColor(score: number | null): string {
@@ -144,6 +176,7 @@ function healthScoreColor(score: number | null): string {
 // ─── Jump nav config ─────────────────────────────────────────────
 
 const NAV_SECTIONS = [
+  { id: "ceo-snapshot", num: "EX", label: "CEO Snapshot" },
   { id: "exec",         num: "01", label: "Executive Summary" },
   { id: "health",       num: "02", label: "Business Health" },
   { id: "strategic",    num: "03", label: "Strategic Priorities" },
@@ -309,6 +342,225 @@ function SectionBlock({
       ) : (
         <p className="text-sm text-slate-700 italic pl-4">No content generated yet.</p>
       )}
+    </div>
+  );
+}
+
+// ─── CeoSnapshotPanel ────────────────────────────────────────────
+
+function CeoSnapshotPanel({
+  blueprint,
+  sections,
+  initiatives,
+}: {
+  blueprint: any;
+  sections: AnySection[];
+  initiatives: InitiativeData[];
+}) {
+  const sc = (key: string): string => {
+    const found = sections.find((s) => s.sectionKey === key);
+    return ((found?.finalContent ?? found?.consultantContent ?? found?.generatedContent) ?? "").trim();
+  };
+
+  const score = blueprint.assessmentHealthScore ? Number(blueprint.assessmentHealthScore) : null;
+  const rating = (blueprint.assessmentHealthRating as string | null) ?? null;
+
+  const indicator =
+    score !== null
+      ? score >= 75 ? "green" : score >= 55 ? "yellow" : "red"
+      : rating === "strong" || rating === "stable" ? "green"
+      : rating === "vulnerable" ? "yellow"
+      : rating ? "red"
+      : null;
+
+  const versionLabel: string =
+    blueprint.versionLabel ?? `v${blueprint.version ?? 1}.${blueprint.revisionNumber ?? 0}`;
+
+  const assessmentDate = blueprint.generatedAt
+    ? new Date(blueprint.generatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : "—";
+  const preparedDate = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+  let topRisks = extractSummaryItems(sc("primary_risks"), 3);
+  if (topRisks.length === 0)
+    topRisks = initiatives.filter((i) => i.priorityClassification === "Critical Priority").slice(0, 3).map((i) => i.title);
+
+  let topOpps = extractSummaryItems(sc("key_strengths"), 3);
+  if (topOpps.length === 0) topOpps = extractSummaryItems(sc("strategic_priorities"), 3);
+  if (topOpps.length === 0)
+    topOpps = initiatives
+      .filter((i) => i.priorityClassification === "High Priority" || i.priorityClassification === "Important")
+      .slice(0, 3)
+      .map((i) => i.title);
+
+  const thirtyDay = initiatives.filter((i) => i.roadmapPeriod === "30_days");
+  const markedQW = thirtyDay.filter((i) => i.roadmapReason?.toLowerCase().includes("quick win")).slice(0, 5).map((i) => i.title);
+  const quickWins = markedQW.length > 0 ? markedQW : thirtyDay.slice(0, 3).map((i) => i.title);
+
+  const counts = {
+    "30": initiatives.filter((i) => i.roadmapPeriod === "30_days").length,
+    "60": initiatives.filter((i) => i.roadmapPeriod === "60_days").length,
+    "90": initiatives.filter((i) => i.roadmapPeriod === "90_days").length,
+    lt: initiatives.filter((i) => i.roadmapPeriod === "longer_term").length,
+  };
+
+  const impactText = sc("business_impact").split(/\n{2,}/)[0]?.replace(/\n/g, " ").trim() ?? "";
+
+  const rec =
+    EXEC_RECOMMENDATIONS[rating ?? ""] ??
+    "Based on the growth assessment findings, we recommend executing the identified strategic plan with focused leadership attention and accountability structures to achieve the projected business outcomes.";
+
+  let nextSteps = extractSummaryItems(sc("executive_decision_summary"), 3);
+  if (nextSteps.length === 0) nextSteps = thirtyDay.slice(0, 3).map((i) => i.title);
+
+  const indicatorDot =
+    indicator === "green" ? "bg-emerald-400"
+    : indicator === "yellow" ? "bg-amber-400"
+    : indicator === "red" ? "bg-red-400"
+    : "bg-slate-600";
+  const indicatorText =
+    indicator === "green" ? "text-emerald-400"
+    : indicator === "yellow" ? "text-amber-400"
+    : indicator === "red" ? "text-red-400"
+    : "text-slate-500";
+
+  return (
+    <div className="border border-slate-700/60 rounded-xl overflow-hidden bg-slate-900/30 print:border-slate-300">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-[9px] font-mono text-slate-600 uppercase tracking-widest mb-1">EX</p>
+          <h2 id="s-ceo-snapshot" className="text-xl font-bold text-slate-50 tracking-tight">CEO Snapshot</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Executive One-Page Summary</p>
+        </div>
+        <span className="text-[10px] font-semibold px-2 py-1 rounded border border-violet-700/40 bg-violet-950/30 text-violet-300 shrink-0 print:hidden">
+          For Executive Review
+        </span>
+      </div>
+
+      {/* Meta strip */}
+      <div className="grid grid-cols-5 divide-x divide-slate-800 border-b border-slate-800 bg-slate-950/30">
+        {[
+          { label: "CLIENT", value: blueprint.clientName ?? "—" },
+          { label: "PROJECT", value: blueprint.projectName ?? "—" },
+          { label: "VERSION", value: versionLabel },
+          { label: "ASSESSMENT DATE", value: assessmentDate },
+          { label: "PREPARED DATE", value: preparedDate },
+        ].map(({ label, value }) => (
+          <div key={label} className="px-4 py-3 min-w-0">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest mb-1">{label}</p>
+            <p className="text-[11px] font-semibold text-slate-200 leading-snug truncate">{value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Main content */}
+      <div className="p-6 space-y-5">
+
+        {/* Row 1: Health + Risks + Opportunities + Quick Wins */}
+        <div className="grid grid-cols-4 gap-5">
+          <div className="bg-slate-900/60 border border-slate-800 rounded-lg p-4 flex flex-col items-center justify-center text-center">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest mb-3">Business Health</p>
+            <div className={cn("text-5xl font-bold tabular-nums leading-none", indicatorText)}>
+              {score !== null ? score.toFixed(0) : "—"}
+            </div>
+            <p className="text-xs text-slate-600 mt-1">/100</p>
+            {indicator && (
+              <div className="flex items-center gap-1.5 mt-3">
+                <span className={cn("h-2 w-2 rounded-full", indicatorDot)} />
+                <span className="text-[10px] text-slate-400 capitalize">{rating?.replace(/_/g, " ") ?? ""}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">Revenue Risks</p>
+            {topRisks.length > 0 ? (
+              <ul className="space-y-1.5">
+                {topRisks.map((r, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-red-500 text-[10px] shrink-0 mt-0.5 leading-none">•</span>
+                    <span className="text-[11px] text-slate-300 leading-snug">{r}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-[11px] text-slate-600 italic">None identified</p>}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">Growth Opportunities</p>
+            {topOpps.length > 0 ? (
+              <ul className="space-y-1.5">
+                {topOpps.map((o, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-emerald-500 text-[10px] shrink-0 mt-0.5 leading-none">•</span>
+                    <span className="text-[11px] text-slate-300 leading-snug">{o}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-[11px] text-slate-600 italic">See strategic priorities</p>}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">30-Day Quick Wins</p>
+            {quickWins.length > 0 ? (
+              <ul className="space-y-1.5">
+                {quickWins.map((w, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-amber-400 text-[10px] shrink-0 mt-0.5 leading-none">⚡</span>
+                    <span className="text-[11px] text-slate-300 leading-snug">{w}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p className="text-[11px] text-slate-600 italic">None in 30-day period</p>}
+          </div>
+        </div>
+
+        {/* Row 2: Roadmap summary */}
+        <div className="grid grid-cols-4 gap-3">
+          {[
+            { label: "30 Days", count: counts["30"], color: "text-rose-300 bg-rose-900/20 border-rose-700/40" },
+            { label: "60 Days", count: counts["60"], color: "text-amber-300 bg-amber-900/20 border-amber-700/40" },
+            { label: "90 Days", count: counts["90"], color: "text-blue-300 bg-blue-900/20 border-blue-700/40" },
+            { label: "Long Term", count: counts["lt"], color: "text-slate-300 bg-slate-800/40 border-slate-600/40" },
+          ].map(({ label, count, color }) => (
+            <div key={label} className={cn("border rounded-lg p-3 text-center", color)}>
+              <p className="text-[8px] font-mono uppercase tracking-widest opacity-60 mb-1">Roadmap · {label}</p>
+              <p className="text-2xl font-bold tabular-nums leading-none">{count}</p>
+              <p className="text-[8px] opacity-50 mt-1">{count === 1 ? "initiative" : "initiatives"}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Row 3: Impact + Recommendation */}
+        <div className="grid grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">Expected Business Impact</p>
+            <p className="text-[12px] text-slate-300 leading-relaxed">
+              {impactText || "See Business Impact section for full projected outcomes."}
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">Executive Recommendation</p>
+            <p className="text-[12px] text-slate-300 leading-relaxed">{rec}</p>
+          </div>
+        </div>
+
+        {/* Row 4: Next steps */}
+        {nextSteps.length > 0 && (
+          <div className="border-t border-slate-800 pt-4 space-y-2">
+            <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest">Recommended Next Steps</p>
+            <div className="flex flex-wrap gap-x-8 gap-y-1.5">
+              {nextSteps.map((step, i) => (
+                <div key={i} className="flex items-start gap-1.5">
+                  <span className="text-violet-400 text-[10px] shrink-0 mt-0.5 font-semibold">{i + 1}.</span>
+                  <span className="text-[12px] text-slate-300 leading-snug">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1578,6 +1830,22 @@ export function GrowthBlueprintDetailPage() {
 
         {/* Center: Document */}
         <div className="flex-1 min-w-0 space-y-20">
+
+          {/* EX — CEO Snapshot */}
+          {blueprint.generationStatus === "complete" && sections.length > 0 && (
+            <section
+              id="ceo-snapshot"
+              ref={(el) => { sectionRefs.current["ceo-snapshot"] = el; }}
+              className="bp-section scroll-mt-4"
+              aria-labelledby="s-ceo-snapshot"
+            >
+              <CeoSnapshotPanel
+                blueprint={blueprint}
+                sections={sections}
+                initiatives={initiatives}
+              />
+            </section>
+          )}
 
           {/* S01 — Executive Summary */}
           <section

@@ -29,6 +29,7 @@ import {
 import type { BrandingConfig } from "../branding";
 import type { BlueprintExportModel, BlueprintInitiative } from "./blueprint-model";
 import { getSectionsByKeys, formatDate, SECTION_GROUPS } from "./blueprint-model";
+import { buildExecutiveSummary } from "./executive-summary-model";
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
@@ -223,6 +224,8 @@ export async function buildDocx(
     year: "numeric",
   });
 
+  const execSummary = buildExecutiveSummary(blueprint, preparedDate);
+
   const doc = new Document({
     title: blueprint.title,
     subject: "Growth Blueprint",
@@ -312,6 +315,78 @@ export async function buildDocx(
               )]
             : []),
           new Paragraph({ children: [new PageBreak()] }),
+
+          // ── EX: Executive One-Page Summary ──────────────────
+          ...chapterHeading("EX", "Executive One-Page Summary"),
+          paraStyle(
+            `${execSummary.client}  ·  ${execSummary.project ?? "—"}  ·  ${execSummary.blueprintVersion}`,
+            { color: MUTED_COLOR, spacing: { after: 80 } },
+          ),
+          paraStyle(
+            `Assessed: ${execSummary.assessmentDate}  |  Prepared: ${execSummary.preparedDate}`,
+            { color: MUTED_COLOR, spacing: { after: 200 } },
+          ),
+          ...(execSummary.healthScore !== null
+            ? [paraStyle(
+                `Health Score: ${execSummary.healthScore.toFixed(0)} / 100  —  ${(execSummary.healthRating ?? "").replace(/_/g, " ")}`,
+                { bold: true, color: HEADING_COLOR, size: 24, spacing: { after: 200 } },
+              )]
+            : []),
+          ...sectionBodyParagraphs(
+            execSummary.topRevenueRisks.map((r) => `• ${r}`).join("\n") || "—",
+            "Revenue Risks",
+          ),
+          ...sectionBodyParagraphs(
+            execSummary.topGrowthOpportunities.map((o) => `• ${o}`).join("\n") || "—",
+            "Growth Opportunities",
+          ),
+          ...sectionBodyParagraphs(
+            execSummary.quickWins.map((w) => `⚡ ${w}`).join("\n") || "—",
+            "30-Day Quick Wins",
+          ),
+          paraStyle("Roadmap Summary", {
+            bold: true, color: HEADING_COLOR, size: 22, spacing: { before: 280, after: 120 },
+          }),
+          new Table({
+            rows: [
+              new TableRow({
+                children: ["30 Days", "60 Days", "90 Days", "Long Term"].map((label) =>
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 18, font: "Calibri", color: HEADING_COLOR })] })],
+                    shading: { type: ShadingType.SOLID, color: "F8FAFC" },
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                  }),
+                ),
+              }),
+              new TableRow({
+                children: [
+                  execSummary.roadmapSummary["30_days"],
+                  execSummary.roadmapSummary["60_days"],
+                  execSummary.roadmapSummary["90_days"],
+                  execSummary.roadmapSummary.longer_term,
+                ].map((n) =>
+                  new TableCell({
+                    children: [
+                      new Paragraph({ children: [new TextRun({ text: String(n), bold: true, size: 28, font: "Calibri", color: HEADING_COLOR })] }),
+                      new Paragraph({ children: [new TextRun({ text: "initiatives", size: 16, font: "Calibri", color: MUTED_COLOR })] }),
+                    ],
+                    shading: { type: ShadingType.SOLID, color: "FFFFFF" },
+                    width: { size: 25, type: WidthType.PERCENTAGE },
+                  }),
+                ),
+              }),
+            ],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+          }),
+          ...sectionBodyParagraphs(
+            execSummary.expectedBusinessImpact || "See Business Impact section for full details.",
+            "Expected Business Impact",
+          ),
+          ...sectionBodyParagraphs(execSummary.executiveRecommendation, "Executive Recommendation"),
+          ...sectionBodyParagraphs(
+            execSummary.recommendedNextSteps.map((s, i) => `${i + 1}. ${s}`).join("\n") || "—",
+            "Recommended Next Steps",
+          ),
 
           // ── Section 01: Executive Summary ───────────────────
           ...chapterHeading("01", "Executive Summary"),
